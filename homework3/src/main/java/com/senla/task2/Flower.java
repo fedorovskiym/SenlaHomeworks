@@ -4,12 +4,10 @@ public abstract class Flower {
 
     protected String name;
     protected double price;
-    protected int count;
 
-    public Flower(String name, double price, int count) {
+    public Flower(String name, double price) {
         this.name = name;
         this.price = price;
-        this.count = count;
     }
 
     public String getName() {
@@ -28,11 +26,4 @@ public abstract class Flower {
         this.price = price;
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
 }

@@ -3,28 +3,30 @@ package com.senla.task2;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Bouquet {
 
-    private final List<Flower> flowerList = new ArrayList<>();
 
-    public void addFlower(Flower flower) {
-        flowerList.add(flower);
-        System.out.println(flower.getName() + " добавлен в количестве " + flower.getCount() + " (" + flower.getPrice() * flower.getCount() + " руб.)");
+    private final HashMap<Flower, Integer> flowers = new HashMap<>();
+
+    public void addFlower(Flower flower, Integer count) {
+        flowers.put(flower, count);
+        System.out.println(flower.getName() + " добавлен в букет в количестве " + count + " шт. Цена - " + flower.getPrice() * count + " руб.");
     }
 
     public void showBouquet() {
         System.out.println("Букет: ");
-        for (Flower flower : flowerList) {
-            System.out.println(flower.getName() + " " + flower.getCount() + " шт. (" + flower.getPrice() * flower.getCount() + " руб.)");
+        for (Map.Entry<Flower, Integer> entry : flowers.entrySet()){
+            System.out.println(entry.getKey().getName() + " " + entry.getValue() + " шт.");
         }
-        System.out.println("Общая стоимость: " + calculatePrice() + " руб.");
+        System.out.println("Общая стоимость букета: " + calculatePrice() + " руб.");
     }
 
     public double calculatePrice() {
         double sum = 0;
-        for (Flower flower : flowerList) {
-            sum += flower.getCount() * flower.getPrice();
+        for (Map.Entry<Flower, Integer> entry : flowers.entrySet()){
+            sum += entry.getKey().getPrice() * entry.getValue();
         }
         return sum;
     }
