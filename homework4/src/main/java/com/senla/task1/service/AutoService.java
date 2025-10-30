@@ -5,7 +5,10 @@ import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.service.OrderService;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class AutoService {
@@ -39,8 +42,8 @@ public class AutoService {
     }
 
     public Object findPlaceByNumber(int placeNumber) {
-        for(GaragePlace garagePlace : placeList) {
-            if(garagePlace.getPlaceNumber() == placeNumber) {
+        for (GaragePlace garagePlace : placeList) {
+            if (garagePlace.getPlaceNumber() == placeNumber) {
                 return garagePlace;
             }
         }
@@ -49,14 +52,20 @@ public class AutoService {
 
     public void showAllMechanic() {
         for (Mechanic mechanic : mechanicList) {
-            System.out.println("Механик №" + mechanic.getIndex() + " " + mechanic.getName());
+            System.out.println("Механик №" + mechanic.getIndex() + " " +
+                    mechanic.getName() + " " +
+                    mechanic.getSurname() +
+                    ". Лет опыта: " + mechanic.getExperience() + " " +
+                    (mechanic.isBusy() ? "Механик не занят" : "Механик занят"));
         }
         System.out.println();
     }
 
-    public void showAllGaragePlaces() {
+    public void showFreeGaragePlaces() {
         for (GaragePlace garagePlace : placeList) {
-            System.out.println("Место №" + garagePlace.getPlaceNumber());
+            if (garagePlace.isEmpty()) {
+                System.out.println("Место №" + garagePlace.getPlaceNumber() + " свободно");
+            }
         }
         System.out.println();
     }
@@ -76,7 +85,7 @@ public class AutoService {
         }
     }
 
-    public void createOrder(String carModel, int mechanicId, int placeNumber, int durationHours) {
+    public void createOrder(String carModel, int mechanicId, int placeNumber, double price, long hours, long minutes) {
 
         if (!mechanicList.contains(findMechanicById(mechanicId)) || !placeList.contains(findPlaceByNumber(placeNumber))) {
             System.out.println("Ошибка: указаны неверные айдишники механика или место в гараже");
@@ -91,8 +100,18 @@ public class AutoService {
             return;
         }
 
-        Order order = new Order(carModel, mechanic, garagePlace, durationHours);
+        Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
+        Order order = new Order(carModel, mechanic, garagePlace, duration, price);
+
         orderService.addOrder(order);
+    }
+
+    public void getOrderByMechanicId(int mechanicId) {
+        orderService.findOrderByMechanicId(mechanicId);
+    }
+
+    public void acceptOrder(int id) {
+        orderService.acceptOrder(id);
     }
 
     public void deleteOrder(int id) {
@@ -107,12 +126,63 @@ public class AutoService {
         orderService.cancelOrder(id);
     }
 
-    public void shiftOrdersTime(double hours) {
-        orderService.shiftOrders(hours);
+    public void shiftOrdersTime(int hours, int minutes) {
+        Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
+        orderService.shiftOrders(duration);
+    }
+
+    public void showOrderByStatus(String status) {
+        orderService.showOrders(status);
     }
 
     public void showAllOrders() {
         orderService.showOrders();
     }
+
+    public void showSortedOrdersByDateOfSubmission() {
+        orderService.sortOrdersByDateOfSubmission();
+        orderService.showOrders();
+    }
+
+    public void showSortedOrdersByDateOfSubmissionReversed() {
+        orderService.sortOrdersByDateOfSubmissionReversed();
+        orderService.showOrders();
+        orderService.sortOrdersByDateOfSubmission();
+    }
+
+    public void showSortedOrdersByDateOfCompletion() {
+        orderService.sortOrdersByDateOfCompletion();
+        orderService.showOrders();
+        orderService.sortOrdersByDateOfSubmission();
+    }
+
+    public void showSortedOrdersByDateOfCompletionReversed() {
+        orderService.sortOrdersByDateOfCompletionReversed();
+        orderService.showOrders();
+        orderService.sortOrdersByDateOfSubmission();
+    }
+
+    public void showSortedOrdersByPrice() {
+        orderService.sortOrdersByPrice();
+        orderService.showOrders();
+        orderService.sortOrdersByDateOfSubmission();
+    }
+
+    public void showSortedOrdersByPriceReversed() {
+        orderService.sortOrdersByPriceReversed();
+        orderService.showOrders();
+        orderService.sortOrdersByDateOfSubmission();
+    }
+
+    public void showSortedMechanicByAlphabet() {
+        mechanicList.sort(Comparator.comparing(Mechanic::getName));
+        showAllMechanic();
+    }
+
+    public void showSortedMechanicByBusy() {
+        mechanicList.sort(Comparator.comparing(Mechanic::isBusy));
+        showAllMechanic();
+    }
+
 
 }

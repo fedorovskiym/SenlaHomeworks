@@ -1,6 +1,9 @@
 package com.senla.task1.models;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Order {
 
@@ -10,15 +13,28 @@ public class Order {
     private Mechanic mechanic;
     private GaragePlace garagePlace;
     private String status;
-    private double durationHours;
+    private LocalDateTime submissionDateTime;
+    private LocalDateTime plannedCompletionDateTime;
+    private LocalDateTime completionDateTime;
+    private LocalDateTime endDateTime;
+    private Duration durationHours;
+    private double price;
 
-    public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, double durationHours) {
+    public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, Duration durationHours, double price) {
         this.index = count++;
         this.carName = carName;
         this.mechanic = mechanic;
         this.garagePlace = garagePlace;
-        this.status = "Принят";
+        this.status = "Ожидает";
+        this.submissionDateTime = LocalDateTime.now();
+        this.price = price;
         this.durationHours = durationHours;
+        mechanic.setBusy(true);
+        garagePlace.setEmpty(false);
+    }
+
+    public void acceptOrder() {
+        status = "Принят";
         mechanic.setBusy(true);
         garagePlace.setEmpty(false);
     }
@@ -41,8 +57,57 @@ public class Order {
         garagePlace.setEmpty(true);
     }
 
-    public void shiftTime(double hours) {
-        durationHours += hours;
+    public void shiftTime(Duration time) {
+        durationHours = durationHours.plus(time);
+        endDateTime = endDateTime.plus(time);
+    }
+
+    public static int getCount() {
+        return count;
+    }
+
+    public static void setCount(int count) {
+        Order.count = count;
+    }
+
+    public LocalDateTime getSubmissionDateTime() {
+        return submissionDateTime;
+    }
+
+    public void setSubmissionDateTime(LocalDateTime submissionDateTime) {
+        this.submissionDateTime = submissionDateTime;
+    }
+
+    public LocalDateTime getPlannedCompletionDateTime() {
+        return plannedCompletionDateTime;
+    }
+
+    public void setPlannedCompletionDateTime(LocalDateTime plannedCompletionDateTime) {
+        this.plannedCompletionDateTime = plannedCompletionDateTime;
+    }
+
+    public LocalDateTime getCompletionDateTime() {
+        return completionDateTime;
+    }
+
+    public void setCompletionDateTime(LocalDateTime completionDateTime) {
+        this.completionDateTime = completionDateTime;
+    }
+
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
+    }
+
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
+    }
+
+    public void setDurationHours(Duration durationHours) {
+        this.durationHours = durationHours;
+    }
+
+    public Duration getDurationHours() {
+        return durationHours;
     }
 
     public int getIndex() {
@@ -85,12 +150,11 @@ public class Order {
         this.status = status;
     }
 
-    public double getDurationHours() {
-        return durationHours;
+    public double getPrice() {
+        return price;
     }
 
-    public void setDurationHours(double durationHours) {
-        this.durationHours = durationHours;
+    public void setPrice(double price) {
+        this.price = price;
     }
-
 }
