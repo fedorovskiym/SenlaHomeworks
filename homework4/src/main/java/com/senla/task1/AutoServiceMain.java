@@ -13,57 +13,66 @@ public class AutoServiceMain {
         autoService.addMechanic(new Mechanic("Сергей", "Иванов", 7));
         autoService.addMechanic(new Mechanic("Петр", "Петров", 3));
         autoService.addMechanic(new Mechanic("Иван", "Сергеев", 10));
-        autoService.addMechanic(new Mechanic("123", "123", 15));
         System.out.println();
 
         autoService.addGaragePlace(1);
         autoService.addGaragePlace(2);
         autoService.addGaragePlace(3);
-        autoService.addGaragePlace(4);
         System.out.println();
 
         autoService.showFreeGaragePlaces();
         autoService.showAllMechanic();
 
         autoService.createOrder("BMW M5", 1, 1, 7000, 2, 30);
-        autoService.acceptOrder(1);
 
-        autoService.createOrder("BMW M2", 3, 3, 5000, 1, 0);
+        autoService.createOrder("Toyota Camry", 3, 3, 5000, 1, 0);
 
-        autoService.acceptOrder(2);
+        autoService.showOrderByStatus("Принят");
 
-//        System.out.println("Показ всех заказов");
-//        autoService.showAllOrders();
-//
-//        System.out.println("Показ по дате выполнения");
-//        autoService.showSortedOrdersByDateOfCompletion();
-//
-//        System.out.println("Показ по дате выполнения (перевернутый)");
-//        autoService.showSortedOrdersByDateOfCompletionReversed();
-//
-//        System.out.println("Показ по дате подачи");
-//        autoService.showSortedOrdersByDateOfSubmission();
-//
-//        System.out.println("Показ по дате подачи (перевернутый)");
-//        autoService.showSortedOrdersByDateOfSubmissionReversed();
+        autoService.createOrder("Kia Rio", 2, 2, 10000, 3, 0);
 
-//        System.out.println("Показ по цене");
-//        autoService.showSortedOrdersByPrice();
-//
-//        System.out.println("Показ по цене (перевернутый)");
-//        autoService.showSortedOrdersByPriceReversed();
+        autoService.closeOrder(1);
+        autoService.cancelOrder(3);
 
-        System.out.println("Вывод свободных мест в гараже");
+        autoService.shiftOrdersTime(1, 0);
+
+        autoService.showAllOrders();
+
         autoService.showFreeGaragePlaces();
 
+        autoService.showOrdersOverPeriodOfTime(2025, 11, 2, 2025, 11, 2, "completion", false);
+
+        System.out.println("Показ по дате выполнения");
+        autoService.showSortedOrdersByDateOfCompletion(true);
+
+        System.out.println("Показ по дате выполнения (перевернутый)");
+        autoService.showSortedOrdersByDateOfCompletion(false);
+
+        System.out.println("Показ по дате подачи");
+        autoService.showSortedOrdersByDateOfSubmission(true);
+
+        System.out.println("Показ по дате подачи (перевернутый)");
+        autoService.showSortedOrdersByDateOfSubmission(false);
+
+        System.out.println("Показ по цене");
+        autoService.showSortedOrdersByPrice(true);
+
+        System.out.println("Показ по цене (перевернутый)");
+        autoService.showSortedOrdersByPrice(false);
+
         System.out.println("Показ мастеров по алфавиту");
-        autoService.showSortedMechanicByAlphabet();
+        autoService.showSortedMechanicByAlphabet(true);
 
         System.out.println("Показ мастеров по занятости");
         autoService.showSortedMechanicByBusy();
 
-
         autoService.getOrderByMechanicId(2);
+
+        autoService.showNearestAvailableDate();
+
+        autoService.getAvailableSlot(2025, 11, 2);
+
+        autoService.getMechanicByOrderId(2);
 
     }
 }

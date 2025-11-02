@@ -6,6 +6,7 @@ import com.senla.task1.models.Order;
 import com.senla.task1.service.OrderService;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,8 +56,8 @@ public class AutoService {
             System.out.println("Механик №" + mechanic.getIndex() + " " +
                     mechanic.getName() + " " +
                     mechanic.getSurname() +
-                    ". Лет опыта: " + mechanic.getExperience() + " " +
-                    (mechanic.isBusy() ? "Механик не занят" : "Механик занят"));
+                    ". Лет опыта: " + mechanic.getExperience() + ". " +
+                    (!mechanic.isBusy() ? "Механик не занят" : "Механик занят"));
         }
         System.out.println();
     }
@@ -139,49 +140,126 @@ public class AutoService {
         orderService.showOrders();
     }
 
-    public void showSortedOrdersByDateOfSubmission() {
-        orderService.sortOrdersByDateOfSubmission();
+    //  Сортировка заказов по дате подачи заявки (flag - способ отображения (перевернутый или обычный)
+    public void showSortedOrdersByDateOfSubmission(boolean flag) {
+        orderService.sortOrdersByDateOfSubmission(flag);
         orderService.showOrders();
+        orderService.sortOrdersByDateOfSubmission(true);
     }
 
-    public void showSortedOrdersByDateOfSubmissionReversed() {
-        orderService.sortOrdersByDateOfSubmissionReversed();
+    //  Сортировка заказов по дате выполнения (flag - способ отображения (перевернутый или обычный)
+    public void showSortedOrdersByDateOfCompletion(boolean flag) {
+        orderService.sortOrdersByDateOfCompletion(flag);
         orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission();
+        orderService.sortOrdersByDateOfSubmission(true);
     }
 
-    public void showSortedOrdersByDateOfCompletion() {
-        orderService.sortOrdersByDateOfCompletion();
+    //  Сортировка заказов по цене (flag - способ отображения (перевернутый или обычный)
+    public void showSortedOrdersByPrice(boolean flag) {
+        orderService.sortOrdersByPrice(flag);
         orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission();
+        orderService.sortOrdersByDateOfSubmission(true);
     }
 
-    public void showSortedOrdersByDateOfCompletionReversed() {
-        orderService.sortOrdersByDateOfCompletionReversed();
-        orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission();
-    }
+    // Сортировка механиков по алфавиту (flag - способ отображения)
+    public void showSortedMechanicByAlphabet(boolean flag) {
 
-    public void showSortedOrdersByPrice() {
-        orderService.sortOrdersByPrice();
-        orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission();
-    }
+        Comparator<Mechanic> comparator = Comparator.comparing(Mechanic::getName);
 
-    public void showSortedOrdersByPriceReversed() {
-        orderService.sortOrdersByPriceReversed();
-        orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission();
-    }
+        if (!flag) {
+            comparator = comparator.reversed();
+        }
 
-    public void showSortedMechanicByAlphabet() {
-        mechanicList.sort(Comparator.comparing(Mechanic::getName));
+        mechanicList.sort(comparator);
         showAllMechanic();
+        sortMechanicsById();
+    }
+
+    public void sortMechanicsById() {
+        mechanicList.sort(Comparator.comparing(Mechanic::getIndex));
     }
 
     public void showSortedMechanicByBusy() {
         mechanicList.sort(Comparator.comparing(Mechanic::isBusy));
         showAllMechanic();
+    }
+
+    public void getMechanicByOrderId(int id) {
+        orderService.showMechanicByOrderId(id);
+    }
+
+    //  Вывод заказов за промежуток времени
+    public void showOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear, int toMonth, int toDay, String sortType, boolean flag) {
+        orderService.findOrdersOverPeriodOfTime(fromYear, fromMonth, fromDay, toYear, toMonth, toDay, sortType, flag);
+    }
+
+    //  Получение количества свободных мест на дату
+    public void getAvailableSlot(int year, int month, int day) {
+
+        int availableMechanics = 0;
+        int availableGaragePlaces = 0;
+
+        List<Order> orders = orderService.getOrders();
+        LocalDateTime startDate = LocalDateTime.of(year, month, day, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(year, month, day, 23, 59);
+
+        for (Mechanic mechanic : mechanicList) {
+            if (isMechanicAvailable(mechanic, orders, startDate, endDate)) {
+                availableMechanics++;
+            }
+        }
+
+        for (GaragePlace garagePlace : placeList) {
+            if (isGaragePlaceAvailable(garagePlace, orders, startDate, endDate)) {
+                availableGaragePlaces++;
+            }
+        }
+
+        System.out.println("Количество свободных мест в сервисе на " + day + "." + month + "." + year + " - " + Math.min(availableMechanics, availableGaragePlaces));
+    }
+
+    //  Проверка свободен ли механик на дату
+    public boolean isMechanicAvailable(Mechanic mechanic, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
+        for (Order order : orders) {
+
+            if (!order.getStatus().equals("Отменен") && !order.getStatus().equals("Удален")) {
+
+                if (order.getMechanic() != null && order.getMechanic().equals(mechanic)) {
+                    LocalDateTime start = order.getSubmissionDateTime();
+                    LocalDateTime end = order.getEndDateTime();
+
+                    if (start == null || end == null) continue;
+
+                    if (!end.isBefore(startDate) && !start.isAfter(endDate)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // Проверка свободно ли место в гараже на дату
+    public boolean isGaragePlaceAvailable(GaragePlace garagePlace, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
+        for (Order order : orders) {
+            if (order.getStatus().equals("Отменен") || order.getStatus().equals("Удален")) continue;
+
+            if (order.getGaragePlace().equals(garagePlace)) {
+                LocalDateTime start = order.getSubmissionDateTime();
+                LocalDateTime end = order.getPlannedCompletionDateTime();
+
+                if (start == null || end == null) continue;
+
+                if (!end.isBefore(startDate) && !start.isAfter(endDate)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void showNearestAvailableDate() {
+        orderService.showNearestAvailableDate();
     }
 
 
