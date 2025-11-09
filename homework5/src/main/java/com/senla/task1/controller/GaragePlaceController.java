@@ -5,12 +5,7 @@ import com.senla.task1.service.GaragePlaceService;
 
 public class GaragePlaceController {
 
-    private final GaragePlaceService garagePlaceService = new GaragePlaceService();
-
-
-    public GaragePlace findPlaceByNumber(int placeNumber) {
-        return garagePlaceService.findPlaceByNumber(placeNumber);
-    }
+    private final GaragePlaceService garagePlaceService = GaragePlaceService.getInstance();
 
     public void showFreeGaragePlaces() {
         garagePlaceService.showFreeGaragePlaces();

@@ -9,7 +9,18 @@ import java.util.List;
 
 public class GaragePlaceService {
 
+    private static GaragePlaceService instance;
     private final List<GaragePlace> placeList = new ArrayList<>();
+
+    public GaragePlaceService() {
+    }
+
+    public static GaragePlaceService getInstance() {
+        if (instance == null) {
+            instance = new GaragePlaceService();
+        }
+        return instance;
+    }
 
     public List<GaragePlace> getPlaceList() {
         return placeList;
@@ -47,9 +58,9 @@ public class GaragePlaceService {
                 return;
             }
         }
+        System.out.println("Такого места в гаражах нет");
     }
 
-    // Проверка свободно ли место в гараже на дату
     public boolean isGaragePlaceAvailable(GaragePlace garagePlace, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
         for (Order order : orders) {
             if (order.getStatus().equals("Отменен") || order.getStatus().equals("Удален")) continue;

@@ -2,6 +2,8 @@ package com.senla.task1.service;
 
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
+import com.senla.task1.models.enums.OrderStatus;
+import org.w3c.dom.ls.LSOutput;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,8 +12,17 @@ import java.util.List;
 
 public class MechanicService {
 
+    private static MechanicService instance;
     private final List<Mechanic> mechanicList = new ArrayList<>();
 
+    private MechanicService() {}
+
+    public static MechanicService getInstance() {
+        if (instance == null) {
+            instance = new MechanicService();
+        }
+        return instance;
+    }
 
     public List<Mechanic> getMechanicList() {
         return mechanicList;
@@ -30,6 +41,7 @@ public class MechanicService {
                 return;
             }
         }
+        System.out.println("Механика с таким номером нет");
     }
 
     public Mechanic findMechanicById(int id) {
@@ -75,11 +87,10 @@ public class MechanicService {
         sortMechanicsById();
     }
 
-    //  Проверка свободен ли механик на дату
     public boolean isMechanicAvailable(Mechanic mechanic, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
         for (Order order : orders) {
 
-            if (!order.getStatus().equals("Отменен") && !order.getStatus().equals("Удален")) {
+            if (!order.getStatus().equals(OrderStatus.CANCEL) && !order.getStatus().equals(OrderStatus.DELETED)) {
 
                 if (order.getMechanic() != null && order.getMechanic().equals(mechanic)) {
                     LocalDateTime start = order.getSubmissionDateTime();

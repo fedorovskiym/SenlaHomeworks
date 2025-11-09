@@ -5,7 +5,7 @@ import com.senla.task1.service.MechanicService;
 
 public class MechanicController {
 
-    private final MechanicService mechanicService = new MechanicService();
+    private final MechanicService mechanicService = MechanicService.getInstance();
 
     public void addMechanic(Mechanic mechanic) {
         mechanicService.addMechanic(mechanic);
@@ -13,10 +13,6 @@ public class MechanicController {
 
     public void removeMechanicById(int id) {
         mechanicService.removeMechanicById(id);
-    }
-
-    public Mechanic findMechanicById(int id) {
-        return mechanicService.findMechanicById(id);
     }
 
     public void showAllMechanics() {

@@ -1,5 +1,7 @@
 package com.senla.task1.models;
 
+import com.senla.task1.models.enums.OrderStatus;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,7 +15,7 @@ public class Order {
     private String carName;
     private Mechanic mechanic;
     private GaragePlace garagePlace;
-    private String status;
+    private OrderStatus status;
     private LocalDateTime submissionDateTime;
     private LocalDateTime plannedCompletionDateTime;
     private LocalDateTime completionDateTime;
@@ -26,7 +28,7 @@ public class Order {
         this.carName = carName;
         this.mechanic = mechanic;
         this.garagePlace = garagePlace;
-        this.status = "Ожидает";
+        this.status = OrderStatus.WAITING;
         this.submissionDateTime = LocalDateTime.now();
         this.price = price;
         this.duration = duration;
@@ -35,25 +37,25 @@ public class Order {
     }
 
     public void acceptOrder() {
-        status = "Принят";
+        status = OrderStatus.ACCEPTED;
         mechanic.setBusy(true);
         garagePlace.setEmpty(false);
     }
 
     public void closeOrder() {
-        status = "Выполнен";
+        status = OrderStatus.DONE;
         mechanic.setBusy(false);
         garagePlace.setEmpty(true);
     }
 
     public void cancelOrder() {
-        status = "Отменен";
+        status = OrderStatus.CANCEL;
         mechanic.setBusy(false);
         garagePlace.setEmpty(true);
     }
 
     public void deleteOrder() {
-        status = "Удален";
+        status = OrderStatus.DELETED;
         mechanic.setBusy(false);
         garagePlace.setEmpty(true);
     }
@@ -95,11 +97,11 @@ public class Order {
         this.garagePlace = garagePlace;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus orderStatus) {
         this.status = status;
     }
 

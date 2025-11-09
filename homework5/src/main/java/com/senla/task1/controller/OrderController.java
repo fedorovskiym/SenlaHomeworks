@@ -4,7 +4,7 @@ import com.senla.task1.service.OrderService;
 
 public class OrderController {
 
-    private final OrderService orderService = new OrderService();
+    private final OrderService orderService = OrderService.getInstance();
 
     public void acceptOrder(int id) {
         orderService.acceptOrder(id);

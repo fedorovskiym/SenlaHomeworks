@@ -14,20 +14,24 @@ import java.util.List;
 
 public class AutoService {
 
-    private final OrderService orderService = new OrderService();
-    private final MechanicService mechanicService = new MechanicService();
-    private final GaragePlaceService garagePlaceService = new GaragePlaceService();
+    private OrderService orderService = OrderService.getInstance();
+    private MechanicService mechanicService = MechanicService.getInstance();
+    private GaragePlaceService garagePlaceService = GaragePlaceService.getInstance();
 
 
     public void createOrder(String carModel, int mechanicId, int placeNumber, double price, int hours, int minutes) {
 
-        if (!mechanicService.getMechanicList().contains(mechanicService.findMechanicById(mechanicId)) || !garagePlaceService.getPlaceList().contains(garagePlaceService.findPlaceByNumber(placeNumber))) {
-            System.out.println("Ошибка: указаны неверные айдишники механика или место в гараже");
+        Mechanic mechanic = mechanicService.findMechanicById(mechanicId);
+        GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(placeNumber);
+
+        if (mechanic == null) {
+            System.out.println("Ошибка: указан неверный номер механика");
             return;
         }
 
-        Mechanic mechanic = mechanicService.findMechanicById(mechanicId);
-        GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(placeNumber);
+        if (garagePlace == null) {
+            System.out.println("Ошибка: указан неверный номер гаража");
+        }
 
         if (mechanic.isBusy() || !garagePlace.isEmpty()) {
             System.out.println("Механик или место занято!");
@@ -63,19 +67,5 @@ public class AutoService {
 
         System.out.println("Количество свободных мест в сервисе на " + day + "." + month + "." + year + " - " + Math.min(availableMechanics, availableGaragePlaces));
     }
-
-    public void showMechanicByOrderId(int id) {
-        for (Order order : orderService.getOrders()) {
-            if (order.getIndex() == id) {
-                System.out.println("Механик №" + order.getMechanic().getIndex() + " " +
-                        order.getMechanic().getName() + " " +
-                        order.getMechanic().getSurname() +
-                        ". Лет опыта: " + order.getMechanic().getExperience() + " " +
-                        (order.getMechanic().isBusy() ? "Механик не занят" : "Механик занят"));
-            }
-        }
-    }
-
-
 
 }
