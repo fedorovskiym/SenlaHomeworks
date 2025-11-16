@@ -26,10 +26,13 @@ public class MenuController {
     public void run() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            navigator.printMenu();
-            int action = scanner.nextInt();
-            scanner.nextLine();
-            navigator.navigate(action);
+            try {
+                navigator.printMenu();
+                int action = Integer.parseInt(scanner.nextLine());
+                navigator.navigate(action);
+            } catch (NumberFormatException e) {
+                System.out.println("Неверный ввод");
+            }
         }
     }
 }

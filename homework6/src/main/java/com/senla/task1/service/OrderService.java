@@ -4,8 +4,11 @@ import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.enums.SortType;
 import org.w3c.dom.ls.LSOutput;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class OrderService {
@@ -76,72 +80,68 @@ public class OrderService {
     }
 
     public void closeOrder(int id) {
-        for (Order order : orders) {
-            if (order.getIndex() == id) {
-                order.closeOrder();
-                System.out.println("Заказ №" + id + " закрыт\n");
-                acceptOrder(id + 1);
-                return;
-            }
+        Order order = orders.stream().filter(order1 -> order1.getIndex() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (order != null) {
+            order.closeOrder();
+            System.out.println("Заказ №" + id + " закрыт\n");
+            acceptOrder(id + 1);
+        } else {
+            System.out.println("Заказ №" + id + " не найден\n");
         }
-        System.out.println("Заказ №" + id + " не найден\n");
     }
 
     public void cancelOrder(int id) {
-        for (Order order : orders) {
-            if (order.getIndex() == id) {
-                order.cancelOrder();
-                System.out.println("Заказ №" + id + " отменен\n");
-                return;
-            }
+        Order order = orders.stream().filter(order1 -> order1.getIndex() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (order != null) {
+            order.cancelOrder();
+            System.out.println("Заказ №" + id + " закрыт\n");
+        } else {
+            System.out.println("Заказ №" + id + " не найден\n");
         }
-        System.out.println("Заказ №" + id + " не найден\n");
     }
 
     public void shiftOrdersTime(int hours, int minutes) {
         Duration time = Duration.ofHours(hours).plusMinutes(minutes);
-        for (Order order : orders) {
-            order.shiftTime(time);
-        }
+        orders.forEach(order -> order.getDuration().plus(time));
         System.out.println("Изменено время выполнения всех заказов на " + time.toHours() + " час(а/ов) " + time.toMinutesPart() + " минут\n");
     }
 
     public void deleteOrder(int id) {
-        for (Order order : orders) {
-            if (order.getIndex() == id) {
-                orders.remove(order);
-                order.deleteOrder();
-                System.out.println("Заказ №" + id + " удален\n");
-                return;
-            }
+        Order order = orders.stream().filter(order1 -> order1.getIndex() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (order != null) {
+            orders.remove(order);
+            order.deleteOrder();
+            System.out.println("Заказ №" + id + " удален\n");
+        } else {
+            System.out.println("Заказ №" + id + " не найден\n");
         }
-        System.out.println("Заказ №" + id + " не найден\n");
+
     }
 
     // Вывод заказа по айдишнку механика
     public void findOrderByMechanicId(int mechanicId) {
-        for (Order order : orders) {
-            if (order.getMechanic().getIndex() == mechanicId) {
-                System.out.println("Заказ №" + order.getIndex() + ":\n" +
-                        "Статус: " + order.getStatus().getDisplayName() + "\n" +
-                        "Механик: " + order.getMechanic().getName() + " " + order.getMechanic().getSurname() + "\n" +
-                        "Название машины: " + order.getCarName() + "\n" +
-                        "Место в гараже: " + order.getGaragePlace().getPlaceNumber() + "\n" +
-                        "Дата подачи заявки: " + order.getSubmissionDateTime().format(dateTimeFormatter) + "\n" +
-                        "Длительность: " + order.getDuration().toHours() + " ч. " + order.getDuration().toMinutesPart() + " мин.\n" +
-                        (order.getCompletionDateTime() != null ? "Начало выполнения заказа: " + order.getCompletionDateTime().format(dateTimeFormatter) + "\n" : "") +
-                        (order.getEndDateTime() != null ? "Конец выполнения: " + order.getEndDateTime().format(dateTimeFormatter) + "\n" : "") +
-                        "Цена: " + order.getPrice() + " руб.\n");
-                return;
-            }
+        List<Order> mechanicOrders = orders.stream().filter(order -> order.getMechanic().getIndex() == mechanicId).toList();
+
+        if (!mechanicOrders.isEmpty()) {
+            mechanicOrders.forEach(order -> System.out.println(formatOrderInfo(order)));
+        } else {
             System.out.println("У данного мастера в данный момент нет заказов");
-            return;
         }
+
     }
 
     // Получение времени окончания последнего активного заказа
     public LocalDateTime getEndDateTimeLastOrder() {
-        if(getLastActiveOrder() == null) {
+        if (getLastActiveOrder() == null) {
             return null;
         }
         return getLastActiveOrder().getEndDateTime();
@@ -160,42 +160,19 @@ public class OrderService {
 
     // Вывод заказов по статусу
     public void showOrders(String status) {
-        System.out.println("Заказы со статусом '" + status + "':\n");
-        for (Order order : orders) {
-            if (order.getStatus().getDisplayName().equals(status)) {
-                System.out.println("Заказ №" + order.getIndex() + ":\n" +
-                        "Статус: " + order.getStatus().getDisplayName() + "\n" +
-                        "Механик: " + order.getMechanic().getName() + " " + order.getMechanic().getSurname() + "\n" +
-                        "Название машины: " + order.getCarName() + "\n" +
-                        "Место в гараже: " + order.getGaragePlace().getPlaceNumber() + "\n" +
-                        "Дата подачи заявки: " + order.getSubmissionDateTime().format(dateTimeFormatter) + "\n" +
-                        (order.getStatus().equals(OrderStatus.WAITING) ? "Планируемая дата выполнения заказа: " + order.getPlannedCompletionDateTime().format(dateTimeFormatter) + "\n" : "") +
-                        (order.getDuration() != null ? "Длительность: " + order.getDuration().toHours() + " ч. " + order.getDuration().toMinutesPart() + " мин.\n" : "") +
-                        (order.getCompletionDateTime() != null ? "Начало выполнения заказа: " + order.getCompletionDateTime().format(dateTimeFormatter) + "\n" : "") +
-                        (order.getEndDateTime() != null ? "Конец выполнения: " + order.getEndDateTime().format(dateTimeFormatter) + "\n" : "") +
-                        "Цена: " + order.getPrice() + " руб.\n");
-            }
+        List<Order> ordersByStatus = orders.stream().filter(order -> order.getStatus().getDisplayName().equals(status)).toList();
+
+        if (!ordersByStatus.isEmpty()) {
+            ordersByStatus.forEach(order -> System.out.println(formatOrderInfo(order)));
+        } else {
+            System.out.println("Заказов с таким статусом нет");
         }
-        System.out.println();
     }
 
     // Вывод всех заказов
     public void showOrders() {
         System.out.println("Заказы:");
-        for (Order order : orders) {
-            System.out.println("Заказ №" + order.getIndex() + ":\n" +
-                    "Статус: " + order.getStatus().getDisplayName() + "\n" +
-                    "Механик: " + order.getMechanic().getName() + " " + order.getMechanic().getSurname() + "\n" +
-                    "Название машины: " + order.getCarName() + "\n" +
-                    "Место в гараже: " + order.getGaragePlace().getPlaceNumber() + "\n" +
-                    "Дата подачи заявки: " + order.getSubmissionDateTime().format(dateTimeFormatter) + "\n" +
-                    (order.getStatus().equals(OrderStatus.WAITING) ? "Планируемая дата выполнения заказа: " + order.getPlannedCompletionDateTime().format(dateTimeFormatter) + "\n" : "") +
-                    (order.getDuration() != null ? "Длительность: " + order.getDuration().toHours() + " ч. " + order.getDuration().toMinutesPart() + " мин.\n" : "") +
-                    (order.getCompletionDateTime() != null ? "Начало выполнения заказа: " + order.getCompletionDateTime().format(dateTimeFormatter) + "\n" : "") +
-                    (order.getEndDateTime() != null ? "Конец выполнения: " + order.getEndDateTime().format(dateTimeFormatter) + "\n" : "") +
-                    "Цена: " + order.getPrice() + " руб.\n");
-        }
-        System.out.println();
+        orders.forEach(order -> System.out.println(formatOrderInfo(order)));
     }
 
     // Сортировка по дате подачи заявки (flag - определяет отображение)
@@ -231,27 +208,25 @@ public class OrderService {
         orders.sort(comparator);
     }
 
-
     // Метод для определения каким способом сортировать и выводить заявки за период времени
-    public void findOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear, int toMonth, int toDay, String sortType, boolean flag) {
+    public void findOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear, int toMonth, int toDay, SortType sortType, boolean flag) {
         LocalDateTime startTime = LocalDateTime.of(fromYear, fromMonth, fromDay, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
         System.out.println("Заказы в период с " + startTime.format(dateTimeFormatter) + " по " + endTime.format(dateTimeFormatter));
         System.out.println();
         switch (sortType) {
-            case "submission": {
+            case DATE_OF_SUBMISSION: {
                 sortOrdersByDateOfSubmission(flag);
                 break;
             }
-            case "completion": {
+            case DATE_OF_COMPLETION: {
                 sortOrdersByDateOfCompletion(flag);
                 break;
             }
-            case "price": {
+            case PRICE: {
                 sortOrdersByPrice(flag);
                 break;
             }
-            default: break;
         }
         showOrdersOverPeriodOfTime(startTime, endTime);
         sortOrdersByDateOfSubmission(true);
@@ -260,28 +235,100 @@ public class OrderService {
     // Вывод заказов за период времени по дате подачи заявки
     public void showOrdersOverPeriodOfTime(LocalDateTime startDate, LocalDateTime endDate) {
         System.out.println("Заказы:");
-        for (Order order : orders) {
-            if (!order.getStatus().equals(OrderStatus.WAITING) && !order.getStatus().equals(OrderStatus.DONE)) {
-                if (order.getSubmissionDateTime().isAfter(startDate) && order.getSubmissionDateTime().isBefore(endDate)) {
-                    System.out.println("Заказ №" + order.getIndex() + ":\n" +
-                            "Статус: " + order.getStatus().getDisplayName() + "\n" +
-                            "Механик: " + order.getMechanic().getName() + " " + order.getMechanic().getSurname() + "\n" +
-                            "Название машины: " + order.getCarName() + "\n" +
-                            "Место в гараже: " + order.getGaragePlace().getPlaceNumber() + "\n" +
-                            "Дата подачи заявки: " + order.getSubmissionDateTime().format(dateTimeFormatter) + "\n" +
-                            "Длительность: " + order.getDuration().toHours() + " ч. " + order.getDuration().toMinutesPart() + " мин.\n" +
-                            (order.getCompletionDateTime() != null ? "Начало выполнения заказа: " + order.getCompletionDateTime().format(dateTimeFormatter) + "\n" : "") +
-                            "Конец выполнения: " + order.getEndDateTime().format(dateTimeFormatter) + "\n" +
-                            "Цена: " + order.getPrice() + " руб.\n");
-                }
-            }
-        }
-        System.out.println();
+        orders.stream()
+                .filter(order -> !order.getStatus().equals(OrderStatus.WAITING) && !order.getStatus().equals(OrderStatus.DONE))
+                .filter(order -> order.getSubmissionDateTime().isAfter(startDate) && order.getSubmissionDateTime().isBefore(endDate))
+                .forEach(order -> System.out.println(formatOrderInfo(order)));
     }
 
     public void showNearestAvailableDate() {
         System.out.println("Ближайшая свободная дата: " + getEndDateTimeLastOrder().format(dateTimeFormatter));
     }
+
+    private String formatOrderInfo(Order order) {
+        return String.format(
+                """
+                        Заказ №%d:
+                        Статус: %s
+                        Механик: %s %s
+                        Название машины: %s
+                        Место в гараже: %d
+                        Дата подачи заявки: %s
+                        %s\
+                        %s\
+                        %s\
+                        %s\
+                        Цена: %.2f руб. \n
+                        """,
+                order.getIndex(),
+                order.getStatus().getDisplayName(),
+                order.getMechanic().getName(),
+                order.getMechanic().getSurname(),
+                order.getCarName(),
+                order.getGaragePlace().getPlaceNumber(),
+                order.getSubmissionDateTime().format(dateTimeFormatter),
+
+                order.getStatus().equals(OrderStatus.WAITING)
+                        ? String.format("Планируемая дата выполнения заказа: %s\n",
+                        order.getPlannedCompletionDateTime().format(dateTimeFormatter))
+                        : "",
+
+                order.getDuration() != null
+                        ? String.format("Длительность: %d ч. %d мин.\n",
+                        order.getDuration().toHours(), order.getDuration().toMinutesPart())
+                        : "",
+
+                order.getCompletionDateTime() != null
+                        ? String.format("Начало выполнения заказа: %s\n",
+                        order.getCompletionDateTime().format(dateTimeFormatter))
+                        : "",
+
+                order.getEndDateTime() != null
+                        ? String.format("Конец выполнения: %s\n",
+                        order.getEndDateTime().format(dateTimeFormatter))
+                        : "",
+
+                order.getPrice()
+        );
+    }
+
+    public Order findOrderById(int id) {
+        return orders.stream().filter(order -> order.getIndex() == id).findFirst().orElse(null);
+    }
+
+    public void updateOrder(int id, String carName, Mechanic mechanic,
+                            GaragePlace garagePlace, OrderStatus status, LocalDateTime submissionDateTime,
+                            LocalDateTime plannedCompletionDateTime, LocalDateTime completionDateTime,
+                            LocalDateTime endDateTime, Duration duration, double price) {
+
+        Order order = findOrderById(id);
+
+//      Если для существующего заказа из файла считывается другой механик, то старому механику меняетс статус на свободный, а новому на занятый
+        if(order.getMechanic().getIndex() != mechanic.getIndex()) {
+            order.getMechanic().setBusy(false);
+            mechanic.setBusy(true);
+        }
+
+//      Аналогично с механиками
+        if(order.getGaragePlace().getPlaceNumber() != garagePlace.getPlaceNumber()) {
+            order.getGaragePlace().setEmpty(true);
+            garagePlace.setEmpty(false);
+        }
+
+        order.setCarName(carName);
+        order.setMechanic(mechanic);
+        order.setGaragePlace(garagePlace);
+        order.setStatus(status);
+        order.setSubmissionDateTime(submissionDateTime);
+        order.setPlannedCompletionDateTime(plannedCompletionDateTime);
+        order.setCompletionDateTime(completionDateTime);
+        order.setEndDateTime(endDateTime);
+        order.setDuration(duration);
+        order.setPrice(price);
+
+        System.out.println("Заказ №" + id + " обновлен");
+    }
+
 }
 
 

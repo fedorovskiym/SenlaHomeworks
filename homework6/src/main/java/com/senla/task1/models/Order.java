@@ -36,6 +36,27 @@ public class Order {
         garagePlace.setEmpty(false);
     }
 
+    public Order(int index, String carName, Mechanic mechanic, GaragePlace garagePlace, OrderStatus status,
+                 LocalDateTime submissionDateTime, LocalDateTime plannedCompletionDateTime,
+                 LocalDateTime completionDateTime, LocalDateTime endDateTime,
+                 Duration duration, double price) {
+        this.index = index;
+        this.carName = carName;
+        this.mechanic = mechanic;
+        this.garagePlace = garagePlace;
+        this.status = status;
+        this.submissionDateTime = submissionDateTime;
+        this.plannedCompletionDateTime = plannedCompletionDateTime;
+        this.completionDateTime = completionDateTime;
+        this.endDateTime = endDateTime;
+        this.duration = duration;
+        this.price = price;
+        if(index > count) {
+            index++;
+            count = index;
+        }
+    }
+
     public void acceptOrder() {
         status = OrderStatus.ACCEPTED;
         mechanic.setBusy(true);

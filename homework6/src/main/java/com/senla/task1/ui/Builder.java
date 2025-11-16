@@ -16,6 +16,8 @@ public class Builder {
                 new MenuItem("Удалить механика", factory.removeMechanicById(), null),
                 new MenuItem("Отсортировать механиков по алфавиту", factory.showSortedMechanicsByAlphabet(), null),
                 new MenuItem("Отсортировать механиков по занятости", factory.showSortedMechanicsByBusy(), null),
+                new MenuItem("Импорт механиков из файла", factory.importMechanicsFromFileAction(), null),
+                new MenuItem("Экспорт механиков в файл", factory.exportMechanicToFileAction(), null),
                 new MenuItem("Назад", factory.goBackAction(), rootMenu)
         ), rootMenu);
 
@@ -23,6 +25,8 @@ public class Builder {
                 new MenuItem("Добавить место", factory.addGaragePlaceAction(), null),
                 new MenuItem("Показать свободные места", factory.showGaragePlacesAction(), null),
                 new MenuItem("Удалить место в гараже", factory.removeGaragePlace(), null),
+                new MenuItem("Импорт гаражных мест из файла", factory.importGaragePlaceFromFileAction(), null),
+                new MenuItem("Экспорт гаражных мест в файл", factory.exportGaragePlaceToFileAction(), null),
                 new MenuItem("Назад", factory.goBackAction(), rootMenu)
         ), rootMenu);
 
@@ -42,6 +46,8 @@ public class Builder {
                 new MenuItem("Показать заказы за период времени", factory.showOrdersOverPeriodOfTimeAction(), null),
                 new MenuItem("Показать ближайшую доступную дату", factory.showNearestAvailableSlot(), null),
                 new MenuItem("Показать свободные места на определенную дату", factory.getAvailableSlot(), null),
+                new MenuItem("Импорт заказов из файла", factory.importOrderFromFileAction(), null),
+                new MenuItem("Экспорт заказов в файл", factory.exportOrderToFileAction(), null),
                 new MenuItem("Назад", factory.goBackAction(), rootMenu)
         ), rootMenu);
 

@@ -7,10 +7,14 @@ public interface ActionFactory {
     IAction showMechanicsAction();
     IAction showSortedMechanicsByAlphabet();
     IAction showSortedMechanicsByBusy();
+    IAction importMechanicsFromFileAction();
+    IAction exportMechanicToFileAction();
 
     IAction addGaragePlaceAction();
     IAction showGaragePlacesAction();
     IAction removeGaragePlace();
+    IAction importGaragePlaceFromFileAction();
+    IAction exportGaragePlaceToFileAction();
 
     IAction createOrderAction();
     IAction getAvailableSlot();
@@ -27,6 +31,8 @@ public interface ActionFactory {
     IAction showSortedOrdersByPriceAction();
     IAction showOrdersOverPeriodOfTimeAction();
     IAction showNearestAvailableSlot();
+    IAction importOrderFromFileAction();
+    IAction exportOrderToFileAction();
 
     IAction goBackAction();
 

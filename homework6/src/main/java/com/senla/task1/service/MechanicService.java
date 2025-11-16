@@ -2,20 +2,22 @@ package com.senla.task1.service;
 
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
-import com.senla.task1.models.enums.OrderStatus;
-import org.w3c.dom.ls.LSOutput;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MechanicService {
 
     private static MechanicService instance;
     private final List<Mechanic> mechanicList = new ArrayList<>();
 
-    private MechanicService() {}
+    private MechanicService() {
+    }
 
     public static MechanicService getInstance() {
         if (instance == null) {
@@ -34,34 +36,28 @@ public class MechanicService {
     }
 
     public void removeMechanicById(int id) {
-        for (Mechanic mechanic : mechanicList) {
-            if (mechanic.getIndex() == id) {
-                mechanicList.remove(mechanic);
-                System.out.println("Удален механик " + mechanic.getName());
-                return;
-            }
+        boolean removed = mechanicList.removeIf(mechanic -> mechanic.getIndex() == id);
+
+        if (removed) {
+            System.out.println("Механик №" + id + " удален");
+        } else {
+            System.out.println("Такого механика нет");
         }
-        System.out.println("Механика с таким номером нет");
     }
 
     public Mechanic findMechanicById(int id) {
-        for (Mechanic mechanic : mechanicList) {
-            if (mechanic.getIndex() == id) {
-                return mechanic;
-            }
-        }
-        return null;
+        return mechanicList.stream().filter(mechanic -> mechanic.getIndex() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     public void showAllMechanic() {
-        for (Mechanic mechanic : mechanicList) {
-            System.out.println("Механик №" + mechanic.getIndex() + " " +
-                    mechanic.getName() + " " +
-                    mechanic.getSurname() +
-                    ". Лет опыта: " + mechanic.getExperience() + ". " +
-                    (!mechanic.isBusy() ? "Механик не занят" : "Механик занят"));
-        }
-        System.out.println();
+        mechanicList.forEach(mechanic ->
+                System.out.println("Механик №" + mechanic.getIndex() + " " +
+                        mechanic.getName() + " " +
+                        mechanic.getSurname() +
+                        ". Лет опыта: " + mechanic.getExperience() + ". " +
+                        (!mechanic.isBusy() ? "Механик не занят" : "Механик занят")));
     }
 
     public void showSortedMechanicByAlphabet(boolean flag) {
@@ -88,23 +84,83 @@ public class MechanicService {
     }
 
     public boolean isMechanicAvailable(Mechanic mechanic, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
-        for (Order order : orders) {
-
-            if (!order.getStatus().equals(OrderStatus.CANCEL) && !order.getStatus().equals(OrderStatus.DELETED)) {
-
-                if (order.getMechanic() != null && order.getMechanic().equals(mechanic)) {
+        return orders.stream()
+                .filter(order -> !order.getStatus().equals("Отменен") && !order.getStatus().equals("Удален"))
+                .filter(order -> order.getMechanic().equals(mechanic))
+                .filter(order -> order.getSubmissionDateTime() != null && order.getPlannedCompletionDateTime() != null)
+                .noneMatch(order -> {
                     LocalDateTime start = order.getSubmissionDateTime();
-                    LocalDateTime end = order.getEndDateTime();
+                    LocalDateTime end = order.getPlannedCompletionDateTime();
+                    return !end.isBefore(startDate) && !start.isAfter(endDate);
+                });
+    }
 
-                    if (start == null || end == null) continue;
+    public void importFromCSV(String filePath) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
+            String line;
+            boolean firstLine = true;
 
-                    if (!end.isBefore(startDate) && !start.isAfter(endDate)) {
-                        return false;
-                    }
+            while ((line = bufferedReader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+
+                String[] parts = line.split(";");
+                int id = Integer.parseInt(parts[0].trim());
+                String name = parts[1].trim();
+                String surname = parts[2].trim();
+                double experience = Double.parseDouble(parts[3].trim().replace(',', '.'));
+                boolean isBusy = Boolean.parseBoolean(parts[4].trim());
+
+//              Если механик уже существует, обновляем, иначе создаем нового
+                if (findMechanicById(id) != null) {
+                    updateMechanic(id, name, surname, experience, isBusy);
+                } else {
+                    Mechanic mechanic = new Mechanic(id, name, surname, experience, isBusy);
+                    addMechanic(mechanic);
                 }
             }
+            System.out.println("Данные успешно экспортированы из " + filePath);
+        } catch (FileNotFoundException e) {
+            System.out.println("Не удалось найти файл");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return true;
+    }
+
+    public void exportToCSV(String filePath) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+
+            bufferedWriter.write("id;name;surname;experienceYears;isBusy");
+            bufferedWriter.newLine();
+
+            String lines = mechanicList.stream().map(mechanic ->
+                            String.format("%d;%s;%s;%.1f;%b",
+                                    mechanic.getIndex(),
+                                    mechanic.getName(),
+                                    mechanic.getSurname(),
+                                    mechanic.getExperience(),
+                                    mechanic.isBusy()))
+                    .collect(Collectors.joining(System.lineSeparator()));
+
+            bufferedWriter.write(lines);
+            System.out.println("Данные успешно экспортированы в " + filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    private void updateMechanic(int id, String name, String surname, double experience, boolean isBusy) {
+        Mechanic mechanic = findMechanicById(id);
+        mechanic.setName(name);
+        mechanic.setSurname(surname);
+        mechanic.setExperience(experience);
+        mechanic.setBusy(isBusy);
+        System.out.println("Механик № " + id + " обновлен");
     }
 
 }

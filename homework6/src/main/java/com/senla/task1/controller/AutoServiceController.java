@@ -14,4 +14,12 @@ public class AutoServiceController {
         autoService.getAvailableSlot(year, month, day);
     }
 
+    public void exportOrdersToCSV(String filePath) {
+        autoService.exportOrdersToCSV(filePath);
+    }
+
+    public void importOrdersFromCSV(String filePath) {
+        autoService.importFromCSV(filePath);
+    }
+
 }

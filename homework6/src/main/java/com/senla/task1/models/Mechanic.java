@@ -16,6 +16,18 @@ public class Mechanic {
         this.isBusy = false;
     }
 
+    public Mechanic(int index, String name, String surname, double experienceYears, boolean isBusy) {
+        this.index = index;
+        this.name = name;
+        this.surname = surname;
+        this.experienceYears = experienceYears;
+        this.isBusy = isBusy;
+        if(index > count) {
+            index++;
+            count = index;
+        }
+    }
+
     public int getIndex() {
         return index;
     }

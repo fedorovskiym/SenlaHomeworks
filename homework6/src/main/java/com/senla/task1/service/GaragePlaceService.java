@@ -1,11 +1,15 @@
 package com.senla.task1.service;
 
 import com.senla.task1.models.GaragePlace;
+import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GaragePlaceService {
 
@@ -27,22 +31,20 @@ public class GaragePlaceService {
     }
 
     public GaragePlace findPlaceByNumber(int placeNumber) {
-        for (GaragePlace garagePlace : placeList) {
-            if (garagePlace.getPlaceNumber() == placeNumber) {
-                return garagePlace;
-            }
-        }
-        return null;
+        return placeList.stream()
+                .filter(garagePlace -> garagePlace.getPlaceNumber() == placeNumber)
+                .findFirst()
+                .orElse(null);
     }
 
 
     public void showFreeGaragePlaces() {
-        for (GaragePlace garagePlace : placeList) {
-            if (garagePlace.isEmpty()) {
-                System.out.println("Место №" + garagePlace.getPlaceNumber() + " свободно");
-            }
-        }
+        placeList.stream().filter(GaragePlace::isEmpty).forEach(garagePlace ->
+                System.out.println("Место №" + garagePlace.getPlaceNumber() + " свободно")
+        );
+
         System.out.println();
+
     }
 
     public void addGaragePlace(int number) {
@@ -51,31 +53,78 @@ public class GaragePlaceService {
     }
 
     public void removeGaragePlace(int number) {
-        for (GaragePlace place : placeList) {
-            if (place.getPlaceNumber() == number) {
-                placeList.remove(place);
-                System.out.println("Место в гараже №" + number + " удалено");
-                return;
-            }
+        boolean removed = placeList.removeIf(place -> place.getPlaceNumber() == number);
+
+        if (removed) {
+            System.out.println("Место в гараже №" + number + " удалено");
+        } else {
+            System.out.println("Такого места в гаражах нет");
         }
-        System.out.println("Такого места в гаражах нет");
+
     }
 
     public boolean isGaragePlaceAvailable(GaragePlace garagePlace, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
-        for (Order order : orders) {
-            if (order.getStatus().equals("Отменен") || order.getStatus().equals("Удален")) continue;
+        return orders.stream()
+                .filter(order -> !order.getStatus().equals("Отменен") && !order.getStatus().equals("Удален"))
+                .filter(order -> order.getGaragePlace().equals(garagePlace))
+                .filter(order -> order.getSubmissionDateTime() != null && order.getPlannedCompletionDateTime() != null)
+                .noneMatch(order -> {
+                    LocalDateTime start = order.getSubmissionDateTime();
+                    LocalDateTime end = order.getPlannedCompletionDateTime();
+                    return !end.isBefore(startDate) && !start.isAfter(endDate);
+                });
+    }
 
-            if (order.getGaragePlace().equals(garagePlace)) {
-                LocalDateTime start = order.getSubmissionDateTime();
-                LocalDateTime end = order.getPlannedCompletionDateTime();
+    public void importFromCSV(String filePath) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
+            String line;
+            boolean firstLine = true;
 
-                if (start == null || end == null) continue;
+            while ((line = bufferedReader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
 
-                if (!end.isBefore(startDate) && !start.isAfter(endDate)) {
-                    return false;
+                String[] parts = line.split(";");
+                int placeNumber = Integer.parseInt(parts[0].trim());
+                boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
+
+//              Если гаражное место существует, обновляем статус, иначе добавляем новое
+                if (findPlaceByNumber(placeNumber) != null) {
+                    findPlaceByNumber(placeNumber).setEmpty(isEmpty);
+                } else {
+                    addGaragePlace(placeNumber);
                 }
             }
+            System.out.println("Данные успешно экспортированы из " + filePath);
+        } catch (FileNotFoundException e) {
+            System.out.println("Не удалось найти файл");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return true;
     }
+
+    public void exportToCSV(String filePath) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+
+            bufferedWriter.write("placeNumber;isEmpty");
+            bufferedWriter.newLine();
+
+            String lines = placeList.stream().map(garagePlace ->
+                            String.format("%d%b",
+                                    garagePlace.getPlaceNumber(),
+                                    garagePlace.isEmpty()))
+                    .collect(Collectors.joining(System.lineSeparator()));
+
+            bufferedWriter.write(lines);
+            System.out.println("Данные успешно экспортированы в " + filePath);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

@@ -27,4 +27,12 @@ public class MechanicController {
         mechanicService.showSortedMechanicByBusy();
     }
 
+    public void importMechanicFromCSV(String filePath) {
+        mechanicService.importFromCSV(filePath);
+    }
+
+    public void exportMechanicToCSV(String filePath) {
+        mechanicService.exportToCSV(filePath);
+    }
+
 }
