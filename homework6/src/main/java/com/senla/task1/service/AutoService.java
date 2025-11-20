@@ -1,5 +1,6 @@
 package com.senla.task1.service;
 
+import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
@@ -29,15 +30,6 @@ public class AutoService {
 
         Mechanic mechanic = mechanicService.findMechanicById(mechanicId);
         GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(placeNumber);
-
-        if (mechanic == null) {
-            System.out.println("Ошибка: указан неверный номер механика");
-            return;
-        }
-
-        if (garagePlace == null) {
-            System.out.println("Ошибка: указан неверный номер гаража");
-        }
 
         if (mechanic.isBusy() || !garagePlace.isEmpty()) {
             System.out.println("Механик или место занято!");
@@ -83,14 +75,14 @@ public class AutoService {
                 String carName = parts[1].trim();
 
 //              Если механика с айди из файла не существует, переходим к следующей строке
-                if(mechanicService.findMechanicById(Integer.parseInt(parts[2].trim())) == null) {
+                if(!mechanicService.isMechanicExists(Integer.parseInt(parts[2].trim()))) {
                     System.out.println("Механика с айди " + parts[2].trim() + " не существует, заказ не может быть добавлен");
                     continue;
                 }
                 Mechanic mechanic = mechanicService.findMechanicById(Integer.parseInt(parts[2].trim()));
 
 //              Если гаражного места нет, переходим к следующей строке в файле
-                if (garagePlaceService.findPlaceByNumber(Integer.parseInt(parts[3])) == null) {
+                if (!garagePlaceService.isGaragePlaceExists(Integer.parseInt(parts[3]))) {
                     System.out.println("Места в гараже № " + Integer.parseInt(parts[3]) + " не существует, заказ не может быть добавлен");
                     continue;
                 }
@@ -114,7 +106,7 @@ public class AutoService {
                 }
 
 //              Обновление записи если запись с таким id существует
-                if(orderService.findOrderById(id) != null) {
+                if(orderService.isOrdersExists(id)) {
                     orderService.updateOrder(id, carName, mechanic, garagePlace, status,
                             submissionDateTime, plannedCompletionDateTime, completionDateTime,
                             endDateTime, duration, price);
@@ -129,7 +121,7 @@ public class AutoService {
         } catch (FileNotFoundException e) {
             System.out.println("Не удалось найти файл");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new OrderException("Ошибка при импорте данных");
         }
     }
 
@@ -158,9 +150,8 @@ public class AutoService {
 
             bufferedWriter.write(lines);
             System.out.println("Заказы успешно экспортированы в " + filePath);
-
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new OrderException("Ошибка при экспорте данных");
         }
     }
 

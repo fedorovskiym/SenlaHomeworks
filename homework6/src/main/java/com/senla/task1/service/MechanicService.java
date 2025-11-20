@@ -1,5 +1,7 @@
 package com.senla.task1.service;
 
+import com.senla.task1.exceptions.GaragePlaceException;
+import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 
@@ -38,17 +40,17 @@ public class MechanicService {
     public void removeMechanicById(int id) {
         boolean removed = mechanicList.removeIf(mechanic -> mechanic.getIndex() == id);
 
-        if (removed) {
-            System.out.println("Механик №" + id + " удален");
-        } else {
-            System.out.println("Такого механика нет");
+        if (!removed) {
+            throw new MechanicException("Механика №" + id + " не существует");
         }
+
+        System.out.println("Механик №" + id + " удален");
     }
 
     public Mechanic findMechanicById(int id) {
         return mechanicList.stream().filter(mechanic -> mechanic.getIndex() == id)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new MechanicException("Механика №" + id + " не существует"));
     }
 
     public void showAllMechanic() {
@@ -114,7 +116,7 @@ public class MechanicService {
                 boolean isBusy = Boolean.parseBoolean(parts[4].trim());
 
 //              Если механик уже существует, обновляем, иначе создаем нового
-                if (findMechanicById(id) != null) {
+                if (isMechanicExists(id)) {
                     updateMechanic(id, name, surname, experience, isBusy);
                 } else {
                     Mechanic mechanic = new Mechanic(id, name, surname, experience, isBusy);
@@ -125,7 +127,7 @@ public class MechanicService {
         } catch (FileNotFoundException e) {
             System.out.println("Не удалось найти файл");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new MechanicException("Ошибка при импорте данных");
         }
     }
 
@@ -148,10 +150,8 @@ public class MechanicService {
             bufferedWriter.write(lines);
             System.out.println("Данные успешно экспортированы в " + filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new MechanicException("Ошибка при экспорте данных");
         }
-
-
     }
 
     private void updateMechanic(int id, String name, String surname, double experience, boolean isBusy) {
@@ -163,4 +163,7 @@ public class MechanicService {
         System.out.println("Механик № " + id + " обновлен");
     }
 
+    public boolean isMechanicExists(int id) {
+        return mechanicList.stream().anyMatch(mechanic -> mechanic.getIndex() == id);
+    }
 }

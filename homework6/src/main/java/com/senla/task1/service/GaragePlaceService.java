@@ -1,5 +1,7 @@
 package com.senla.task1.service;
 
+import com.senla.task1.exceptions.ExceptionHandler;
+import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
@@ -34,7 +36,9 @@ public class GaragePlaceService {
         return placeList.stream()
                 .filter(garagePlace -> garagePlace.getPlaceNumber() == placeNumber)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new GaragePlaceException(
+                        "Место в гараже № " + placeNumber + " уже существует"
+                ));
     }
 
 
@@ -55,11 +59,11 @@ public class GaragePlaceService {
     public void removeGaragePlace(int number) {
         boolean removed = placeList.removeIf(place -> place.getPlaceNumber() == number);
 
-        if (removed) {
-            System.out.println("Место в гараже №" + number + " удалено");
-        } else {
-            System.out.println("Такого места в гаражах нет");
+        if(!removed) {
+            throw new GaragePlaceException("Места в гараже № " + number + " нет");
         }
+
+        System.out.println("Место в гараже №" + number + " удалено");
 
     }
 
@@ -91,7 +95,7 @@ public class GaragePlaceService {
                 boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
 
 //              Если гаражное место существует, обновляем статус, иначе добавляем новое
-                if (findPlaceByNumber(placeNumber) != null) {
+                if (isGaragePlaceExists(placeNumber)) {
                     findPlaceByNumber(placeNumber).setEmpty(isEmpty);
                 } else {
                     addGaragePlace(placeNumber);
@@ -101,7 +105,7 @@ public class GaragePlaceService {
         } catch (FileNotFoundException e) {
             System.out.println("Не удалось найти файл");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GaragePlaceException("Ошибка при импорте данных");
         }
     }
 
@@ -122,9 +126,12 @@ public class GaragePlaceService {
             System.out.println("Данные успешно экспортированы в " + filePath);
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GaragePlaceException("Ошибка при экспорте данных");
         }
     }
 
+    public boolean isGaragePlaceExists(int placeNumber) {
+        return placeList.stream().anyMatch(garagePlace -> garagePlace.getPlaceNumber() == placeNumber);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.senla.task1.service;
 
+import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
@@ -76,34 +77,26 @@ public class OrderService {
                 return;
             }
         }
-        System.out.println("Заказ не найден\n");
+        throw new OrderException("Заказ №" + id + " не найден");
     }
 
     public void closeOrder(int id) {
         Order order = orders.stream().filter(order1 -> order1.getIndex() == id)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new OrderException("Заказ №" + id + " не найден"));
 
-        if (order != null) {
-            order.closeOrder();
-            System.out.println("Заказ №" + id + " закрыт\n");
-            acceptOrder(id + 1);
-        } else {
-            System.out.println("Заказ №" + id + " не найден\n");
-        }
+        order.closeOrder();
+        System.out.println("Заказ №" + id + " закрыт\n");
+        acceptOrder(id + 1);
     }
 
     public void cancelOrder(int id) {
         Order order = orders.stream().filter(order1 -> order1.getIndex() == id)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new OrderException("Заказ №" + id + " не найден"));
 
-        if (order != null) {
-            order.cancelOrder();
-            System.out.println("Заказ №" + id + " закрыт\n");
-        } else {
-            System.out.println("Заказ №" + id + " не найден\n");
-        }
+        order.cancelOrder();
+        System.out.println("Заказ №" + id + " закрыт\n");
     }
 
     public void shiftOrdersTime(int hours, int minutes) {
@@ -115,16 +108,11 @@ public class OrderService {
     public void deleteOrder(int id) {
         Order order = orders.stream().filter(order1 -> order1.getIndex() == id)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new OrderException("Заказ №" + id + " не найден"));
 
-        if (order != null) {
-            orders.remove(order);
-            order.deleteOrder();
-            System.out.println("Заказ №" + id + " удален\n");
-        } else {
-            System.out.println("Заказ №" + id + " не найден\n");
-        }
-
+        orders.remove(order);
+        order.deleteOrder();
+        System.out.println("Заказ №" + id + " удален\n");
     }
 
     // Вывод заказа по айдишнку механика
@@ -293,7 +281,8 @@ public class OrderService {
     }
 
     public Order findOrderById(int id) {
-        return orders.stream().filter(order -> order.getIndex() == id).findFirst().orElse(null);
+        return orders.stream().filter(order -> order.getIndex() == id).findFirst()
+                .orElseThrow(() -> new OrderException("Заказ №" + id + " не найден"));
     }
 
     public void updateOrder(int id, String carName, Mechanic mechanic,
@@ -304,13 +293,13 @@ public class OrderService {
         Order order = findOrderById(id);
 
 //      Если для существующего заказа из файла считывается другой механик, то старому механику меняетс статус на свободный, а новому на занятый
-        if(order.getMechanic().getIndex() != mechanic.getIndex()) {
+        if (order.getMechanic().getIndex() != mechanic.getIndex()) {
             order.getMechanic().setBusy(false);
             mechanic.setBusy(true);
         }
 
 //      Аналогично с механиками
-        if(order.getGaragePlace().getPlaceNumber() != garagePlace.getPlaceNumber()) {
+        if (order.getGaragePlace().getPlaceNumber() != garagePlace.getPlaceNumber()) {
             order.getGaragePlace().setEmpty(true);
             garagePlace.setEmpty(false);
         }
@@ -327,6 +316,10 @@ public class OrderService {
         order.setPrice(price);
 
         System.out.println("Заказ №" + id + " обновлен");
+    }
+
+    public boolean isOrdersExists(int id) {
+        return orders.stream().anyMatch(order -> order.getIndex() == id);
     }
 
 }
