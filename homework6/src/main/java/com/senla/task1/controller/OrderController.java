@@ -1,5 +1,6 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.models.enums.SortType;
 import com.senla.task1.service.OrderService;
 
 public class OrderController {
@@ -56,7 +57,8 @@ public class OrderController {
         orderService.sortOrdersByDateOfSubmission(true);
     }
 
-    public void showOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear, int toMonth, int toDay, String sortType, boolean flag){
+    public void showOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear,
+                                           int toMonth, int toDay, SortType sortType, boolean flag) {
         orderService.findOrdersOverPeriodOfTime(fromYear, fromMonth, fromDay, toYear, toMonth, toDay, sortType, flag);
     }
 

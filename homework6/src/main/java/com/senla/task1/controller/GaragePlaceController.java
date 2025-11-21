@@ -19,4 +19,13 @@ public class GaragePlaceController {
         garagePlaceService.removeGaragePlace(placeNumber);
     }
 
+    public void importGaragePlaceFromCSV(String filePath) {
+        garagePlaceService.importFromCSV(filePath);
+    }
+
+    public void exportGaragePlaceToCSV(String filePath) {
+        garagePlaceService.exportToCSV(filePath);
+    }
+
+
 }
