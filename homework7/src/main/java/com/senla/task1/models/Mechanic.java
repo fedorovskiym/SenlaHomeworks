@@ -1,6 +1,9 @@
 package com.senla.task1.models;
 
-public class Mechanic {
+import java.io.Serializable;
+
+public class Mechanic implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static int count = 1;
     private int index;
     private String name;
@@ -66,5 +69,16 @@ public class Mechanic {
 
     public void setBusy(boolean busy) {
         isBusy = busy;
+    }
+
+    @Override
+    public String toString() {
+        return "Mechanic{" +
+                "index=" + index +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", experienceYears=" + experienceYears +
+                ", isBusy=" + isBusy +
+                '}';
     }
 }

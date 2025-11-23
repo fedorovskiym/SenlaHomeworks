@@ -2,14 +2,15 @@ package com.senla.task1.models;
 
 import com.senla.task1.models.enums.OrderStatus;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-public class Order {
-
+public class Order implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static int count = 1;
     private int index;
     private String carName;
@@ -172,5 +173,22 @@ public class Order {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "index=" + index +
+                ", carName='" + carName + '\'' +
+                ", mechanic=" + mechanic +
+                ", garagePlace=" + garagePlace +
+                ", status=" + status +
+                ", submissionDateTime=" + submissionDateTime +
+                ", plannedCompletionDateTime=" + plannedCompletionDateTime +
+                ", completionDateTime=" + completionDateTime +
+                ", endDateTime=" + endDateTime +
+                ", duration=" + duration +
+                ", price=" + price +
+                '}';
     }
 }
