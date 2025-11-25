@@ -3,7 +3,7 @@ package com.senla.task1.models;
 import java.io.Serializable;
 
 public class Mechanic implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 12L;
     private static int count = 1;
     private int index;
     private String name;
