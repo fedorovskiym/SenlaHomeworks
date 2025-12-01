@@ -1,5 +1,6 @@
 package com.senla.task1;
 
+import com.senla.task1.config.AutoServiceConfig;
 import com.senla.task1.controller.AutoServiceController;
 import com.senla.task1.controller.GaragePlaceController;
 import com.senla.task1.controller.MechanicController;
@@ -19,8 +20,9 @@ public class AutoServiceMain {
         GaragePlaceController garagePlaceController = new GaragePlaceController();
         OrderController orderController = new OrderController();
         AutoServiceController autoServiceController = new AutoServiceController();
+        AutoServiceConfig autoServiceConfig = new AutoServiceConfig();
 
-        ConsoleActionFactory consoleActionFactory = new ConsoleActionFactory(mechanicController, garagePlaceController, orderController, autoServiceController);
+        ConsoleActionFactory consoleActionFactory = new ConsoleActionFactory(mechanicController, garagePlaceController, orderController, autoServiceController, autoServiceConfig);
 
         MenuController controller = MenuController.instance();
         controller.init(consoleActionFactory);

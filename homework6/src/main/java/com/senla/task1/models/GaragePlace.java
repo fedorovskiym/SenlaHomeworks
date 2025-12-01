@@ -1,7 +1,10 @@
 package com.senla.task1.models;
 
-public class GaragePlace {
+import java.io.Serializable;
 
+public class GaragePlace implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private int placeNumber;
     private boolean isEmpty;
 
@@ -24,5 +27,13 @@ public class GaragePlace {
 
     public void setEmpty(boolean empty) {
         isEmpty = empty;
+    }
+
+    @Override
+    public String toString() {
+        return "GaragePlace{" +
+                "placeNumber=" + placeNumber +
+                ", isEmpty=" + isEmpty +
+                '}';
     }
 }

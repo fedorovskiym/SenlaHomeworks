@@ -1,5 +1,6 @@
 package com.senla.task1.ui;
 
+import com.senla.task1.config.AutoServiceConfig;
 import com.senla.task1.controller.AutoServiceController;
 import com.senla.task1.controller.GaragePlaceController;
 import com.senla.task1.controller.MechanicController;
@@ -21,12 +22,15 @@ public class ConsoleActionFactory implements ActionFactory {
     private final OrderController orderController;
     private final AutoServiceController autoServiceController;
     private final Scanner scanner = new Scanner(System.in);
+    private final AutoServiceConfig autoServiceConfig;
 
-    public ConsoleActionFactory(MechanicController mechanicController, GaragePlaceController garagePlaceController, OrderController orderController, AutoServiceController autoServiceController) {
+    public ConsoleActionFactory(MechanicController mechanicController, GaragePlaceController garagePlaceController,
+                                OrderController orderController, AutoServiceController autoServiceController, AutoServiceConfig autoServiceConfig) {
         this.mechanicController = mechanicController;
         this.garagePlaceController = garagePlaceController;
         this.orderController = orderController;
         this.autoServiceController = autoServiceController;
+        this.autoServiceConfig = autoServiceConfig;
     }
 
     @Override
@@ -126,6 +130,10 @@ public class ConsoleActionFactory implements ActionFactory {
     @Override
     public IAction addGaragePlaceAction() {
         return () -> {
+            if (!autoServiceConfig.isAllowAddGaragePlace()) {
+                System.out.println("Добавление места в гараже отключено");
+                return;
+            }
             try {
                 System.out.println("Введите номер места: ");
                 int placeNumber = scanner.nextInt();
@@ -147,6 +155,10 @@ public class ConsoleActionFactory implements ActionFactory {
     @Override
     public IAction removeGaragePlace() {
         return () -> {
+            System.out.println(autoServiceConfig.isAllowDeleteGaragePlace());
+            if (!autoServiceConfig.isAllowDeleteGaragePlace()) {
+                System.out.println("Удаление места в гараже отключено");
+            }
             try {
                 System.out.println("Введите номер гаража, который хотите удалить: ");
                 int placeNumber = scanner.nextInt();
@@ -273,6 +285,10 @@ public class ConsoleActionFactory implements ActionFactory {
     @Override
     public IAction shiftOrderTimeAction() {
         return () -> {
+            if (!autoServiceConfig.isAllowShiftOrdersTime()) {
+                System.out.println("Смещение времени заказов отключено");
+                return;
+            }
             try {
                 System.out.println("Введите часы: ");
                 int hours = Integer.parseInt(scanner.nextLine());
@@ -288,6 +304,10 @@ public class ConsoleActionFactory implements ActionFactory {
     @Override
     public IAction deleteOrderAction() {
         return () -> {
+            if (!autoServiceConfig.isAllowDeleteOrder()) {
+                System.out.println("Удаление заказа отключено");
+                return;
+            }
             try {
                 System.out.println("Введите номер заказа: ");
                 int id = Integer.parseInt(scanner.nextLine());

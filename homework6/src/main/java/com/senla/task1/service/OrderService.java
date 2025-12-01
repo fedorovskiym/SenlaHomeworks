@@ -25,8 +25,12 @@ public class OrderService {
     private static OrderService instance;
     private final List<Order> orders = new ArrayList<>();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+    private final String folderPath = "data";
+    private final String fileName = "order.bin";
 
     public OrderService() {
+        load();
+        registerShutdown();
     }
 
     public static OrderService getInstance() {
@@ -320,6 +324,41 @@ public class OrderService {
 
     public boolean isOrdersExists(int id) {
         return orders.stream().anyMatch(order -> order.getIndex() == id);
+    }
+
+    public void save() {
+        try {
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            File file = new File(folder, fileName);
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                oos.writeObject(orders);
+                System.out.println("Состояние заказов сохранено");
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка при сериализации файла");
+        }
+    }
+
+    private void load() {
+        File file = new File(folderPath, fileName);
+        if (!file.exists()) return;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            List<Order> loadedList = (List<Order>) ois.readObject();
+            orders.clear();
+            orders.addAll(loadedList);
+            System.out.println("Состояние заказов загружено");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Ошибка при десериализации файла");
+        }
+    }
+
+    private void registerShutdown() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
     }
 
 }

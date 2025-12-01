@@ -2,8 +2,10 @@ package com.senla.task1.service;
 
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.exceptions.MechanicException;
+import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -17,8 +19,12 @@ public class MechanicService {
 
     private static MechanicService instance;
     private final List<Mechanic> mechanicList = new ArrayList<>();
+    private final String folderPath = "data";
+    private final String fileName = "mechanic.bin";
 
     private MechanicService() {
+        load();
+        registerShutdown();
     }
 
     public static MechanicService getInstance() {
@@ -165,5 +171,40 @@ public class MechanicService {
 
     public boolean isMechanicExists(int id) {
         return mechanicList.stream().anyMatch(mechanic -> mechanic.getIndex() == id);
+    }
+
+    public void save() {
+        try {
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            File file = new File(folder, fileName);
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                oos.writeObject(mechanicList);
+                System.out.println("Состояние механиков сохранено");
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка при сериализации файла");
+        }
+    }
+
+    private void load() {
+        File file = new File(folderPath, fileName);
+        if (!file.exists()) return;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            List<Mechanic> loadedList = (List<Mechanic>) ois.readObject();
+            mechanicList.clear();
+            mechanicList.addAll(loadedList);
+            System.out.println("Состояние механиков загружено");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Ошибка при десериализации файла");
+        }
+    }
+
+    private void registerShutdown() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
     }
 }

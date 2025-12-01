@@ -17,8 +17,12 @@ public class GaragePlaceService {
 
     private static GaragePlaceService instance;
     private final List<GaragePlace> placeList = new ArrayList<>();
+    private final String folderPath = "data";
+    private final String fileName = "garage_places.bin";
 
     public GaragePlaceService() {
+        load();
+        registerShutdown();
     }
 
     public static GaragePlaceService getInstance() {
@@ -132,6 +136,41 @@ public class GaragePlaceService {
 
     public boolean isGaragePlaceExists(int placeNumber) {
         return placeList.stream().anyMatch(garagePlace -> garagePlace.getPlaceNumber() == placeNumber);
+    }
+
+    public void save() {
+        try {
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            File file = new File(folder, fileName);
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                oos.writeObject(placeList);
+                System.out.println("Состояние мест в гараже сохранено");
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка при сериализации файла");
+        }
+    }
+
+    private void load() {
+        File file = new File(folderPath, fileName);
+        if (!file.exists()) return;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            List<GaragePlace> loadedList = (List<GaragePlace>) ois.readObject();
+            placeList.clear();
+            placeList.addAll(loadedList);
+            System.out.println("Состояние гаража загружено");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Ошибка при десериализации файла");
+        }
+    }
+
+    private void registerShutdown() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
     }
 
 }
