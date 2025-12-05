@@ -1,6 +1,10 @@
 package com.senla.task1.ui;
 
+import com.senla.task1.annotations.Inject;
+
 public class Navigator {
+
+    @Inject
     private Menu currentMenu;
 
     public Navigator(Menu rootMenu) {
@@ -29,9 +33,7 @@ public class Navigator {
 
         if (item.getNextMenu() != null) {
             currentMenu = item.getNextMenu();
-        }
-
-        else if (item.getTitle().equalsIgnoreCase("Назад") && currentMenu.getParentMenu() != null) {
+        } else if (item.getTitle().equalsIgnoreCase("Назад") && currentMenu.getParentMenu() != null) {
             currentMenu = currentMenu.getParentMenu();
         }
     }

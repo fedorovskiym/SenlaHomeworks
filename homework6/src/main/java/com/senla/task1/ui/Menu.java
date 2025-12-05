@@ -1,17 +1,18 @@
 package com.senla.task1.ui;
 
+import com.senla.task1.annotations.Inject;
 import java.util.List;
 
 public class Menu {
 
     private String name;
     private List<MenuItem> menuItems;
+    @Inject
     private Menu parentMenu;
 
-    public Menu(String name, List<MenuItem> menuItems, Menu parentMenu) {
+    public Menu(String name, List<MenuItem> menuItems) {
         this.name = name;
         this.menuItems = menuItems;
-        this.parentMenu = parentMenu;
     }
 
     public String getName() {

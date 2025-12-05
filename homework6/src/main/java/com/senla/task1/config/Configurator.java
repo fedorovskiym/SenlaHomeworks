@@ -71,7 +71,6 @@ public class Configurator {
         }
 
         if (Collection.class.isAssignableFrom(type)) {
-
             if (field.getGenericType() instanceof ParameterizedType parameterizedType) {
                 Type elementType = parameterizedType.getActualTypeArguments()[0];
                 Class<?> elementClass = (Class<?>) elementType;

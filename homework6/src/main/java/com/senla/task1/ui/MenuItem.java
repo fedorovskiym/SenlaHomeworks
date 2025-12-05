@@ -1,23 +1,21 @@
 package com.senla.task1.ui;
 
+import com.senla.task1.annotations.Inject;
+
 public class MenuItem {
 
     private String title;
+    @Inject
     private IAction action;
+    @Inject
     private Menu nextMenu;
 
-    public MenuItem(String title, IAction action, Menu nextMenu) {
+    public MenuItem(String title) {
         this.title = title;
-        this.action = action;
-        this.nextMenu = nextMenu;
     }
 
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public IAction getAction() {

@@ -1,5 +1,7 @@
 package com.senla.task1.service;
 
+import com.senla.task1.annotations.Inject;
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
@@ -21,10 +23,17 @@ import java.util.stream.Collectors;
 
 public class AutoService {
 
-    private OrderService orderService = OrderService.getInstance();
-    private MechanicService mechanicService = MechanicService.getInstance();
-    private GaragePlaceService garagePlaceService = GaragePlaceService.getInstance();
+    @Inject
+    private OrderService orderService;
+    @Inject
+    private MechanicService mechanicService;
+    @Inject
+    private GaragePlaceService garagePlaceService;
 
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Общий сервис создался");
+    }
 
     public void createOrder(String carModel, int mechanicId, int placeNumber, double price, int hours, int minutes) {
 

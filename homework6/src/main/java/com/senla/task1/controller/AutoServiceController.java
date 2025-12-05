@@ -1,10 +1,18 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.annotations.Inject;
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.service.AutoService;
 
 public class AutoServiceController {
 
-    private final AutoService autoService = new AutoService();
+    @Inject
+    private AutoService autoService;
+
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Контроллер сервиса создался");
+    }
 
     public void createOrder(String carModel, int mechanicId, int placeNumber, double price, int hours, int minutes) {
         autoService.createOrder(carModel, mechanicId, placeNumber, price, hours, minutes);

@@ -1,5 +1,6 @@
 package com.senla.task1.ui;
 
+import com.senla.task1.annotations.Inject;
 import com.senla.task1.config.AutoServiceConfig;
 import com.senla.task1.controller.AutoServiceController;
 import com.senla.task1.controller.GaragePlaceController;
@@ -17,20 +18,20 @@ import java.util.Scanner;
 
 public class ConsoleActionFactory implements ActionFactory {
 
-    private final MechanicController mechanicController;
-    private final GaragePlaceController garagePlaceController;
-    private final OrderController orderController;
-    private final AutoServiceController autoServiceController;
-    private final Scanner scanner = new Scanner(System.in);
-    private final AutoServiceConfig autoServiceConfig;
+    @Inject
+    private MechanicController mechanicController;
+    @Inject
+    private GaragePlaceController garagePlaceController;
+    @Inject
+    private OrderController orderController;
+    @Inject
+    private AutoServiceController autoServiceController;
+    @Inject
+    private AutoServiceConfig autoServiceConfig;
 
-    public ConsoleActionFactory(MechanicController mechanicController, GaragePlaceController garagePlaceController,
-                                OrderController orderController, AutoServiceController autoServiceController, AutoServiceConfig autoServiceConfig) {
-        this.mechanicController = mechanicController;
-        this.garagePlaceController = garagePlaceController;
-        this.orderController = orderController;
-        this.autoServiceController = autoServiceController;
-        this.autoServiceConfig = autoServiceConfig;
+    private Scanner scanner = new Scanner(System.in);
+
+    public ConsoleActionFactory() {
     }
 
     @Override

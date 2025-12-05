@@ -6,6 +6,9 @@ import com.senla.task1.controller.AutoServiceController;
 import com.senla.task1.controller.GaragePlaceController;
 import com.senla.task1.controller.MechanicController;
 import com.senla.task1.controller.OrderController;
+import com.senla.task1.factory.ApplicationContext;
+import com.senla.task1.factory.BeanConfigurator;
+import com.senla.task1.factory.CustomBeanFactory;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.service.AutoService;
 import com.senla.task1.ui.ConsoleActionFactory;
@@ -15,20 +18,21 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class AutoServiceMain {
-    public static void main(String[] args) {
 
-        MechanicController mechanicController = new MechanicController();
-        GaragePlaceController garagePlaceController = new GaragePlaceController();
-        OrderController orderController = new OrderController();
-        AutoServiceController autoServiceController = new AutoServiceController();
-        AutoServiceConfig autoServiceConfig = new AutoServiceConfig();
-        Configurator.configure(autoServiceConfig);
-        System.out.println(autoServiceConfig);
-        ConsoleActionFactory consoleActionFactory = new ConsoleActionFactory(mechanicController, garagePlaceController, orderController, autoServiceController, autoServiceConfig);
-
-        MenuController controller = MenuController.instance();
-        controller.init(consoleActionFactory);
-        controller.run();
-
+    public ApplicationContext run() {
+        ApplicationContext applicationContext = new ApplicationContext();
+        CustomBeanFactory customBeanFactory = new CustomBeanFactory(applicationContext);
+        applicationContext.setCustomBeanFactory(customBeanFactory);
+        return applicationContext;
     }
+
+    public static void main(String[] args) {
+        AutoServiceMain autoServiceMain = new AutoServiceMain();
+        ApplicationContext context = autoServiceMain.run();
+        MenuController controller = context.getBean(MenuController.class);
+        controller.init();
+        controller.run();
+    }
+
+
 }

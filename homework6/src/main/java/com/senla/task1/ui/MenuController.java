@@ -1,25 +1,18 @@
 package com.senla.task1.ui;
 
+import com.senla.task1.annotations.Inject;
 import java.util.Scanner;
 
 public class MenuController {
 
-    private static MenuController instance;
-    private final Builder builder = new Builder();
+    @Inject
+    private Builder builder;
     private Navigator navigator;
+    @Inject
+    private ActionFactory actionFactory;
 
-    public MenuController() {
-    }
-
-    public static MenuController instance() {
-        if (instance == null) {
-            instance = new MenuController();
-        }
-        return instance;
-    }
-
-    public void init(ActionFactory actionFactory) {
-        builder.build(actionFactory);
+    public void init() {
+        builder.build();
         navigator = new Navigator(builder.getRootMenu());
     }
 

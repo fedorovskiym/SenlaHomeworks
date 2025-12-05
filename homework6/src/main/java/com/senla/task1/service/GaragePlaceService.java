@@ -1,5 +1,6 @@
 package com.senla.task1.service;
 
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.exceptions.ExceptionHandler;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
@@ -15,21 +16,18 @@ import java.util.stream.Collectors;
 
 public class GaragePlaceService {
 
-    private static GaragePlaceService instance;
     private final List<GaragePlace> placeList = new ArrayList<>();
     private final String folderPath = "data";
     private final String fileName = "garage_places.bin";
 
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Сервис гаражных мест создался");
+    }
+
     public GaragePlaceService() {
         load();
         registerShutdown();
-    }
-
-    public static GaragePlaceService getInstance() {
-        if (instance == null) {
-            instance = new GaragePlaceService();
-        }
-        return instance;
     }
 
     public List<GaragePlace> getPlaceList() {
@@ -163,7 +161,6 @@ public class GaragePlaceService {
             List<GaragePlace> loadedList = (List<GaragePlace>) ois.readObject();
             placeList.clear();
             placeList.addAll(loadedList);
-            System.out.println("Состояние гаража загружено");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка при десериализации файла");
         }

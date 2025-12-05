@@ -1,11 +1,21 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.annotations.Inject;
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.service.MechanicService;
 
+import javax.swing.plaf.PanelUI;
+
 public class MechanicController {
 
-    private final MechanicService mechanicService = MechanicService.getInstance();
+    @Inject
+    private MechanicService mechanicService;
+
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Контроллер механиков создался");
+    }
 
     public void addMechanic(Mechanic mechanic) {
         mechanicService.addMechanic(mechanic);

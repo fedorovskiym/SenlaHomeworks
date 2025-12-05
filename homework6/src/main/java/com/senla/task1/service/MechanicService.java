@@ -1,5 +1,6 @@
 package com.senla.task1.service;
 
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.GaragePlace;
@@ -17,21 +18,18 @@ import java.util.stream.Collectors;
 
 public class MechanicService {
 
-    private static MechanicService instance;
     private final List<Mechanic> mechanicList = new ArrayList<>();
     private final String folderPath = "data";
     private final String fileName = "mechanic.bin";
 
-    private MechanicService() {
-        load();
-        registerShutdown();
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Сервис механиков создался");
     }
 
-    public static MechanicService getInstance() {
-        if (instance == null) {
-            instance = new MechanicService();
-        }
-        return instance;
+    public MechanicService() {
+        load();
+        registerShutdown();
     }
 
     public List<Mechanic> getMechanicList() {
@@ -198,7 +196,6 @@ public class MechanicService {
             List<Mechanic> loadedList = (List<Mechanic>) ois.readObject();
             mechanicList.clear();
             mechanicList.addAll(loadedList);
-            System.out.println("Состояние механиков загружено");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка при десериализации файла");
         }
