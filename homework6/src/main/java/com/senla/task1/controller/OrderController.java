@@ -7,8 +7,12 @@ import com.senla.task1.service.OrderService;
 
 public class OrderController {
 
+    private final OrderService orderService;
+
     @Inject
-    private OrderService orderService;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @PostConstruct
     public void postConstruct() {

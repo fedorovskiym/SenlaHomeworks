@@ -3,10 +3,11 @@ package com.senla.task1.factory;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.Objects;
 
 public class BeanConfigurator {
 
-    public <T> Class<? extends T> getImplClass(Class<T> interfaceClass) {
+    public static <T> Class<? extends T> getImplClass(Class<T> interfaceClass) {
         try {
             String packageName = interfaceClass.getPackageName();
             String path = packageName.replace('.', '/');
@@ -19,28 +20,21 @@ public class BeanConfigurator {
             }
 
             File directory = new File(url.toURI());
-            File[] files = directory.listFiles();
-            if (files == null) {
-                throw new RuntimeException("Пакет пустой: " + packageName);
-            }
-
-            for (File file : files) {
-                if (!file.getName().endsWith(".class")) {
-                    continue;
-                }
+            for (File file : Objects.requireNonNull(directory.listFiles())) {
+                if (!file.getName().endsWith(".class")) continue;
 
                 String className = packageName + "." + file.getName().replace(".class", "");
                 Class<?> aClass = Class.forName(className);
 
-                if (interfaceClass.isAssignableFrom(aClass) && !aClass.isInterface() && !Modifier.isAbstract(aClass.getModifiers())) {
+                if (interfaceClass.isAssignableFrom(aClass)
+                        && !aClass.isInterface()
+                        && !Modifier.isAbstract(aClass.getModifiers())) {
                     return (Class<? extends T>) aClass;
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Ошибка при поиске реализации интерфейса: " + e.getMessage(), e);
+            throw new RuntimeException("Ошибка поиска реализации: " + interfaceClass.getName());
         }
-
-        throw new RuntimeException("Реализация интерфейса не найдена для " + interfaceClass.getName());
+        throw new RuntimeException("Реализация не найдена: " + interfaceClass.getName());
     }
 }
-

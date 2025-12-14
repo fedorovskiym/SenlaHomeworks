@@ -2,12 +2,6 @@ package com.senla.task1.config;
 
 import com.senla.task1.annotations.ConfigProperty;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-
 public class AutoServiceConfig {
 
     @ConfigProperty(propertyName = "AutoServiceConfig.allowAddGaragePlace")

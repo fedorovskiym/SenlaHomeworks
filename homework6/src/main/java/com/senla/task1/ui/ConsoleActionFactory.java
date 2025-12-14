@@ -8,30 +8,26 @@ import com.senla.task1.controller.MechanicController;
 import com.senla.task1.controller.OrderController;
 import com.senla.task1.exceptions.ExceptionHandler;
 import com.senla.task1.exceptions.InvalidInputException;
-import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.enums.SortType;
 
-import java.io.IOException;
-import java.io.StreamCorruptedException;
-import java.nio.file.WatchEvent;
 import java.util.Scanner;
 
 public class ConsoleActionFactory implements ActionFactory {
 
-    @Inject
-    private MechanicController mechanicController;
-    @Inject
-    private GaragePlaceController garagePlaceController;
-    @Inject
-    private OrderController orderController;
-    @Inject
-    private AutoServiceController autoServiceController;
-    @Inject
-    private AutoServiceConfig autoServiceConfig;
+    private final MechanicController mechanicController;
+    private final GaragePlaceController garagePlaceController;
+    private final OrderController orderController;
+    private final AutoServiceController autoServiceController;
+    private final AutoServiceConfig autoServiceConfig;
+    private final Scanner scanner = new Scanner(System.in);
 
-    private Scanner scanner = new Scanner(System.in);
-
-    public ConsoleActionFactory() {
+    @Inject
+    public ConsoleActionFactory(MechanicController mechanicController, GaragePlaceController garagePlaceController, OrderController orderController, AutoServiceController autoServiceController, AutoServiceConfig autoServiceConfig) {
+        this.mechanicController = mechanicController;
+        this.garagePlaceController = garagePlaceController;
+        this.orderController = orderController;
+        this.autoServiceController = autoServiceController;
+        this.autoServiceConfig = autoServiceConfig;
     }
 
     @Override
@@ -44,7 +40,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 String surname = scanner.nextLine();
                 System.out.println("Введите опыт механика в годах: ");
                 double experienceYears = Double.parseDouble(scanner.nextLine());
-                mechanicController.addMechanic(new Mechanic(name, surname, experienceYears));
+                mechanicController.addMechanic(name, surname, experienceYears);
                 System.out.println();
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
@@ -106,9 +102,9 @@ public class ConsoleActionFactory implements ActionFactory {
     public IAction importMechanicsFromFileAction() {
         return () -> {
             try {
-                System.out.println("Введите путь: ");
-                String filePath = scanner.nextLine();
-                mechanicController.importMechanicFromCSV(filePath);
+                System.out.println("Введите название файла: ");
+                String fileName = scanner.nextLine();
+                mechanicController.importMechanicFromCSV(fileName);
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -520,9 +516,9 @@ public class ConsoleActionFactory implements ActionFactory {
     public IAction importOrderFromFileAction() {
         return () -> {
             try {
-                System.out.println("Введите путь: ");
-                String filePath = scanner.nextLine();
-                autoServiceController.importOrdersFromCSV(filePath);
+                System.out.println("Введите название файла: ");
+                String fileName = scanner.nextLine();
+                autoServiceController.importOrdersFromCSV(fileName);
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }

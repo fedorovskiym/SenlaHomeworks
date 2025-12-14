@@ -1,51 +1,90 @@
 package com.senla.task1.factory;
 
 import com.senla.task1.annotations.Inject;
+import com.senla.task1.annotations.FieldInject;
 import com.senla.task1.annotations.PostConstruct;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.lang.reflect.Modifier;
 
 public class CustomBeanFactory {
 
-    private final BeanConfigurator beanConfigurator;
-    private final ApplicationContext applicationContext;
+    @FieldInject
+    private ApplicationContext context;
 
-    public CustomBeanFactory(ApplicationContext applicationContext) {
-        this.beanConfigurator = new BeanConfigurator();
-        this.applicationContext = applicationContext;
+    public CustomBeanFactory() {
     }
 
-    public <T> T getBean(Class<T> tClass) {
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
+    public Object createBean(Class<?> beanClass) {
         try {
-            Class<? extends T> implementationClass = tClass;
-            if (implementationClass.isInterface()) {
-                implementationClass = beanConfigurator.getImplClass(tClass);
+            if (beanClass.isEnum() || beanClass.isAnnotation() || beanClass.isAnonymousClass()
+                    || Throwable.class.isAssignableFrom(beanClass)
+                    || (beanClass.isMemberClass() && !Modifier.isStatic(beanClass.getModifiers()))) {
+                return null;
             }
 
-            T bean = implementationClass.getDeclaredConstructor().newInstance();
-
-            for (Field field : Arrays.stream(implementationClass.getDeclaredFields())
-                    .filter(f -> f.isAnnotationPresent(Inject.class))
-                    .collect(Collectors.toList())) {
-
-                field.setAccessible(true);
-                Object dependency = applicationContext.getBean(field.getType());
-                field.set(bean, dependency);
+            Class<?> implClass = beanClass;
+            if (beanClass.isInterface()) {
+                implClass = BeanConfigurator.getImplClass(beanClass);
             }
 
-            for (Method method : implementationClass.getDeclaredMethods()) {
+            for (Constructor<?> constructor : implClass.getDeclaredConstructors()) {
+                if (constructor.isAnnotationPresent(Inject.class)) {
+                    constructor.setAccessible(true);
+                    Class<?>[] paramTypes = constructor.getParameterTypes();
+                    Object[] params = new Object[paramTypes.length];
+                    for (int i = 0; i < paramTypes.length; i++) {
+                        params[i] = context.getBean(paramTypes[i]);
+                    }
+                    return constructor.newInstance(params);
+                }
+            }
+
+            Constructor<?> defaultConstructor = implClass.getDeclaredConstructor();
+            defaultConstructor.setAccessible(true);
+            return defaultConstructor.newInstance();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка создания бина: " + beanClass.getName(), e);
+        }
+    }
+
+    public void injectFields(Object bean) {
+        if (bean == null) {
+            return;
+        }
+        try {
+            for (Field field : bean.getClass().getDeclaredFields()) {
+                if (field.isAnnotationPresent(Inject.class) || field.isAnnotationPresent(FieldInject.class)) {
+                    field.setAccessible(true);
+                    Object dependency = context.getBean(field.getType());
+                    field.set(bean, dependency);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при инъекции полей", e);
+        }
+    }
+
+    public void invokePostConstruct(Object bean) {
+        if (bean == null) {
+            return;
+        }
+        try {
+            for (Method method : bean.getClass().getDeclaredMethods()) {
                 if (method.isAnnotationPresent(PostConstruct.class)) {
                     method.setAccessible(true);
                     method.invoke(bean);
                 }
             }
-
-            return bean;
-
         } catch (Exception e) {
-            throw new RuntimeException("Ошибка при создании бина: " + tClass.getName(), e);
+            throw new RuntimeException("Ошибка @PostConstruct", e);
         }
     }
 }

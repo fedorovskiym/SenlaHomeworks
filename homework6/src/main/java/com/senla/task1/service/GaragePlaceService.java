@@ -1,10 +1,9 @@
 package com.senla.task1.service;
 
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.exceptions.ExceptionHandler;
 import com.senla.task1.exceptions.GaragePlaceException;
+import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.GaragePlace;
-import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 
 import java.io.*;
@@ -61,7 +60,7 @@ public class GaragePlaceService {
     public void removeGaragePlace(int number) {
         boolean removed = placeList.removeIf(place -> place.getPlaceNumber() == number);
 
-        if(!removed) {
+        if (!removed) {
             throw new GaragePlaceException("Места в гараже № " + number + " нет");
         }
 
@@ -81,33 +80,38 @@ public class GaragePlaceService {
                 });
     }
 
-    public void importFromCSV(String filePath) {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
-            String line;
-            boolean firstLine = true;
+    public void importFromCSV(String resourceName) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
 
-            while ((line = bufferedReader.readLine()) != null) {
-                if (firstLine) {
-                    firstLine = false;
-                    continue;
-                }
+            if (inputStream == null) {
+                throw new FileNotFoundException("Ресурс не найден: " + resourceName);
+            }
 
-                String[] parts = line.split(";");
-                int placeNumber = Integer.parseInt(parts[0].trim());
-                boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                String line;
+                boolean firstLine = true;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (firstLine) {
+                        firstLine = false;
+                        continue;
+                    }
+
+                    String[] parts = line.split(";");
+                    int placeNumber = Integer.parseInt(parts[0].trim());
+                    boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
 
 //              Если гаражное место существует, обновляем статус, иначе добавляем новое
-                if (isGaragePlaceExists(placeNumber)) {
-                    findPlaceByNumber(placeNumber).setEmpty(isEmpty);
-                } else {
-                    addGaragePlace(placeNumber);
+                    if (isGaragePlaceExists(placeNumber)) {
+                        findPlaceByNumber(placeNumber).setEmpty(isEmpty);
+                    } else {
+                        addGaragePlace(placeNumber);
+                    }
                 }
             }
-            System.out.println("Данные успешно экспортированы из " + filePath);
-        } catch (FileNotFoundException e) {
-            System.out.println("Не удалось найти файл");
+            System.out.println("Данные успешно экспортированы из " + resourceName);
         } catch (IOException e) {
-            throw new GaragePlaceException("Ошибка при импорте данных");
+            throw new MechanicException("Ошибка при импорте данных механиков");
         }
     }
 

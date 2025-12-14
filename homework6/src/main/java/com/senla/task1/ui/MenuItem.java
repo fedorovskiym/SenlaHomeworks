@@ -1,16 +1,19 @@
 package com.senla.task1.ui;
 
-import com.senla.task1.annotations.Inject;
+import com.senla.task1.annotations.FieldInject;
 
 public class MenuItem {
 
     private String title;
-    @Inject
+    @FieldInject
     private IAction action;
-    @Inject
+    @FieldInject
     private Menu nextMenu;
 
-    public MenuItem(String title) {
+    public MenuItem() {
+    }
+
+    public void setTitle(String title) {
         this.title = title;
     }
 

@@ -6,8 +6,12 @@ import com.senla.task1.service.AutoService;
 
 public class AutoServiceController {
 
+    private final AutoService autoService;
+
     @Inject
-    private AutoService autoService;
+    public AutoServiceController(AutoService autoService) {
+        this.autoService = autoService;
+    }
 
     @PostConstruct
     public void postConstruct() {

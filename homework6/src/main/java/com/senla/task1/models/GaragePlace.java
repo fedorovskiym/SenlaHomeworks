@@ -8,6 +8,9 @@ public class GaragePlace implements Serializable {
     private int placeNumber;
     private boolean isEmpty;
 
+    public GaragePlace() {
+    }
+
     public GaragePlace(int placeNumber) {
         this.placeNumber = placeNumber;
         this.isEmpty = true;

@@ -11,6 +11,9 @@ public class Mechanic implements Serializable {
     private double experienceYears;
     private boolean isBusy;
 
+    public Mechanic() {
+    }
+
     public Mechanic(String name, String surname, double experienceYears) {
         this.index = count++;
         this.name = name;

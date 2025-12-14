@@ -5,15 +5,18 @@ import java.util.Scanner;
 
 public class MenuController {
 
+    private final Builder builder;
+    private final Navigator navigator;
+
     @Inject
-    private Builder builder;
-    private Navigator navigator;
-    @Inject
-    private ActionFactory actionFactory;
+    public MenuController(Builder builder, Navigator navigator) {
+        this.builder = builder;
+        this.navigator = navigator;
+    }
 
     public void init() {
         builder.build();
-        navigator = new Navigator(builder.getRootMenu());
+        navigator.setCurrentMenu(builder.getRootMenu());
     }
 
     public void run() {
