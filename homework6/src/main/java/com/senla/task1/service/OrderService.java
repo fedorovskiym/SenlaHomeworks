@@ -1,43 +1,36 @@
 package com.senla.task1.service;
 
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
 import com.senla.task1.models.enums.SortType;
-import org.w3c.dom.ls.LSOutput;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 public class OrderService {
 
-    private static OrderService instance;
     private final List<Order> orders = new ArrayList<>();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     private final String folderPath = "data";
     private final String fileName = "order.bin";
 
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Сервис заказов создался");
+    }
+
     public OrderService() {
         load();
         registerShutdown();
-    }
-
-    public static OrderService getInstance() {
-        if (instance == null) {
-            instance = new OrderService();
-        }
-        return instance;
     }
 
     public List<Order> getOrders() {
@@ -351,7 +344,6 @@ public class OrderService {
             List<Order> loadedList = (List<Order>) ois.readObject();
             orders.clear();
             orders.addAll(loadedList);
-            System.out.println("Состояние заказов загружено");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка при десериализации файла");
         }

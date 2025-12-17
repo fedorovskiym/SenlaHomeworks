@@ -1,36 +1,17 @@
 package com.senla.task1.config;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import com.senla.task1.annotations.ConfigProperty;
 
 public class AutoServiceConfig {
 
+    @ConfigProperty(propertyName = "AutoServiceConfig.allowAddGaragePlace")
     private boolean allowAddGaragePlace;
+    @ConfigProperty(propertyName = "AutoServiceConfig.allowDeleteGaragePlaces")
     private boolean allowDeleteGaragePlace;
+    @ConfigProperty(propertyName = "AutoServiceConfig.allowShiftOrdersTime")
     private boolean allowShiftOrdersTime;
+    @ConfigProperty(propertyName = "AutoServiceConfig.allowDeleteOrder")
     private boolean allowDeleteOrder;
-
-    public AutoServiceConfig() {
-        load();
-    }
-
-    public void load() {
-        Properties properties = new Properties();
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("autoservice.properties")) {
-
-            properties.load(inputStream);
-
-            allowAddGaragePlace = Boolean.parseBoolean(properties.getProperty("allowAddGaragePlace"));
-            allowDeleteGaragePlace = Boolean.parseBoolean(properties.getProperty("allowDeleteGaragePlaces"));
-            allowShiftOrdersTime = Boolean.parseBoolean(properties.getProperty("allowShiftOrdersTime"));
-            allowDeleteOrder = Boolean.parseBoolean(properties.getProperty("allowDeleteOrder"));
-
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка при загрузке файла конфигурации", e);
-        }
-    }
 
     public boolean isAllowAddGaragePlace() {
         return allowAddGaragePlace;
@@ -46,5 +27,15 @@ public class AutoServiceConfig {
 
     public boolean isAllowDeleteOrder() {
         return allowDeleteOrder;
+    }
+
+    @Override
+    public String toString() {
+        return "AutoServiceConfig{" +
+                "allowAddGaragePlace=" + allowAddGaragePlace +
+                ", allowDeleteGaragePlace=" + allowDeleteGaragePlace +
+                ", allowShiftOrdersTime=" + allowShiftOrdersTime +
+                ", allowDeleteOrder=" + allowDeleteOrder +
+                '}';
     }
 }

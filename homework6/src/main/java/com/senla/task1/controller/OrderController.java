@@ -1,11 +1,23 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.annotations.Inject;
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.models.enums.SortType;
 import com.senla.task1.service.OrderService;
 
 public class OrderController {
 
-    private final OrderService orderService = OrderService.getInstance();
+    private final OrderService orderService;
+
+    @Inject
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Контроллер заказов создался");
+    }
 
     public void acceptOrder(int id) {
         orderService.acceptOrder(id);

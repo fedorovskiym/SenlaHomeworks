@@ -1,11 +1,9 @@
 package com.senla.task1.service;
 
-import com.senla.task1.exceptions.GaragePlaceException;
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.exceptions.MechanicException;
-import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
-import org.w3c.dom.ls.LSOutput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -17,30 +15,32 @@ import java.util.stream.Collectors;
 
 public class MechanicService {
 
-    private static MechanicService instance;
     private final List<Mechanic> mechanicList = new ArrayList<>();
     private final String folderPath = "data";
     private final String fileName = "mechanic.bin";
 
-    private MechanicService() {
-        load();
-        registerShutdown();
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Сервис механиков создался");
     }
 
-    public static MechanicService getInstance() {
-        if (instance == null) {
-            instance = new MechanicService();
-        }
-        return instance;
+    public MechanicService() {
+        load();
+        registerShutdown();
     }
 
     public List<Mechanic> getMechanicList() {
         return mechanicList;
     }
 
-    public void addMechanic(Mechanic mechanic) {
-        mechanicList.add(mechanic);
-        System.out.println("Добавлен механик " + mechanic.getName() + " " + mechanic.getSurname() + ". Опыт: " + mechanic.getExperience() + " лет/год(а/ов)");
+    public void addMechanic(String name, String surname, double experienceYears) {
+        mechanicList.add(new Mechanic(name, surname, experienceYears));
+        System.out.println("Добавлен механик " + name + " " + surname + ". Опыт: " + experienceYears + " лет/год(а/ов)");
+    }
+
+    public void addMechanic(int id, String name, String surname, double experienceYears, boolean isBusy) {
+        mechanicList.add(new Mechanic(id, name, surname, experienceYears, isBusy));
+        System.out.println("Добавлен механик " + name + " " + surname + ". Опыт: " + experienceYears + " лет/год(а/ов)");
     }
 
     public void removeMechanicById(int id) {
@@ -103,39 +103,44 @@ public class MechanicService {
                 });
     }
 
-    public void importFromCSV(String filePath) {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
-            String line;
-            boolean firstLine = true;
+    public void importFromCSV(String resourceName) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
 
-            while ((line = bufferedReader.readLine()) != null) {
-                if (firstLine) {
-                    firstLine = false;
-                    continue;
-                }
+            if (inputStream == null) {
+                throw new FileNotFoundException("Ресурс не найден: " + resourceName);
+            }
 
-                String[] parts = line.split(";");
-                int id = Integer.parseInt(parts[0].trim());
-                String name = parts[1].trim();
-                String surname = parts[2].trim();
-                double experience = Double.parseDouble(parts[3].trim().replace(',', '.'));
-                boolean isBusy = Boolean.parseBoolean(parts[4].trim());
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                String line;
+                boolean firstLine = true;
 
-//              Если механик уже существует, обновляем, иначе создаем нового
-                if (isMechanicExists(id)) {
-                    updateMechanic(id, name, surname, experience, isBusy);
-                } else {
-                    Mechanic mechanic = new Mechanic(id, name, surname, experience, isBusy);
-                    addMechanic(mechanic);
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (firstLine) {
+                        firstLine = false;
+                        continue;
+                    }
+
+                    String[] parts = line.split(";");
+                    int id = Integer.parseInt(parts[0].trim());
+                    String name = parts[1].trim();
+                    String surname = parts[2].trim();
+                    double experience = Double.parseDouble(parts[3].trim().replace(',', '.'));
+                    boolean isBusy = Boolean.parseBoolean(parts[4].trim());
+
+//                  Если механик уже существует, обновляем, иначе создаем нового
+                    if (isMechanicExists(id)) {
+                        updateMechanic(id, name, surname, experience, isBusy);
+                    } else {
+                        addMechanic(id, name, surname, experience, isBusy);
+                    }
                 }
             }
-            System.out.println("Данные успешно экспортированы из " + filePath);
-        } catch (FileNotFoundException e) {
-            System.out.println("Не удалось найти файл");
+            System.out.println("Данные успешно импортированы из " + resourceName);
         } catch (IOException e) {
-            throw new MechanicException("Ошибка при импорте данных");
+            throw new MechanicException("Ошибка при импорте данных механиков");
         }
     }
+
 
     public void exportToCSV(String filePath) {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
@@ -198,7 +203,6 @@ public class MechanicService {
             List<Mechanic> loadedList = (List<Mechanic>) ois.readObject();
             mechanicList.clear();
             mechanicList.addAll(loadedList);
-            System.out.println("Состояние механиков загружено");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка при десериализации файла");
         }

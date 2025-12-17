@@ -1,9 +1,9 @@
 package com.senla.task1.service;
 
-import com.senla.task1.exceptions.ExceptionHandler;
+import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.exceptions.GaragePlaceException;
+import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.GaragePlace;
-import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 
 import java.io.*;
@@ -15,21 +15,18 @@ import java.util.stream.Collectors;
 
 public class GaragePlaceService {
 
-    private static GaragePlaceService instance;
     private final List<GaragePlace> placeList = new ArrayList<>();
     private final String folderPath = "data";
     private final String fileName = "garage_places.bin";
 
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("Сервис гаражных мест создался");
+    }
+
     public GaragePlaceService() {
         load();
         registerShutdown();
-    }
-
-    public static GaragePlaceService getInstance() {
-        if (instance == null) {
-            instance = new GaragePlaceService();
-        }
-        return instance;
     }
 
     public List<GaragePlace> getPlaceList() {
@@ -63,7 +60,7 @@ public class GaragePlaceService {
     public void removeGaragePlace(int number) {
         boolean removed = placeList.removeIf(place -> place.getPlaceNumber() == number);
 
-        if(!removed) {
+        if (!removed) {
             throw new GaragePlaceException("Места в гараже № " + number + " нет");
         }
 
@@ -83,33 +80,38 @@ public class GaragePlaceService {
                 });
     }
 
-    public void importFromCSV(String filePath) {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
-            String line;
-            boolean firstLine = true;
+    public void importFromCSV(String resourceName) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
 
-            while ((line = bufferedReader.readLine()) != null) {
-                if (firstLine) {
-                    firstLine = false;
-                    continue;
-                }
+            if (inputStream == null) {
+                throw new FileNotFoundException("Ресурс не найден: " + resourceName);
+            }
 
-                String[] parts = line.split(";");
-                int placeNumber = Integer.parseInt(parts[0].trim());
-                boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                String line;
+                boolean firstLine = true;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (firstLine) {
+                        firstLine = false;
+                        continue;
+                    }
+
+                    String[] parts = line.split(";");
+                    int placeNumber = Integer.parseInt(parts[0].trim());
+                    boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
 
 //              Если гаражное место существует, обновляем статус, иначе добавляем новое
-                if (isGaragePlaceExists(placeNumber)) {
-                    findPlaceByNumber(placeNumber).setEmpty(isEmpty);
-                } else {
-                    addGaragePlace(placeNumber);
+                    if (isGaragePlaceExists(placeNumber)) {
+                        findPlaceByNumber(placeNumber).setEmpty(isEmpty);
+                    } else {
+                        addGaragePlace(placeNumber);
+                    }
                 }
             }
-            System.out.println("Данные успешно экспортированы из " + filePath);
-        } catch (FileNotFoundException e) {
-            System.out.println("Не удалось найти файл");
+            System.out.println("Данные успешно экспортированы из " + resourceName);
         } catch (IOException e) {
-            throw new GaragePlaceException("Ошибка при импорте данных");
+            throw new MechanicException("Ошибка при импорте данных механиков");
         }
     }
 
@@ -163,7 +165,6 @@ public class GaragePlaceService {
             List<GaragePlace> loadedList = (List<GaragePlace>) ois.readObject();
             placeList.clear();
             placeList.addAll(loadedList);
-            System.out.println("Состояние гаража загружено");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка при десериализации файла");
         }

@@ -4,10 +4,7 @@ import com.senla.task1.models.enums.OrderStatus;
 
 import java.io.Serializable;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 public class Order implements Serializable {
     private static final long serialVersionUID = 123L;
@@ -23,6 +20,9 @@ public class Order implements Serializable {
     private LocalDateTime endDateTime;
     private Duration duration;
     private double price;
+
+    public Order() {
+    }
 
     public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, Duration duration, double price) {
         this.index = count++;
