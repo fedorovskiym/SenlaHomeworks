@@ -1,0 +1,5 @@
+INSERT INTO public.laptop (code,model,speed,ram,hd,price,screen) VALUES
+	 (2,'L2',700,256,120.0,1500,15),
+	 (4,'L4',300,64,40.0,700,14),
+	 (3,'L3',800,256,160.0,1800,17),
+	 (1,'L1',800,128,80.0,1100,13);
