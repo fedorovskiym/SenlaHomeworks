@@ -1,0 +1,21 @@
+-- public.laptop определение
+
+-- Drop table
+
+-- DROP TABLE public.laptop;
+
+CREATE TABLE public.laptop (
+	code int4 NOT NULL,
+	model varchar(50) NOT NULL,
+	speed int2 NOT NULL,
+	ram int2 NOT NULL,
+	hd float4 NOT NULL,
+	price money NULL,
+	screen int2 NOT NULL,
+	CONSTRAINT laptop_pkey PRIMARY KEY (code)
+);
+
+
+-- public.laptop внешние включи
+
+ALTER TABLE public.laptop ADD CONSTRAINT fk_model FOREIGN KEY (model) REFERENCES public.product(model);

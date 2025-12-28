@@ -1,0 +1,20 @@
+-- public.printer определение
+
+-- Drop table
+
+-- DROP TABLE public.printer;
+
+CREATE TABLE public.printer (
+	code int4 NOT NULL,
+	model varchar(50) NOT NULL,
+	color bpchar(1) NOT NULL,
+	"type" varchar(10) NOT NULL,
+	price money NULL,
+	CONSTRAINT printer_pkey PRIMARY KEY (code)
+);
+
+
+-- public.printer внешние включи
+
+ALTER TABLE public.printer ADD CONSTRAINT fk_model FOREIGN KEY (model) REFERENCES public.product(model);
+
