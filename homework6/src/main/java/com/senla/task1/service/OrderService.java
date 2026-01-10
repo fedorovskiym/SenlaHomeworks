@@ -6,7 +6,7 @@ import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
-import com.senla.task1.models.enums.SortType;
+import com.senla.task1.models.enums.OrderSortType;
 
 import java.io.*;
 import java.time.Duration;
@@ -114,7 +114,7 @@ public class OrderService {
 
     // Вывод заказа по айдишнку механика
     public void findOrderByMechanicId(int mechanicId) {
-        List<Order> mechanicOrders = orders.stream().filter(order -> order.getMechanic().getIndex() == mechanicId).toList();
+        List<Order> mechanicOrders = orders.stream().filter(order -> order.getMechanic().getId() == mechanicId).toList();
 
         if (!mechanicOrders.isEmpty()) {
             mechanicOrders.forEach(order -> System.out.println(formatOrderInfo(order)));
@@ -194,7 +194,7 @@ public class OrderService {
     }
 
     // Метод для определения каким способом сортировать и выводить заявки за период времени
-    public void findOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear, int toMonth, int toDay, SortType sortType, boolean flag) {
+    public void findOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear, int toMonth, int toDay, OrderSortType sortType, boolean flag) {
         LocalDateTime startTime = LocalDateTime.of(fromYear, fromMonth, fromDay, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
         System.out.println("Заказы в период с " + startTime.format(dateTimeFormatter) + " по " + endTime.format(dateTimeFormatter));
@@ -290,7 +290,7 @@ public class OrderService {
         Order order = findOrderById(id);
 
 //      Если для существующего заказа из файла считывается другой механик, то старому механику меняетс статус на свободный, а новому на занятый
-        if (order.getMechanic().getIndex() != mechanic.getIndex()) {
+        if (order.getMechanic().getId() != mechanic.getId()) {
             order.getMechanic().setBusy(false);
             mechanic.setBusy(true);
         }

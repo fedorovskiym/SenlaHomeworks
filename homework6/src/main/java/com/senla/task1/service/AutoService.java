@@ -55,11 +55,11 @@ public class AutoService {
         LocalDateTime startDate = LocalDateTime.of(year, month, day, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(year, month, day, 23, 59);
 
-        long availableMechanics = mechanicService.getMechanicList().stream()
+        long availableMechanics = mechanicService.findAllMechanic().stream()
                 .filter(mechanic -> mechanicService.isMechanicAvailable(mechanic, orders, startDate, endDate))
                 .count();
 
-        long availableGaragePlaces = garagePlaceService.getPlaceList().stream()
+        long availableGaragePlaces = garagePlaceService.findAllGaragePlace().stream()
                 .filter(garagePlace -> garagePlaceService.isGaragePlaceAvailable(garagePlace, orders, startDate, endDate))
                 .count();
 

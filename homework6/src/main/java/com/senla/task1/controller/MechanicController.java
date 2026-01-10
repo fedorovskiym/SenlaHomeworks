@@ -2,7 +2,10 @@ package com.senla.task1.controller;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
+import com.senla.task1.models.Mechanic;
 import com.senla.task1.service.MechanicService;
+
+import java.util.List;
 
 public class MechanicController {
 
@@ -22,12 +25,16 @@ public class MechanicController {
         mechanicService.addMechanic(name, surname, experienceYears);
     }
 
+    public List<Mechanic> findAllMechanic() {
+        return mechanicService.findAllMechanic();
+    }
+
     public void removeMechanicById(int id) {
         mechanicService.removeMechanicById(id);
     }
 
     public void showAllMechanics() {
-        mechanicService.showAllMechanic();
+        mechanicService.showAllMechanic(findAllMechanic());
     }
 
     public void showSortedMechanicByAlphabet(boolean flag) {

@@ -1,9 +1,13 @@
 package com.senla.task1.service;
 
+import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
+import com.senla.task1.dao.MechanicDAO;
+import com.senla.task1.dao.MechanicDAOImpl;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
+import com.senla.task1.models.enums.MechanicSortType;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -15,53 +19,45 @@ import java.util.stream.Collectors;
 
 public class MechanicService {
 
-    private final List<Mechanic> mechanicList = new ArrayList<>();
     private final String folderPath = "data";
     private final String fileName = "mechanic.bin";
+    private final MechanicDAOImpl mechanicDAO;
 
     @PostConstruct
     public void postConstruct() {
         System.out.println("Сервис механиков создался");
     }
 
-    public MechanicService() {
-        load();
+    @Inject
+    public MechanicService(MechanicDAOImpl mechanicDAO) {
+        this.mechanicDAO = mechanicDAO;
         registerShutdown();
     }
 
-    public List<Mechanic> getMechanicList() {
-        return mechanicList;
+    public List<Mechanic> findAllMechanic() {
+        return mechanicDAO.findAll();
     }
 
     public void addMechanic(String name, String surname, double experienceYears) {
-        mechanicList.add(new Mechanic(name, surname, experienceYears));
+        Mechanic mechanic = new Mechanic(name, surname, experienceYears);
+        mechanicDAO.save(mechanic);
         System.out.println("Добавлен механик " + name + " " + surname + ". Опыт: " + experienceYears + " лет/год(а/ов)");
     }
 
-    public void addMechanic(int id, String name, String surname, double experienceYears, boolean isBusy) {
-        mechanicList.add(new Mechanic(id, name, surname, experienceYears, isBusy));
-        System.out.println("Добавлен механик " + name + " " + surname + ". Опыт: " + experienceYears + " лет/год(а/ов)");
-    }
-
-    public void removeMechanicById(int id) {
-        boolean removed = mechanicList.removeIf(mechanic -> mechanic.getIndex() == id);
-
-        if (!removed) {
-            throw new MechanicException("Механика №" + id + " не существует");
-        }
-
+    public void removeMechanicById(Integer id) {
+        mechanicDAO.delete(id);
         System.out.println("Механик №" + id + " удален");
     }
 
-    public Mechanic findMechanicById(int id) {
-        return mechanicList.stream().filter(mechanic -> mechanic.getIndex() == id)
-                .findFirst()
-                .orElseThrow(() -> new MechanicException("Механика №" + id + " не существует"));
+    public Mechanic findMechanicById(Integer id) {
+        return mechanicDAO.findById(id).orElseThrow(() -> new MechanicException(
+                "Механик с id - " + id + " не существует"
+        ));
     }
 
-    public void showAllMechanic() {
+    public void showAllMechanic(List<Mechanic> mechanicList) {
         mechanicList.forEach(mechanic ->
-                System.out.println("Механик №" + mechanic.getIndex() + " " +
+                System.out.println("Механик №" + mechanic.getId() + " " +
                         mechanic.getName() + " " +
                         mechanic.getSurname() +
                         ". Лет опыта: " + mechanic.getExperience() + ". " +
@@ -69,26 +65,13 @@ public class MechanicService {
     }
 
     public void showSortedMechanicByAlphabet(boolean flag) {
-
-        Comparator<Mechanic> comparator = Comparator.comparing(Mechanic::getName);
-
-        if (!flag) {
-            comparator = comparator.reversed();
-        }
-
-        mechanicList.sort(comparator);
-        showAllMechanic();
-        sortMechanicsById();
-    }
-
-    public void sortMechanicsById() {
-        mechanicList.sort(Comparator.comparing(Mechanic::getIndex));
+        List<Mechanic> sortedList = mechanicDAO.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag);
+        showAllMechanic(sortedList);
     }
 
     public void showSortedMechanicByBusy() {
-        mechanicList.sort(Comparator.comparing(Mechanic::isBusy));
-        showAllMechanic();
-        sortMechanicsById();
+        List<Mechanic> sortedList = mechanicDAO.sortBy(MechanicSortType.BUSY.getDisplayName(), true);
+        showAllMechanic(sortedList);
     }
 
     public boolean isMechanicAvailable(Mechanic mechanic, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
@@ -121,17 +104,16 @@ public class MechanicService {
                     }
 
                     String[] parts = line.split(";");
-                    int id = Integer.parseInt(parts[0].trim());
+                    Integer id = Integer.parseInt(parts[0].trim());
                     String name = parts[1].trim();
                     String surname = parts[2].trim();
                     double experience = Double.parseDouble(parts[3].trim().replace(',', '.'));
                     boolean isBusy = Boolean.parseBoolean(parts[4].trim());
 
-//                  Если механик уже существует, обновляем, иначе создаем нового
                     if (isMechanicExists(id)) {
                         updateMechanic(id, name, surname, experience, isBusy);
                     } else {
-                        addMechanic(id, name, surname, experience, isBusy);
+                        addMechanic(name, surname, experience);
                     }
                 }
             }
@@ -149,9 +131,9 @@ public class MechanicService {
             bufferedWriter.write("id;name;surname;experienceYears;isBusy");
             bufferedWriter.newLine();
 
-            String lines = mechanicList.stream().map(mechanic ->
+            String lines = findAllMechanic().stream().map(mechanic ->
                             String.format("%d;%s;%s;%.1f;%b",
-                                    mechanic.getIndex(),
+                                    mechanic.getId(),
                                     mechanic.getName(),
                                     mechanic.getSurname(),
                                     mechanic.getExperience(),
@@ -165,17 +147,18 @@ public class MechanicService {
         }
     }
 
-    private void updateMechanic(int id, String name, String surname, double experience, boolean isBusy) {
+    private void updateMechanic(Integer id, String name, String surname, double experience, boolean isBusy) {
         Mechanic mechanic = findMechanicById(id);
         mechanic.setName(name);
         mechanic.setSurname(surname);
         mechanic.setExperience(experience);
         mechanic.setBusy(isBusy);
+        mechanicDAO.update(mechanic);
         System.out.println("Механик № " + id + " обновлен");
     }
 
-    public boolean isMechanicExists(int id) {
-        return mechanicList.stream().anyMatch(mechanic -> mechanic.getIndex() == id);
+    public boolean isMechanicExists(Integer id) {
+        return mechanicDAO.checkIsMechanicExists(id);
     }
 
     public void save() {
@@ -187,7 +170,7 @@ public class MechanicService {
 
             File file = new File(folder, fileName);
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(mechanicList);
+                oos.writeObject(findAllMechanic());
                 System.out.println("Состояние механиков сохранено");
             }
         } catch (IOException e) {
@@ -195,18 +178,18 @@ public class MechanicService {
         }
     }
 
-    private void load() {
-        File file = new File(folderPath, fileName);
-        if (!file.exists()) return;
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            List<Mechanic> loadedList = (List<Mechanic>) ois.readObject();
-            mechanicList.clear();
-            mechanicList.addAll(loadedList);
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Ошибка при десериализации файла");
-        }
-    }
+//    private void load() {
+//        File file = new File(folderPath, fileName);
+//        if (!file.exists()) return;
+//
+//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+//            List<Mechanic> loadedList = (List<Mechanic>) ois.readObject();
+//            mechanicList.clear();
+//            mechanicList.addAll(loadedList);
+//        } catch (IOException | ClassNotFoundException e) {
+//            System.out.println("Ошибка при десериализации файла");
+//        }
+//    }
 
     private void registerShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::save));

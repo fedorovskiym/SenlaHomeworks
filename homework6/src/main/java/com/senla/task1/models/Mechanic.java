@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 public class Mechanic implements Serializable {
     private static final long serialVersionUID = 12L;
-    private static int count = 1;
-    private int index;
+    private Integer id;
     private String name;
     private String surname;
     private double experienceYears;
@@ -15,31 +14,26 @@ public class Mechanic implements Serializable {
     }
 
     public Mechanic(String name, String surname, double experienceYears) {
-        this.index = count++;
         this.name = name;
         this.surname = surname;
         this.experienceYears = experienceYears;
         this.isBusy = false;
     }
 
-    public Mechanic(int index, String name, String surname, double experienceYears, boolean isBusy) {
-        this.index = index;
+    public Mechanic(Integer id, String name, String surname, double experienceYears, boolean isBusy) {
+        this.id = id;
         this.name = name;
         this.surname = surname;
         this.experienceYears = experienceYears;
         this.isBusy = isBusy;
-        if(index > count) {
-            index++;
-            count = index;
-        }
     }
 
-    public int getIndex() {
-        return index;
+    public int getId() {
+        return id;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -77,7 +71,7 @@ public class Mechanic implements Serializable {
     @Override
     public String toString() {
         return "Mechanic{" +
-                "index=" + index +
+                "index=" + id +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", experienceYears=" + experienceYears +

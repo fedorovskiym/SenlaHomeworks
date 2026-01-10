@@ -2,7 +2,7 @@ package com.senla.task1.controller;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.models.enums.SortType;
+import com.senla.task1.models.enums.OrderSortType;
 import com.senla.task1.service.OrderService;
 
 public class OrderController {
@@ -70,7 +70,7 @@ public class OrderController {
     }
 
     public void showOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear,
-                                           int toMonth, int toDay, SortType sortType, boolean flag) {
+                                           int toMonth, int toDay, OrderSortType sortType, boolean flag) {
         orderService.findOrdersOverPeriodOfTime(fromYear, fromMonth, fromDay, toYear, toMonth, toDay, sortType, flag);
     }
 

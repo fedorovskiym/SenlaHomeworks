@@ -19,7 +19,7 @@ public class GaragePlaceController {
     }
 
     public void showFreeGaragePlaces() {
-        garagePlaceService.showFreeGaragePlaces();
+        garagePlaceService.findFreeGaragePlaces();
     }
 
     public void addGaragePlace(int placeNumber) {
@@ -37,6 +37,4 @@ public class GaragePlaceController {
     public void exportGaragePlaceToCSV(String filePath) {
         garagePlaceService.exportToCSV(filePath);
     }
-
-
 }
