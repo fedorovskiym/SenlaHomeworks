@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class Order implements Serializable {
     private static final long serialVersionUID = 123L;
     private static int count = 1;
-    private int index;
+    private Integer id;
     private String carName;
     private Mechanic mechanic;
     private GaragePlace garagePlace;
@@ -25,7 +25,6 @@ public class Order implements Serializable {
     }
 
     public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, Duration duration, double price) {
-        this.index = count++;
         this.carName = carName;
         this.mechanic = mechanic;
         this.garagePlace = garagePlace;
@@ -37,11 +36,11 @@ public class Order implements Serializable {
         garagePlace.setEmpty(false);
     }
 
-    public Order(int index, String carName, Mechanic mechanic, GaragePlace garagePlace, OrderStatus status,
+    public Order(Integer id, String carName, Mechanic mechanic, GaragePlace garagePlace, OrderStatus status,
                  LocalDateTime submissionDateTime, LocalDateTime plannedCompletionDateTime,
                  LocalDateTime completionDateTime, LocalDateTime endDateTime,
                  Duration duration, double price) {
-        this.index = index;
+        this.id = id;
         this.carName = carName;
         this.mechanic = mechanic;
         this.garagePlace = garagePlace;
@@ -52,10 +51,6 @@ public class Order implements Serializable {
         this.endDateTime = endDateTime;
         this.duration = duration;
         this.price = price;
-        if(index > count) {
-            index++;
-            count = index;
-        }
     }
 
     public void acceptOrder() {
@@ -76,23 +71,18 @@ public class Order implements Serializable {
         garagePlace.setEmpty(true);
     }
 
-    public void deleteOrder() {
-        status = OrderStatus.DELETED;
-        mechanic.setBusy(false);
-        garagePlace.setEmpty(true);
-    }
-
-    public void shiftTime(Duration time) {
+    public Duration shiftTime(Duration time) {
         duration = duration.plus(time);
         endDateTime = endDateTime.plus(time);
+        return time;
     }
 
-    public int getIndex() {
-        return index;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getCarName() {
@@ -178,7 +168,7 @@ public class Order implements Serializable {
     @Override
     public String toString() {
         return "Order{" +
-                "index=" + index +
+                "index=" + id +
                 ", carName='" + carName + '\'' +
                 ", mechanic=" + mechanic +
                 ", garagePlace=" + garagePlace +

@@ -111,7 +111,7 @@ public class MechanicService {
                     boolean isBusy = Boolean.parseBoolean(parts[4].trim());
 
                     if (isMechanicExists(id)) {
-                        updateMechanic(id, name, surname, experience, isBusy);
+                        updateMechanic(new Mechanic(id, name, surname, experience, isBusy));
                     } else {
                         addMechanic(name, surname, experience);
                     }
@@ -147,14 +147,9 @@ public class MechanicService {
         }
     }
 
-    private void updateMechanic(Integer id, String name, String surname, double experience, boolean isBusy) {
-        Mechanic mechanic = findMechanicById(id);
-        mechanic.setName(name);
-        mechanic.setSurname(surname);
-        mechanic.setExperience(experience);
-        mechanic.setBusy(isBusy);
+    public void updateMechanic(Mechanic mechanic) {
         mechanicDAO.update(mechanic);
-        System.out.println("Механик № " + id + " обновлен");
+        System.out.println("Механик № " + mechanic.getId() + " обновлен");
     }
 
     public boolean isMechanicExists(Integer id) {

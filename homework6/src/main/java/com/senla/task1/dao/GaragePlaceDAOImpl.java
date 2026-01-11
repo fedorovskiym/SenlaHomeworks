@@ -4,6 +4,8 @@ import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;
 
+import javax.print.attribute.standard.MediaSize;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +32,7 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
 
     @Override
     protected String getUpdateSql() {
-        return "UPDATE " + getTableName() + " SET is_empty=? WHERE place_number=?";
+        return "UPDATE " + getTableName() + " SET place_number=?, is_empty=? WHERE id=?";
     }
 
     @Override
@@ -41,8 +43,9 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
 
     @Override
     protected void fillPreparesStatementForUpdate(PreparedStatement preparedStatement, GaragePlace garagePlace) throws SQLException {
-        preparedStatement.setBoolean(1, garagePlace.isEmpty());
-        preparedStatement.setInt(2, garagePlace.getPlaceNumber());
+        preparedStatement.setInt(1, garagePlace.getPlaceNumber());
+        preparedStatement.setBoolean(2, garagePlace.isEmpty());
+        preparedStatement.setInt(3, garagePlace.getId());
     }
 
     @Override
@@ -99,5 +102,51 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
         }
     }
 
+    @Override
+    public Optional<GaragePlace> findById(Integer id) {
+        String sql = "SELECT * FROM " + getTableName() + " WHERE id=?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                GaragePlace garagePlace = mapRow(resultSet);
+                return Optional.of(garagePlace);
+            }
+        } catch (SQLException e) {
+           throw new RuntimeException(e);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public void importWithTransaction(List<GaragePlace> garagePlaces) {
+        Connection conn = getConnection();
+        try {
+            conn.setAutoCommit(false);
+
+            for (GaragePlace g : garagePlaces) {
+                if (checkIsPlaceNumberExists(g.getPlaceNumber())) {
+                    update(g);
+                } else {
+                    save(g);
+                }
+            }
+
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

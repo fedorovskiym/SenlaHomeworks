@@ -35,7 +35,6 @@ public class GaragePlaceService {
         registerShutdown();
     }
 
-
     public List<GaragePlace> findAllGaragePlace() {
         return garagePlaceDAO.findAll();
     }
@@ -76,6 +75,8 @@ public class GaragePlaceService {
     }
 
     public void importFromCSV(String resourceName) {
+        List<GaragePlace> garagePlacesToSaveOrUpdate = new ArrayList<>();
+
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
             if (inputStream == null) {
                 throw new FileNotFoundException("Ресурс не найден: " + resourceName);
@@ -92,25 +93,27 @@ public class GaragePlaceService {
                     }
 
                     String[] parts = line.split(";");
-                    int placeNumber = Integer.parseInt(parts[0].trim());
-                    boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
+                    Integer id = Integer.parseInt(parts[0].trim());
+                    int placeNumber = Integer.parseInt(parts[1].trim());
+                    boolean isEmpty = Boolean.parseBoolean(parts[2].trim());
 
-                    if (isGaragePlaceExists(placeNumber)) {
-                        updateGaragePlace(placeNumber, isEmpty);
-                    } else {
-                        addGaragePlace(placeNumber);
-                    }
+                    GaragePlace garagePlace = new GaragePlace(id, placeNumber, isEmpty);
+                    garagePlacesToSaveOrUpdate.add(garagePlace);
                 }
             }
-            System.out.println("Данные успешно экспортированы из " + resourceName);
+
+            // Транзакция
+            garagePlaceDAO.importWithTransaction(garagePlacesToSaveOrUpdate);
+
+            System.out.println("Данные успешно импортированы из " + resourceName);
+
         } catch (IOException e) {
-            throw new GaragePlaceException("Ошибка при импорте данных гаражных мест");
+            throw new GaragePlaceException("Ошибка при импорте данных гаражных мест: " + e.getMessage());
         }
     }
 
-    private void updateGaragePlace(int placeNumber, boolean isEmpty) {
-        GaragePlace garagePlace = findPlaceByNumber(placeNumber);
-        garagePlace.setEmpty(isEmpty);
+
+    public void updateGaragePlace(GaragePlace garagePlace) {
         garagePlaceDAO.update(garagePlace);
     }
 

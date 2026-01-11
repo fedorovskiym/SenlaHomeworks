@@ -9,6 +9,7 @@ import com.senla.task1.controller.OrderController;
 import com.senla.task1.exceptions.ExceptionHandler;
 import com.senla.task1.exceptions.InvalidInputException;
 import com.senla.task1.models.enums.OrderSortType;
+import com.senla.task1.models.enums.OrderStatus;
 
 import java.util.Scanner;
 
@@ -174,7 +175,6 @@ public class ConsoleActionFactory implements ActionFactory {
             try {
                 System.out.println("Введите название файла: ");
                 String filePath = scanner.nextLine();
-                System.out.println(filePath);
                 garagePlaceController.importGaragePlaceFromCSV(filePath);
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
@@ -338,24 +338,20 @@ public class ConsoleActionFactory implements ActionFactory {
                         2 - Принят
                         3 - Выполнен
                         4 - Отменен
-                        5 - Удален
                         """);
                 int status = Integer.parseInt(scanner.nextLine());
                 switch (status) {
                     case 1:
-                        orderController.showOrdersByStatus("Ожидает");
+                        orderController.showOrdersByStatus(OrderStatus.WAITING);
                         break;
                     case 2:
-                        orderController.showOrdersByStatus("Принят");
+                        orderController.showOrdersByStatus(OrderStatus.ACCEPTED);
                         break;
                     case 3:
-                        orderController.showOrdersByStatus("Выполнен");
+                        orderController.showOrdersByStatus(OrderStatus.DONE);
                         break;
                     case 4:
-                        orderController.showOrdersByStatus("Отменен");
-                        break;
-                    case 5:
-                        orderController.showOrdersByStatus("Удален");
+                        orderController.showOrdersByStatus(OrderStatus.CANCEL);
                         break;
                     default:
                         throw new InvalidInputException("Неожиданное значение: " + status);

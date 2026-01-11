@@ -46,12 +46,14 @@ public class AutoService {
 
         Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
         Order order = new Order(carModel, mechanic, garagePlace, duration, price);
+        mechanicService.updateMechanic(mechanic);
+        garagePlaceService.updateGaragePlace(garagePlace);
 
         orderService.addOrder(order);
     }
 
     public void getAvailableSlot(int year, int month, int day) {
-        List<Order> orders = orderService.getOrders();
+        List<Order> orders = orderService.findAllOrders();
         LocalDateTime startDate = LocalDateTime.of(year, month, day, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(year, month, day, 23, 59);
 
@@ -121,15 +123,20 @@ public class AutoService {
 
 //              Обновление записи если запись с таким id существует
                     if (orderService.isOrdersExists(id)) {
-                        orderService.updateOrder(id, carName, mechanic, garagePlace, status,
+                        updateOrder(id, carName, mechanic, garagePlace, status,
                                 submissionDateTime, plannedCompletionDateTime, completionDateTime,
                                 endDateTime, duration, price);
                     } else {
+                        if (mechanic.isBusy() || !garagePlace.isEmpty()) {
+                            System.out.println("Механик или место занято, заказ не может быть добавлен");
+                            continue;
+                        }
                         Order order = new Order(id, carName, mechanic, garagePlace, status, submissionDateTime,
                                 plannedCompletionDateTime, completionDateTime, endDateTime, duration, price);
                         orderService.addOrder(order);
                     }
-
+                    mechanicService.updateMechanic(mechanic);
+                    garagePlaceService.updateGaragePlace(garagePlace);
                 }
             }
             System.out.println("Данные успешно экспортированы из " + resourceName);
@@ -145,18 +152,18 @@ public class AutoService {
             bufferedWriter.write("id;carName;mechanicId;garagePlaceNumber;status;submissionDateTime;plannedCompletionDateTime;completionDateTime;endDateTime;duration;price");
             bufferedWriter.newLine();
 
-            String lines = orderService.getOrders().stream()
+            String lines = orderService.findAllOrders().stream()
                     .map(order -> String.format("%d;%s;%d;%d;%s;%s;%s;%s;%s;%d;%.2f",
-                            order.getIndex(),
+                            order.getId(),
                             order.getCarName(),
-                            order.getMechanic(),
-                            order.getGaragePlace(),
+                            order.getMechanic().getId(),
+                            order.getGaragePlace().getId(),
                             order.getStatus(),
                             order.getSubmissionDateTime(),
                             order.getPlannedCompletionDateTime() != null ? order.getPlannedCompletionDateTime().toString() : "",
                             order.getCompletionDateTime() != null ? order.getCompletionDateTime().toString() : "",
                             order.getEndDateTime(),
-                            order.getDuration(),
+                            order.getDuration().toMinutes(),
                             order.getPrice()
                     ))
                     .collect(Collectors.joining(System.lineSeparator()));
@@ -168,5 +175,37 @@ public class AutoService {
         }
     }
 
+    public void updateOrder(int id, String carName, Mechanic mechanic,
+                            GaragePlace garagePlace, OrderStatus status, LocalDateTime submissionDateTime,
+                            LocalDateTime plannedCompletionDateTime, LocalDateTime completionDateTime,
+                            LocalDateTime endDateTime, Duration duration, double price) {
+
+        Order order = orderService.findOrderById(id);
+
+//      Если для существующего заказа из файла считывается другой механик, то старому механику меняетс статус на свободный, а новому на занятый
+        if (order.getMechanic().getId() != mechanic.getId()) {
+            order.getMechanic().setBusy(false);
+            mechanic.setBusy(true);
+        }
+
+//      Аналогично с механиками
+        if (order.getGaragePlace().getPlaceNumber() != garagePlace.getPlaceNumber()) {
+            order.getGaragePlace().setEmpty(true);
+            garagePlace.setEmpty(false);
+        }
+
+        order.setCarName(carName);
+        order.setMechanic(mechanic);
+        order.setGaragePlace(garagePlace);
+        order.setStatus(status);
+        order.setSubmissionDateTime(submissionDateTime);
+        order.setPlannedCompletionDateTime(plannedCompletionDateTime);
+        order.setCompletionDateTime(completionDateTime);
+        order.setEndDateTime(endDateTime);
+        order.setDuration(duration);
+        order.setPrice(price);
+        orderService.update(order);
+        System.out.println("Заказ №" + id + " обновлен");
+    }
 
 }
