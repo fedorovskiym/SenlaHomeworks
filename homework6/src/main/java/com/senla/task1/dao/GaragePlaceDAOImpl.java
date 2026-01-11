@@ -90,8 +90,8 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
         String sql = "SELECT * FROM " + getTableName() + " WHERE place_number=?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, placeNumber);
-            try (ResultSet resultSet = preparedStatement.executeQuery()){
-                if(resultSet.next()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
                     GaragePlace garagePlace = mapRow(resultSet);
                     return Optional.of(garagePlace);
                 }
@@ -105,15 +105,15 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
     @Override
     public Optional<GaragePlace> findById(Integer id) {
         String sql = "SELECT * FROM " + getTableName() + " WHERE id=?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()) {
+            if (resultSet.next()) {
                 GaragePlace garagePlace = mapRow(resultSet);
                 return Optional.of(garagePlace);
             }
         } catch (SQLException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         return Optional.empty();
     }
@@ -123,15 +123,13 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false);
-
-            for (GaragePlace g : garagePlaces) {
-                if (checkIsPlaceNumberExists(g.getPlaceNumber())) {
-                    update(g);
+            for (GaragePlace garagePlace : garagePlaces) {
+                if (checkIsPlaceNumberExists(garagePlace.getPlaceNumber())) {
+                    update(garagePlace);
                 } else {
-                    save(g);
+                    save(garagePlace);
                 }
             }
-
             conn.commit();
         } catch (SQLException e) {
             try {

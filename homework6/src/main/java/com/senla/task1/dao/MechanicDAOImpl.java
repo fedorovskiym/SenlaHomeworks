@@ -2,6 +2,7 @@ package com.senla.task1.dao;
 
 import com.senla.task1.models.Mechanic;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -102,5 +103,34 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    @Override
+    public void importWithTransaction(List<Mechanic> mechanicList) {
+        Connection conn = getConnection();
+        try {
+            conn.setAutoCommit(false);
+            for (Mechanic mechanic : mechanicList) {
+                if (checkIsMechanicExists(mechanic.getId())) {
+                    update(mechanic);
+                } else {
+                    save(mechanic);
+                }
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

@@ -39,7 +39,7 @@ public class GaragePlaceService {
         return garagePlaceDAO.findAll();
     }
 
-    public GaragePlace findPlaceByNumber(int placeNumber) {
+    public GaragePlace findPlaceByNumber(Integer placeNumber) {
         return garagePlaceDAO.findByPlaceNumber(placeNumber).orElseThrow(() -> new GaragePlaceException(
                 "Место в гараже № " + placeNumber + " не существует"
         ));
@@ -51,13 +51,13 @@ public class GaragePlaceService {
         freeGaragePlaces.forEach(garagePlace -> showGaragePlaces(garagePlace));
     }
 
-    public void addGaragePlace(int number) {
+    public void addGaragePlace(Integer number) {
         GaragePlace garagePlace = new GaragePlace(number);
         garagePlaceDAO.save(garagePlace);
         System.out.println("Добавлено место в гараж №" + number);
     }
 
-    public void removeGaragePlace(int id) {
+    public void removeGaragePlace(Integer id) {
         garagePlaceDAO.delete(id);
         System.out.println("Место в гараже №" + id + " удалено");
     }
@@ -138,7 +138,7 @@ public class GaragePlaceService {
         }
     }
 
-    public boolean isGaragePlaceExists(int placeNumber) {
+    public boolean isGaragePlaceExists(Integer placeNumber) {
         return garagePlaceDAO.checkIsPlaceNumberExists(placeNumber);
     }
 

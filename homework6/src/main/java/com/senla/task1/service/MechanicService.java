@@ -38,7 +38,7 @@ public class MechanicService {
         return mechanicDAO.findAll();
     }
 
-    public void addMechanic(String name, String surname, double experienceYears) {
+    public void addMechanic(String name, String surname, Double experienceYears) {
         Mechanic mechanic = new Mechanic(name, surname, experienceYears);
         mechanicDAO.save(mechanic);
         System.out.println("Добавлен механик " + name + " " + surname + ". Опыт: " + experienceYears + " лет/год(а/ов)");
@@ -64,7 +64,7 @@ public class MechanicService {
                         (!mechanic.isBusy() ? "Механик не занят" : "Механик занят")));
     }
 
-    public void showSortedMechanicByAlphabet(boolean flag) {
+    public void showSortedMechanicByAlphabet(Boolean flag) {
         List<Mechanic> sortedList = mechanicDAO.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag);
         showAllMechanic(sortedList);
     }
@@ -87,8 +87,8 @@ public class MechanicService {
     }
 
     public void importFromCSV(String resourceName) {
+        List<Mechanic> mechanicsToSaveOrUpdate = new ArrayList<>();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
-
             if (inputStream == null) {
                 throw new FileNotFoundException("Ресурс не найден: " + resourceName);
             }
@@ -110,19 +110,19 @@ public class MechanicService {
                     double experience = Double.parseDouble(parts[3].trim().replace(',', '.'));
                     boolean isBusy = Boolean.parseBoolean(parts[4].trim());
 
-                    if (isMechanicExists(id)) {
-                        updateMechanic(new Mechanic(id, name, surname, experience, isBusy));
-                    } else {
-                        addMechanic(name, surname, experience);
-                    }
+                    Mechanic mechanic = new Mechanic(id, name, surname, experience, isBusy);
+                    mechanicsToSaveOrUpdate.add(mechanic);
                 }
             }
+
+            // Транзакция
+            mechanicDAO.importWithTransaction(mechanicsToSaveOrUpdate);
+
             System.out.println("Данные успешно импортированы из " + resourceName);
         } catch (IOException e) {
-            throw new MechanicException("Ошибка при импорте данных механиков");
+            throw new MechanicException("Ошибка при импорте данных механиков: " + e.getMessage());
         }
     }
-
 
     public void exportToCSV(String filePath) {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(

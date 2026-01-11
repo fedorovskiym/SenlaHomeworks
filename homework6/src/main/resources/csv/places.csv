@@ -1,5 +1,5 @@
-placeNumber;isEmpty
-1;false
-2;false
-3;false
-50;true
+id;placeNumber;isEmpty
+1;1;false
+2;2;false
+3;3;false
+4;50;true

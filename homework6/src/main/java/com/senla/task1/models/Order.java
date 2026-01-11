@@ -19,12 +19,12 @@ public class Order implements Serializable {
     private LocalDateTime completionDateTime;
     private LocalDateTime endDateTime;
     private Duration duration;
-    private double price;
+    private Double price;
 
     public Order() {
     }
 
-    public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, Duration duration, double price) {
+    public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, Duration duration, Double price) {
         this.carName = carName;
         this.mechanic = mechanic;
         this.garagePlace = garagePlace;
@@ -32,14 +32,12 @@ public class Order implements Serializable {
         this.submissionDateTime = LocalDateTime.now();
         this.price = price;
         this.duration = duration;
-        mechanic.setBusy(true);
-        garagePlace.setEmpty(false);
     }
 
     public Order(Integer id, String carName, Mechanic mechanic, GaragePlace garagePlace, OrderStatus status,
                  LocalDateTime submissionDateTime, LocalDateTime plannedCompletionDateTime,
                  LocalDateTime completionDateTime, LocalDateTime endDateTime,
-                 Duration duration, double price) {
+                 Duration duration, Double price) {
         this.id = id;
         this.carName = carName;
         this.mechanic = mechanic;
@@ -157,11 +155,11 @@ public class Order implements Serializable {
         this.duration = duration;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

@@ -26,7 +26,7 @@ public abstract class GenericDAOImpl<T extends Serializable, ID> implements Gene
 
     protected abstract T mapRow(ResultSet resultSet) throws SQLException;
 
-    protected Connection getConnection() {
+    public Connection getConnection() {
         if (connection == null) {
             connection = JDBCUtil.getInstance().connect();
         }

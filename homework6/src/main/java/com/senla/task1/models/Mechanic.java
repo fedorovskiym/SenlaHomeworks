@@ -7,20 +7,20 @@ public class Mechanic implements Serializable {
     private Integer id;
     private String name;
     private String surname;
-    private double experienceYears;
-    private boolean isBusy;
+    private Double experienceYears;
+    private Boolean isBusy;
 
     public Mechanic() {
     }
 
-    public Mechanic(String name, String surname, double experienceYears) {
+    public Mechanic(String name, String surname, Double experienceYears) {
         this.name = name;
         this.surname = surname;
         this.experienceYears = experienceYears;
         this.isBusy = false;
     }
 
-    public Mechanic(Integer id, String name, String surname, double experienceYears, boolean isBusy) {
+    public Mechanic(Integer id, String name, String surname, Double experienceYears, Boolean isBusy) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -52,19 +52,19 @@ public class Mechanic implements Serializable {
         this.surname = surname;
     }
 
-    public double getExperience() {
+    public Double getExperience() {
         return experienceYears;
     }
 
-    public void setExperience(double experienceYears) {
+    public void setExperience(Double experienceYears) {
         this.experienceYears = experienceYears;
     }
 
-    public boolean isBusy() {
+    public Boolean isBusy() {
         return isBusy;
     }
 
-    public void setBusy(boolean busy) {
+    public void setBusy(Boolean busy) {
         isBusy = busy;
     }
 
