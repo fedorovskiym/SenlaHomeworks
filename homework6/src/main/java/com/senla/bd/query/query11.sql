@@ -1,0 +1,1 @@
+select AVG(speed) from pc 
