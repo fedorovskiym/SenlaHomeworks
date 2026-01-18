@@ -52,5 +52,4 @@ public class MechanicController {
     public void exportMechanicToCSV(String filePath) {
         mechanicService.exportToCSV(filePath);
     }
-
 }

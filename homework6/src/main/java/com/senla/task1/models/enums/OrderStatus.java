@@ -16,5 +16,4 @@ public enum OrderStatus {
     public String getDisplayName() {
         return displayName;
     }
-
 }

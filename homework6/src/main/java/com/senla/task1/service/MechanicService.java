@@ -2,18 +2,27 @@ package com.senla.task1.service;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.dao.MechanicDAO;
 import com.senla.task1.dao.MechanicDAOImpl;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.MechanicSortType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +31,7 @@ public class MechanicService {
     private final String folderPath = "data";
     private final String fileName = "mechanic.bin";
     private final MechanicDAOImpl mechanicDAO;
+    private static final Logger logger = LogManager.getLogger(MechanicService.class);
 
     @PostConstruct
     public void postConstruct() {
@@ -39,14 +49,16 @@ public class MechanicService {
     }
 
     public void addMechanic(String name, String surname, Double experienceYears) {
+        logger.info("Обработка добавления нового механика");
         Mechanic mechanic = new Mechanic(name, surname, experienceYears);
         mechanicDAO.save(mechanic);
-        System.out.println("Добавлен механик " + name + " " + surname + ". Опыт: " + experienceYears + " лет/год(а/ов)");
+        logger.info("Добавлен новый механик {}", mechanic);
     }
 
     public void removeMechanicById(Integer id) {
+        logger.info("Обработка удаления механика № {}", id);
         mechanicDAO.delete(id);
-        System.out.println("Механик №" + id + " удален");
+        logger.info("Механик № {} удален", id);
     }
 
     public Mechanic findMechanicById(Integer id) {
@@ -65,12 +77,16 @@ public class MechanicService {
     }
 
     public void showSortedMechanicByAlphabet(Boolean flag) {
+        logger.info("Обработка сортировки механиков по алфавиту");
         List<Mechanic> sortedList = mechanicDAO.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag);
+        logger.info("Механики отсортированы по алфавиту");
         showAllMechanic(sortedList);
     }
 
     public void showSortedMechanicByBusy() {
+        logger.info("Обработка сортировки механиков по занятости");
         List<Mechanic> sortedList = mechanicDAO.sortBy(MechanicSortType.BUSY.getDisplayName(), true);
+        logger.info("Механики отсортированы по занятости");
         showAllMechanic(sortedList);
     }
 
@@ -87,6 +103,7 @@ public class MechanicService {
     }
 
     public void importFromCSV(String resourceName) {
+        logger.info("Обработка импорта данных механиков из файла {}", resourceName);
         List<Mechanic> mechanicsToSaveOrUpdate = new ArrayList<>();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
             if (inputStream == null) {
@@ -118,13 +135,15 @@ public class MechanicService {
             // Транзакция
             mechanicDAO.importWithTransaction(mechanicsToSaveOrUpdate);
 
-            System.out.println("Данные успешно импортированы из " + resourceName);
+            logger.info("Данные успешно импортированы из файла {}", resourceName);
         } catch (IOException e) {
-            throw new MechanicException("Ошибка при импорте данных механиков: " + e.getMessage());
+            logger.error("Ошибка при импорте данных механиков из файла {}", resourceName);
+            throw new RuntimeException(e);
         }
     }
 
     public void exportToCSV(String filePath) {
+        logger.info("Обработка экспорта данных механиков в файл {}", filePath);
         try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
 
@@ -141,9 +160,10 @@ public class MechanicService {
                     .collect(Collectors.joining(System.lineSeparator()));
 
             bufferedWriter.write(lines);
-            System.out.println("Данные успешно экспортированы в " + filePath);
+            logger.info("Данные успешно записаны в файл {}", filePath);
         } catch (IOException e) {
-            throw new MechanicException("Ошибка при экспорте данных");
+            logger.error("Ошибка при экспорте данных в файл {}", filePath);
+            throw new RuntimeException(e);
         }
     }
 

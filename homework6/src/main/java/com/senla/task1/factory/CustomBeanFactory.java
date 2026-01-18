@@ -48,7 +48,7 @@ public class CustomBeanFactory {
                 }
             }
 
-            if(bean == null) {
+            if (bean == null) {
                 Constructor<?> defaultConstructor = implClass.getDeclaredConstructor();
                 defaultConstructor.setAccessible(true);
                 bean = defaultConstructor.newInstance();

@@ -2,9 +2,9 @@ package com.senla.task1.dao;
 
 import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.models.GaragePlace;
-import com.senla.task1.models.Order;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.print.attribute.standard.MediaSize;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> implements GaragePlaceDAO {
+
+    private static final Logger logger = LogManager.getLogger(GaragePlaceDAOImpl.class);
 
     @PostConstruct
     public void post() {
@@ -64,6 +66,7 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
                 return true;
             }
         } catch (SQLException e) {
+            logger.error("Ошибка проверки статусу гаражного места {}", placeNumber, e);
             throw new RuntimeException(e);
         }
         return false;
@@ -80,6 +83,7 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
                 freeGaragePlaces.add(garagePlace);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка нахождения свободных гаражных мест", e);
             throw new RuntimeException(e);
         }
         return freeGaragePlaces;
@@ -98,6 +102,7 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
                 return Optional.empty();
             }
         } catch (SQLException e) {
+            logger.error("Ошибка нахождения места по номеру {}", placeNumber);
             throw new RuntimeException(e);
         }
     }
@@ -113,6 +118,7 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
                 return Optional.of(garagePlace);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка удаления места № {}", id);
             throw new RuntimeException(e);
         }
         return Optional.empty();
@@ -146,5 +152,4 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
             }
         }
     }
-
 }

@@ -5,8 +5,13 @@ import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +22,8 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
 
     private final MechanicDAOImpl mechanicDAO;
     private final GaragePlaceDAOImpl garagePlaceDAO;
-    private final static String SQL_ORDER_BY = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM orders ORDER BY ";
+    private static final String SQL_ORDER_BY = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM orders ORDER BY ";
+    private static final Logger logger = LogManager.getLogger(OrderDAOImpl.class);
 
 
     @Inject
@@ -108,6 +114,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 orders.add(mapRow(rs));
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при нахождении всех заказов", e);
             throw new RuntimeException(e);
         }
         return orders;
@@ -126,6 +133,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 return Optional.of(order);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при получении времени завершения последнего активного заказа", e);
             throw new RuntimeException(e);
         }
         return Optional.empty();
@@ -142,6 +150,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 return Optional.of(order);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при нахождении заказа по номеру {}", id, e);
             throw new RuntimeException(e);
         }
         return Optional.empty();
@@ -163,6 +172,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 orderList.add(order);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка сортировки заказов по {}", field, e);
             throw new RuntimeException(e);
         }
         return orderList;
@@ -180,6 +190,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 orderList.add(order);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка поиска заказов по номеру механика {}", mechanicId, e);
             throw new RuntimeException(e);
         }
         return orderList;
@@ -198,6 +209,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 orderList.add(order);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при поиска заказов по статусу {}", status, e);
             throw new RuntimeException(e);
         }
         return orderList;
@@ -213,6 +225,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 return true;
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при проверки заказа на существование № {}", id, e);
             throw new RuntimeException(e);
         }
         return false;
@@ -231,6 +244,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
                 orderList.add(order);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при поиске заказов за период времени с {} по {}, сортируя по {}", start, end, field, e);
             throw new RuntimeException(e);
         }
         return orderList;

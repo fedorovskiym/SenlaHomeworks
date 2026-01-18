@@ -49,5 +49,4 @@ public class Navigator {
             rootMenu = item.getNextMenu();
         }
     }
-
 }

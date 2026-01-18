@@ -35,5 +35,4 @@ public interface ActionFactory {
     IAction exportOrderToFileAction();
 
     IAction goBackAction();
-
 }
