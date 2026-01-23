@@ -1,13 +1,28 @@
 package com.senla.task1.models;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
+@Entity
+@Table(name = "mechanic")
 public class Mechanic implements Serializable {
     private static final long serialVersionUID = 12L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "surname")
     private String surname;
+    @Column(name = "experience_years")
     private Double experienceYears;
+    @Column(name = "is_busy")
     private Boolean isBusy;
 
     public Mechanic() {

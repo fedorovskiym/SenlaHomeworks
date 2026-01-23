@@ -2,23 +2,50 @@ package com.senla.task1.models;
 
 import com.senla.task1.models.enums.OrderStatus;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "orders")
 public class Order implements Serializable {
     private static final long serialVersionUID = 123L;
-    private static int count = 1;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "car_name")
     private String carName;
+    @ManyToOne
+    @JoinColumn(name = "mechanic_id")
     private Mechanic mechanic;
+    @ManyToOne
+    @JoinColumn(name = "garage_place_id")
     private GaragePlace garagePlace;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
+    @Column(name = "submission_date_time")
     private LocalDateTime submissionDateTime;
+    @Column(name = "planned_completion_date_time")
     private LocalDateTime plannedCompletionDateTime;
+    @Column(name = "completion_date_time")
     private LocalDateTime completionDateTime;
+    @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
+    @Column(name = "duration")
     private Duration duration;
+    @Column(name = "price")
     private Double price;
 
     public Order() {

@@ -1,5 +1,6 @@
-package com.senla.task1.dao;
+package com.senla.task1.dao.impl.jdbc;
 
+import com.senla.task1.dao.MechanicDAO;
 import com.senla.task1.models.Mechanic;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,24 +54,6 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
     protected Mechanic mapRow(ResultSet resultSet) throws SQLException {
         return new Mechanic(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getString("surname"),
                 resultSet.getDouble("experience_years"), resultSet.getBoolean("is_busy"));
-    }
-
-    @Override
-    public Optional<Mechanic> findById(Integer id) {
-        String sql = "SELECT * FROM " + getTableName() + " WHERE id=?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    Mechanic mechanic = mapRow(resultSet);
-                    return Optional.of(mechanic);
-                }
-                return Optional.empty();
-            }
-        } catch (SQLException e) {
-            logger.error("Ошибка при нахождении механика № {}", id, e);
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -138,5 +121,21 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void delete(Mechanic entity) {
+        String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+            preparedStatement.setInt(1, entity.getId());
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<Mechanic> findBy(Integer id) {
+        return Optional.empty();
     }
 }

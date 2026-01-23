@@ -1,6 +1,7 @@
-package com.senla.task1.dao;
+package com.senla.task1.dao.impl.jdbc;
 
 import com.senla.task1.annotations.PostConstruct;
+import com.senla.task1.dao.GaragePlaceDAO;
 import com.senla.task1.models.GaragePlace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,23 +109,6 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
     }
 
     @Override
-    public Optional<GaragePlace> findById(Integer id) {
-        String sql = "SELECT * FROM " + getTableName() + " WHERE id=?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                GaragePlace garagePlace = mapRow(resultSet);
-                return Optional.of(garagePlace);
-            }
-        } catch (SQLException e) {
-            logger.error("Ошибка удаления места № {}", id);
-            throw new RuntimeException(e);
-        }
-        return Optional.empty();
-    }
-
-    @Override
     public void importWithTransaction(List<GaragePlace> garagePlaces) {
         Connection conn = getConnection();
         try {
@@ -151,5 +135,21 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void delete(GaragePlace entity) {
+        String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+            preparedStatement.setInt(1, entity.getId());
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<GaragePlace> findBy(Integer id) {
+        return Optional.empty();
     }
 }

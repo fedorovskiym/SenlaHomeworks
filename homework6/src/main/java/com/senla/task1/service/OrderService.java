@@ -2,7 +2,7 @@ package com.senla.task1.service;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.dao.OrderDAOImpl;
+import com.senla.task1.dao.impl.jdbc.OrderDAOImpl;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;

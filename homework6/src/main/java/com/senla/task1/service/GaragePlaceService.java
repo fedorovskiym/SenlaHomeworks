@@ -2,7 +2,7 @@ package com.senla.task1.service;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.dao.GaragePlaceDAOImpl;
+import com.senla.task1.dao.impl.jdbc.GaragePlaceDAOImpl;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;

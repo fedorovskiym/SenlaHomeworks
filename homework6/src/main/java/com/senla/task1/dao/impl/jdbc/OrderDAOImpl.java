@@ -1,6 +1,7 @@
-package com.senla.task1.dao;
+package com.senla.task1.dao.impl.jdbc;
 
 import com.senla.task1.annotations.Inject;
+import com.senla.task1.dao.OrderDAO;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
@@ -121,6 +122,22 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
     }
 
     @Override
+    public void delete(Order entity) {
+        String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+            preparedStatement.setInt(1, entity.getId());
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<Order> findBy(Integer id) {
+        return Optional.empty();
+    }
+
+    @Override
     public Optional<Order> getEndDateTimeLastActiveOrder() {
         String sql = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM " + getTableName() +
                 " WHERE order_status IN('" + OrderStatus.WAITING + "', '" + OrderStatus.ACCEPTED + "')" +
@@ -139,22 +156,6 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
         return Optional.empty();
     }
 
-    @Override
-    public Optional<Order> findOrderById(Integer id) {
-        String sql = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM " + getTableName() + " WHERE id=?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                Order order = mapRow(resultSet);
-                return Optional.of(order);
-            }
-        } catch (SQLException e) {
-            logger.error("Ошибка при нахождении заказа по номеру {}", id, e);
-            throw new RuntimeException(e);
-        }
-        return Optional.empty();
-    }
 
     @Override
     public List<Order> sortBy(String field, boolean flag) {

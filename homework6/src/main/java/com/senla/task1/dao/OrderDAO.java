@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface OrderDAO extends GenericDAO<Order, Integer> {
     Optional<Order> getEndDateTimeLastActiveOrder();
 
-    Optional<Order> findOrderById(Integer id);
-
     List<Order> sortBy(String field, boolean flag);
 
     List<Order> findOrderByMechanicId(Integer mechanicId);
