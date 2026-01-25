@@ -140,7 +140,7 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
     @Override
     public void delete(GaragePlace entity) {
         String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, entity.getId());
             preparedStatement.executeQuery();
         } catch (SQLException e) {

@@ -124,7 +124,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
     @Override
     public void delete(Order entity) {
         String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, entity.getId());
             preparedStatement.executeQuery();
         } catch (SQLException e) {
@@ -244,10 +244,5 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
             throw new RuntimeException(e);
         }
         return orderList;
-    }
-
-    @Override
-    public Optional<Mechanic> findMechanicByOrderIf(Integer id) {
-        return Optional.empty();
     }
 }

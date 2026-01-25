@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implements MechanicDAO {
 
@@ -126,7 +125,7 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
     @Override
     public void delete(Mechanic entity) {
         String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, entity.getId());
             preparedStatement.executeQuery();
         } catch (SQLException e) {

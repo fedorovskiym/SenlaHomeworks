@@ -2,7 +2,6 @@ package com.senla.task1.service;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.dao.impl.jdbc.MechanicDAOImpl;
 import com.senla.task1.dao.impl.jpa.MechanicJpaDAOImpl;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
@@ -70,12 +69,7 @@ public class MechanicService {
     }
 
     public void showAllMechanic(List<Mechanic> mechanicList) {
-        mechanicList.forEach(mechanic ->
-                System.out.println("Механик №" + mechanic.getId() + " " +
-                        mechanic.getName() + " " +
-                        mechanic.getSurname() +
-                        ". Лет опыта: " + mechanic.getExperience() + ". " +
-                        (!mechanic.isBusy() ? "Механик не занят" : "Механик занят")));
+        mechanicList.forEach(mechanic -> System.out.println(formatMechanic(mechanic)));
     }
 
     public void showSortedMechanicByAlphabet(Boolean flag) {
@@ -209,5 +203,20 @@ public class MechanicService {
 
     private void registerShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::save));
+    }
+
+    public String formatMechanic(Mechanic mechanic) {
+        return String.format(
+                """
+                        Механик №%d: %s %s
+                        Лет опыта: %d
+                        Статус: %s
+                        """,
+                mechanic.getId(),
+                mechanic.getName(),
+                mechanic.getSurname(),
+                mechanic.getExperience(),
+                mechanic.isBusy() ? "Механик занят" : "Механик не занят"
+        );
     }
 }

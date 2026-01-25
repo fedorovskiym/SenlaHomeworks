@@ -1,17 +1,22 @@
 package com.senla.task1.dao.impl.jpa;
 
 import com.senla.task1.dao.GenericDAO;
+import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.util.HibernateUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractJpaDAO<T, PK extends Serializable> implements GenericDAO<T, PK> {
 
     protected Class<T> type;
+    private static final Logger logger = LogManager.getLogger(AbstractJpaDAO.class);
 
     public AbstractJpaDAO(Class<T> type) {
         this.type = type;
@@ -19,16 +24,16 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
 
     @Override
     public List<T> findAll() {
-        List<T> result;
+        List<T> result = new ArrayList<>();
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
             result = session.createQuery("FROM " + type.getSimpleName(), type).getResultList();
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при нахождении сущностей класса {}", type.getSimpleName(), e);
         } finally {
             session.close();
         }
@@ -43,9 +48,9 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
             transaction = session.beginTransaction();
             session.save(entity);
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при сохранении сущности {}", type.getSimpleName(), e);
         } finally {
             session.close();
         }
@@ -59,9 +64,9 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
             transaction = session.beginTransaction();
             session.remove(entity);
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при удалении сущности класса {}", type.getSimpleName(), e);
         } finally {
             session.close();
         }
@@ -75,9 +80,9 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
             transaction = session.beginTransaction();
             session.merge(entity);
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при обновлении сущности класса {}", type.getSimpleName(), e);
         } finally {
             session.close();
         }
@@ -85,17 +90,16 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
 
     @Override
     public Optional<T> findById(PK id) {
-        T entity;
+        T entity = null;
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
             entity = session.get(type, id);
-//            entity = (T) session.createQuery("FROM " + type.getSimpleName() + " u WHERE u.id = :id", type).setParameter("id", id);
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при нахождении по id сущности {}", type.getSimpleName(), e);
         } finally {
             session.close();
         }

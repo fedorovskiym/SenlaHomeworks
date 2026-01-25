@@ -11,5 +11,4 @@ public interface MechanicDAO extends GenericDAO<Mechanic, Integer> {
     Boolean checkIsMechanicExists(Integer id);
 
     void importWithTransaction(List<Mechanic> mechanicList);
-
 }

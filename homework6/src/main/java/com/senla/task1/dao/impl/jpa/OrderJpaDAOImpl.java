@@ -1,14 +1,17 @@
 package com.senla.task1.dao.impl.jpa;
 
 import com.senla.task1.dao.OrderDAO;
-import com.senla.task1.models.Mechanic;
+import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
 import com.senla.task1.util.HibernateUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +24,7 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
             " AND :end ORDER BY ";
     private static final String HQL_END_DATE_TIME = "SELECT o FROM Order o WHERE" +
             " o.status = :waiting OR o.status = :accepted ORDER BY submissionDateTime DESC";
+    private static final Logger logger = LogManager.getLogger(OrderJpaDAOImpl.class);
 
     public OrderJpaDAOImpl(Class<Order> type) {
         super(type);
@@ -32,7 +36,7 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
 
     @Override
     public Optional<Order> getEndDateTimeLastActiveOrder() {
-        Order order;
+        Order order = null;
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
@@ -43,8 +47,9 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
                     .setMaxResults(1)
                     .uniqueResult();
             transaction.commit();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (JpaException e) {
+            transaction.rollback();
+            logger.error("Ошибка при получении последнего активного заказа", e);
         } finally {
             session.close();
         }
@@ -53,7 +58,7 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
 
     @Override
     public List<Order> sortBy(String field, boolean flag) {
-        List<Order> sortedList;
+        List<Order> sortedList = new ArrayList<>();
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
@@ -61,9 +66,9 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
             String hql = HQL_SORT_BY + field + (flag ? " ASC" : " DESC");
             sortedList = session.createQuery(hql, Order.class).getResultList();
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при сортировке заказов по {}", field, e);
         } finally {
             session.close();
         }
@@ -72,7 +77,7 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
 
     @Override
     public List<Order> findOrderByMechanicId(Integer mechanicId) {
-        List<Order> orderList;
+        List<Order> orderList = new ArrayList<>();
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
@@ -81,9 +86,9 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
                     .setParameter("mechanicId", mechanicId)
                     .getResultList();
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при нахождении заказа по id механика {}", mechanicId, e);
         } finally {
             session.close();
         }
@@ -92,7 +97,7 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
 
     @Override
     public List<Order> findOrderByStatus(OrderStatus status) {
-        List<Order> orderList;
+        List<Order> orderList = new ArrayList<>();
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
@@ -101,9 +106,9 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
                     .setParameter("status", status)
                     .getResultList();
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при нахождении заказов по статусу {}", status, e);
         } finally {
             session.close();
         }
@@ -120,9 +125,9 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
                 return false;
             }
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при проверке заказа на существование", e);
         } finally {
             session.close();
         }
@@ -131,24 +136,23 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
 
     @Override
     public List<Order> findOrderOverPeriodOfTime(LocalDateTime start, LocalDateTime end, String field, boolean flag) {
-        List<Order> sortedOrder;
+        List<Order> sortedOrder = new ArrayList<>();
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
             String hql = HQL_PERIOD_OF_TIME + field + (flag ? " ASC" : " DESC");
             sortedOrder = session.createQuery(hql, Order.class)
-                            .setParameter("start", start)
-                            .setParameter("end", end)
-                            .getResultList();
+                    .setParameter("start", start)
+                    .setParameter("end", end)
+                    .getResultList();
             transaction.commit();
-        } catch (Exception e) {
+        } catch (JpaException e) {
             transaction.rollback();
-            throw e;
+            logger.error("Ошибка при нахождении заказов за период с {} по {} и сортировкой по полю {}", start, end, field, e);
         } finally {
             session.close();
         }
         return sortedOrder;
     }
-
 }
