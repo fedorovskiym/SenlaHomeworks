@@ -9,10 +9,10 @@ public class Builder {
     private final Menu rootMenu;
     private final MenuItem menuItem;
     private final Menu menu;
-    private final ActionFactory actionFactory;
+    private final ConsoleActionFactory actionFactory;
 
     @Inject
-    public Builder(Menu rootMenu, MenuItem menuItem, Menu menu, ActionFactory actionFactory) {
+    public Builder(Menu rootMenu, MenuItem menuItem, Menu menu, ConsoleActionFactory actionFactory) {
         this.rootMenu = rootMenu;
         this.menuItem = menuItem;
         this.menu = menu;

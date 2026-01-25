@@ -4,42 +4,36 @@ import java.io.Serializable;
 
 public class Mechanic implements Serializable {
     private static final long serialVersionUID = 12L;
-    private static int count = 1;
-    private int index;
+    private Integer id;
     private String name;
     private String surname;
-    private double experienceYears;
-    private boolean isBusy;
+    private Double experienceYears;
+    private Boolean isBusy;
 
     public Mechanic() {
     }
 
-    public Mechanic(String name, String surname, double experienceYears) {
-        this.index = count++;
+    public Mechanic(String name, String surname, Double experienceYears) {
         this.name = name;
         this.surname = surname;
         this.experienceYears = experienceYears;
         this.isBusy = false;
     }
 
-    public Mechanic(int index, String name, String surname, double experienceYears, boolean isBusy) {
-        this.index = index;
+    public Mechanic(Integer id, String name, String surname, Double experienceYears, Boolean isBusy) {
+        this.id = id;
         this.name = name;
         this.surname = surname;
         this.experienceYears = experienceYears;
         this.isBusy = isBusy;
-        if(index > count) {
-            index++;
-            count = index;
-        }
     }
 
-    public int getIndex() {
-        return index;
+    public int getId() {
+        return id;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -58,26 +52,26 @@ public class Mechanic implements Serializable {
         this.surname = surname;
     }
 
-    public double getExperience() {
+    public Double getExperience() {
         return experienceYears;
     }
 
-    public void setExperience(double experienceYears) {
+    public void setExperience(Double experienceYears) {
         this.experienceYears = experienceYears;
     }
 
-    public boolean isBusy() {
+    public Boolean isBusy() {
         return isBusy;
     }
 
-    public void setBusy(boolean busy) {
+    public void setBusy(Boolean busy) {
         isBusy = busy;
     }
 
     @Override
     public String toString() {
         return "Mechanic{" +
-                "index=" + index +
+                "index=" + id +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", experienceYears=" + experienceYears +

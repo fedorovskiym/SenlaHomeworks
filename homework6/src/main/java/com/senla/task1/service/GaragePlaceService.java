@@ -1,6 +1,10 @@
 package com.senla.task1.service;
 
+import com.senla.task1.annotations.FieldInject;
+import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
+import com.senla.task1.dao.GaragePlaceDAO;
+import com.senla.task1.dao.GaragePlaceDAOImpl;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.GaragePlace;
@@ -15,57 +19,47 @@ import java.util.stream.Collectors;
 
 public class GaragePlaceService {
 
-    private final List<GaragePlace> placeList = new ArrayList<>();
     private final String folderPath = "data";
     private final String fileName = "garage_places.bin";
+    private final GaragePlaceDAOImpl garagePlaceDAO;
 
     @PostConstruct
     public void postConstruct() {
         System.out.println("Сервис гаражных мест создался");
     }
 
-    public GaragePlaceService() {
-        load();
+    @Inject
+    public GaragePlaceService(GaragePlaceDAOImpl garagePlaceDAO) {
+        this.garagePlaceDAO = garagePlaceDAO;
+//        load();
         registerShutdown();
     }
 
-    public List<GaragePlace> getPlaceList() {
-        return placeList;
+    public List<GaragePlace> findAllGaragePlace() {
+        return garagePlaceDAO.findAll();
     }
 
-    public GaragePlace findPlaceByNumber(int placeNumber) {
-        return placeList.stream()
-                .filter(garagePlace -> garagePlace.getPlaceNumber() == placeNumber)
-                .findFirst()
-                .orElseThrow(() -> new GaragePlaceException(
-                        "Место в гараже № " + placeNumber + " уже существует"
-                ));
+    public GaragePlace findPlaceByNumber(Integer placeNumber) {
+        return garagePlaceDAO.findByPlaceNumber(placeNumber).orElseThrow(() -> new GaragePlaceException(
+                "Место в гараже № " + placeNumber + " не существует"
+        ));
     }
 
 
-    public void showFreeGaragePlaces() {
-        placeList.stream().filter(GaragePlace::isEmpty).forEach(garagePlace ->
-                System.out.println("Место №" + garagePlace.getPlaceNumber() + " свободно")
-        );
-
-        System.out.println();
-
+    public void findFreeGaragePlaces() {
+        List<GaragePlace> freeGaragePlaces = garagePlaceDAO.findFreeGaragePlaces();
+        freeGaragePlaces.forEach(garagePlace -> showGaragePlaces(garagePlace));
     }
 
-    public void addGaragePlace(int number) {
-        placeList.add(new GaragePlace(number));
+    public void addGaragePlace(Integer number) {
+        GaragePlace garagePlace = new GaragePlace(number);
+        garagePlaceDAO.save(garagePlace);
         System.out.println("Добавлено место в гараж №" + number);
     }
 
-    public void removeGaragePlace(int number) {
-        boolean removed = placeList.removeIf(place -> place.getPlaceNumber() == number);
-
-        if (!removed) {
-            throw new GaragePlaceException("Места в гараже № " + number + " нет");
-        }
-
-        System.out.println("Место в гараже №" + number + " удалено");
-
+    public void removeGaragePlace(Integer id) {
+        garagePlaceDAO.delete(id);
+        System.out.println("Место в гараже №" + id + " удалено");
     }
 
     public boolean isGaragePlaceAvailable(GaragePlace garagePlace, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
@@ -81,8 +75,9 @@ public class GaragePlaceService {
     }
 
     public void importFromCSV(String resourceName) {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
+        List<GaragePlace> garagePlacesToSaveOrUpdate = new ArrayList<>();
 
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
             if (inputStream == null) {
                 throw new FileNotFoundException("Ресурс не найден: " + resourceName);
             }
@@ -98,21 +93,28 @@ public class GaragePlaceService {
                     }
 
                     String[] parts = line.split(";");
-                    int placeNumber = Integer.parseInt(parts[0].trim());
-                    boolean isEmpty = Boolean.parseBoolean(parts[1].trim());
+                    Integer id = Integer.parseInt(parts[0].trim());
+                    int placeNumber = Integer.parseInt(parts[1].trim());
+                    boolean isEmpty = Boolean.parseBoolean(parts[2].trim());
 
-//              Если гаражное место существует, обновляем статус, иначе добавляем новое
-                    if (isGaragePlaceExists(placeNumber)) {
-                        findPlaceByNumber(placeNumber).setEmpty(isEmpty);
-                    } else {
-                        addGaragePlace(placeNumber);
-                    }
+                    GaragePlace garagePlace = new GaragePlace(id, placeNumber, isEmpty);
+                    garagePlacesToSaveOrUpdate.add(garagePlace);
                 }
             }
-            System.out.println("Данные успешно экспортированы из " + resourceName);
+
+            // Транзакция
+            garagePlaceDAO.importWithTransaction(garagePlacesToSaveOrUpdate);
+
+            System.out.println("Данные успешно импортированы из " + resourceName);
+
         } catch (IOException e) {
-            throw new MechanicException("Ошибка при импорте данных механиков");
+            throw new GaragePlaceException("Ошибка при импорте данных гаражных мест: " + e.getMessage());
         }
+    }
+
+
+    public void updateGaragePlace(GaragePlace garagePlace) {
+        garagePlaceDAO.update(garagePlace);
     }
 
     public void exportToCSV(String filePath) {
@@ -122,7 +124,7 @@ public class GaragePlaceService {
             bufferedWriter.write("placeNumber;isEmpty");
             bufferedWriter.newLine();
 
-            String lines = placeList.stream().map(garagePlace ->
+            String lines = findAllGaragePlace().stream().map(garagePlace ->
                             String.format("%d%b",
                                     garagePlace.getPlaceNumber(),
                                     garagePlace.isEmpty()))
@@ -136,8 +138,8 @@ public class GaragePlaceService {
         }
     }
 
-    public boolean isGaragePlaceExists(int placeNumber) {
-        return placeList.stream().anyMatch(garagePlace -> garagePlace.getPlaceNumber() == placeNumber);
+    public boolean isGaragePlaceExists(Integer placeNumber) {
+        return garagePlaceDAO.checkIsPlaceNumberExists(placeNumber);
     }
 
     public void save() {
@@ -149,7 +151,7 @@ public class GaragePlaceService {
 
             File file = new File(folder, fileName);
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(placeList);
+                oos.writeObject(garagePlaceDAO.findAll());
                 System.out.println("Состояние мест в гараже сохранено");
             }
         } catch (IOException e) {
@@ -157,21 +159,26 @@ public class GaragePlaceService {
         }
     }
 
-    private void load() {
-        File file = new File(folderPath, fileName);
-        if (!file.exists()) return;
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            List<GaragePlace> loadedList = (List<GaragePlace>) ois.readObject();
-            placeList.clear();
-            placeList.addAll(loadedList);
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Ошибка при десериализации файла");
-        }
-    }
+//    private void load() {
+//        File file = new File(folderPath, fileName);
+//        if (!file.exists()) return;
+//
+//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+//            List<GaragePlace> loadedList = (List<GaragePlace>) ois.readObject();
+//            placeList.clear();
+//            placeList.addAll(loadedList);
+//        } catch (IOException | ClassNotFoundException e) {
+//            System.out.println("Ошибка при десериализации файла");
+//        }
+//    }
 
     private void registerShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::save));
     }
 
+    public void showGaragePlaces(GaragePlace garagePlace) {
+        System.out.println("Id: " + garagePlace.getId() + "\n" +
+                "Номер места: " + garagePlace.getPlaceNumber() + "\n" +
+                "Статус: " + (garagePlace.isEmpty() ? "Не занято" : "Занято"));
+    }
 }

@@ -8,7 +8,8 @@ import com.senla.task1.controller.MechanicController;
 import com.senla.task1.controller.OrderController;
 import com.senla.task1.exceptions.ExceptionHandler;
 import com.senla.task1.exceptions.InvalidInputException;
-import com.senla.task1.models.enums.SortType;
+import com.senla.task1.models.enums.OrderSortType;
+import com.senla.task1.models.enums.OrderStatus;
 
 import java.util.Scanner;
 
@@ -152,7 +153,6 @@ public class ConsoleActionFactory implements ActionFactory {
     @Override
     public IAction removeGaragePlace() {
         return () -> {
-            System.out.println(autoServiceConfig.isAllowDeleteGaragePlace());
             if (!autoServiceConfig.isAllowDeleteGaragePlace()) {
                 System.out.println("Удаление места в гараже отключено");
             }
@@ -173,7 +173,7 @@ public class ConsoleActionFactory implements ActionFactory {
     public IAction importGaragePlaceFromFileAction() {
         return () -> {
             try {
-                System.out.println("Введите путь: ");
+                System.out.println("Введите название файла: ");
                 String filePath = scanner.nextLine();
                 garagePlaceController.importGaragePlaceFromCSV(filePath);
             } catch (Exception e) {
@@ -338,24 +338,20 @@ public class ConsoleActionFactory implements ActionFactory {
                         2 - Принят
                         3 - Выполнен
                         4 - Отменен
-                        5 - Удален
                         """);
                 int status = Integer.parseInt(scanner.nextLine());
                 switch (status) {
                     case 1:
-                        orderController.showOrdersByStatus("Ожидает");
+                        orderController.showOrdersByStatus(OrderStatus.WAITING);
                         break;
                     case 2:
-                        orderController.showOrdersByStatus("Принят");
+                        orderController.showOrdersByStatus(OrderStatus.ACCEPTED);
                         break;
                     case 3:
-                        orderController.showOrdersByStatus("Выполнен");
+                        orderController.showOrdersByStatus(OrderStatus.DONE);
                         break;
                     case 4:
-                        orderController.showOrdersByStatus("Отменен");
-                        break;
-                    case 5:
-                        orderController.showOrdersByStatus("Удален");
+                        orderController.showOrdersByStatus(OrderStatus.CANCEL);
                         break;
                     default:
                         throw new InvalidInputException("Неожиданное значение: " + status);
@@ -468,18 +464,18 @@ public class ConsoleActionFactory implements ActionFactory {
                         2 - Сортировать по дате выполнения
                         3 - Сортировать по цене
                         """);
-                SortType sortType;
+                OrderSortType sortType;
                 int userSortType = Integer.parseInt(scanner.nextLine());
 
                 switch (userSortType) {
                     case 1:
-                        sortType = SortType.DATE_OF_SUBMISSION;
+                        sortType = OrderSortType.DATE_OF_SUBMISSION;
                         break;
                     case 2:
-                        sortType = SortType.DATE_OF_COMPLETION;
+                        sortType = OrderSortType.DATE_OF_COMPLETION;
                         break;
                     case 3:
-                        sortType = SortType.PRICE;
+                        sortType = OrderSortType.PRICE;
                         break;
                     default:
                         throw new InvalidInputException("Неожиданное значение: " + userSortType);

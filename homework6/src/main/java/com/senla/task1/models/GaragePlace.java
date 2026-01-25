@@ -5,31 +5,46 @@ import java.io.Serializable;
 public class GaragePlace implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private int placeNumber;
-    private boolean isEmpty;
+    private Integer id;
+    private Integer placeNumber;
+    private Boolean isEmpty;
 
     public GaragePlace() {
     }
 
-    public GaragePlace(int placeNumber) {
+    public GaragePlace(Integer placeNumber) {
         this.placeNumber = placeNumber;
         this.isEmpty = true;
     }
 
-    public int getPlaceNumber() {
+    public GaragePlace(Integer id, Integer placeNumber, Boolean isEmpty) {
+        this.id = id;
+        this.placeNumber = placeNumber;
+        this.isEmpty = isEmpty;
+    }
+
+    public Integer getPlaceNumber() {
         return placeNumber;
     }
 
-    public void setPlaceNumber(int placeNumber) {
+    public void setPlaceNumber(Integer placeNumber) {
         this.placeNumber = placeNumber;
     }
 
-    public boolean isEmpty() {
+    public Boolean isEmpty() {
         return isEmpty;
     }
 
-    public void setEmpty(boolean empty) {
+    public void setEmpty(Boolean empty) {
         isEmpty = empty;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     @Override

@@ -2,7 +2,8 @@ package com.senla.task1.controller;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.models.enums.SortType;
+import com.senla.task1.models.enums.OrderSortType;
+import com.senla.task1.models.enums.OrderStatus;
 import com.senla.task1.service.OrderService;
 
 public class OrderController {
@@ -43,34 +44,28 @@ public class OrderController {
         orderService.findOrderByMechanicId(mechanicId);
     }
 
-    public void showOrdersByStatus(String status) {
-        orderService.showOrders(status);
+    public void showOrdersByStatus(OrderStatus status) {
+        orderService.findOrderByStatus(status);
     }
 
     public void showAllOrders() {
-        orderService.showOrders();
+        orderService.showOrders(orderService.findAllOrders());
     }
 
     public void showSortedOrdersByDateOfSubmission(boolean flag) {
         orderService.sortOrdersByDateOfSubmission(flag);
-        orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission(true);
     }
 
     public void showSortedOrdersByDateOfCompletion(boolean flag) {
         orderService.sortOrdersByDateOfCompletion(flag);
-        orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission(true);
     }
 
     public void showSortedOrdersByPrice(boolean flag) {
         orderService.sortOrdersByPrice(flag);
-        orderService.showOrders();
-        orderService.sortOrdersByDateOfSubmission(true);
     }
 
     public void showOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear,
-                                           int toMonth, int toDay, SortType sortType, boolean flag) {
+                                           int toMonth, int toDay, OrderSortType sortType, boolean flag) {
         orderService.findOrdersOverPeriodOfTime(fromYear, fromMonth, fromDay, toYear, toMonth, toDay, sortType, flag);
     }
 
