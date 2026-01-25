@@ -12,5 +12,7 @@ public interface GaragePlaceRepository extends GenericRepository<GaragePlace, In
 
     Optional<GaragePlace> findByPlaceNumber(int placeNumber);
 
+    Optional<GaragePlace> findById(Integer id);
+
     void importWithTransaction(List<GaragePlace> garagePlaces);
 }
