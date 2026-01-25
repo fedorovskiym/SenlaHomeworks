@@ -3,6 +3,7 @@ package com.senla.task1.service;
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.dao.impl.jdbc.GaragePlaceDAOImpl;
+import com.senla.task1.dao.impl.jpa.GaragePlaceJpaDAOImpl;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;
@@ -29,7 +30,7 @@ public class GaragePlaceService {
 
     private final String folderPath = "data";
     private final String fileName = "garage_places.bin";
-    private final GaragePlaceDAOImpl garagePlaceDAO;
+    private final GaragePlaceJpaDAOImpl garagePlaceDAO;
     private static final Logger logger = LogManager.getLogger(GaragePlaceService.class);
 
     @PostConstruct
@@ -38,7 +39,7 @@ public class GaragePlaceService {
     }
 
     @Inject
-    public GaragePlaceService(GaragePlaceDAOImpl garagePlaceDAO) {
+    public GaragePlaceService(GaragePlaceJpaDAOImpl garagePlaceDAO) {
         this.garagePlaceDAO = garagePlaceDAO;
 //        load();
         registerShutdown();
@@ -71,7 +72,10 @@ public class GaragePlaceService {
 
     public void removeGaragePlace(Integer id) {
         logger.info("Обработка удаления гаражного места № {}", id);
-        garagePlaceDAO.delete(id);
+        GaragePlace garagePlace = garagePlaceDAO.findById(id).orElseThrow(() -> new GaragePlaceException(
+                "Места в гараже c id " + id + " не найдено"
+        ));
+        garagePlaceDAO.delete(garagePlace);
         logger.info("Место в гараже № {} удалено", id);
     }
 

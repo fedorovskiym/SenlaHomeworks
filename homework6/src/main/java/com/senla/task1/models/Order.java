@@ -1,8 +1,11 @@
 package com.senla.task1.models;
 
 import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.util.DurationConverter;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Converter;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -32,7 +35,7 @@ public class Order implements Serializable {
     @ManyToOne
     @JoinColumn(name = "garage_place_id")
     private GaragePlace garagePlace;
-    @Column(name = "status")
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     @Column(name = "submission_date_time")
@@ -44,6 +47,7 @@ public class Order implements Serializable {
     @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
     @Column(name = "duration")
+    @Convert(converter = DurationConverter.class)
     private Duration duration;
     @Column(name = "price")
     private Double price;

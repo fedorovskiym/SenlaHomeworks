@@ -133,11 +133,6 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
     }
 
     @Override
-    public Optional<Order> findBy(Integer id) {
-        return Optional.empty();
-    }
-
-    @Override
     public Optional<Order> getEndDateTimeLastActiveOrder() {
         String sql = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM " + getTableName() +
                 " WHERE order_status IN('" + OrderStatus.WAITING + "', '" + OrderStatus.ACCEPTED + "')" +
@@ -198,7 +193,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
     }
 
     @Override
-    public List<Order> finalOrderByStatus(OrderStatus status) {
+    public List<Order> findOrderByStatus(OrderStatus status) {
         List<Order> orderList = new ArrayList<>();
         String sql = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM " + getTableName() +
                 " WHERE order_status=?";
@@ -249,5 +244,10 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
             throw new RuntimeException(e);
         }
         return orderList;
+    }
+
+    @Override
+    public Optional<Mechanic> findMechanicByOrderIf(Integer id) {
+        return Optional.empty();
     }
 }

@@ -4,15 +4,18 @@ import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.models.enums.OrderSortType;
 import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.service.AutoService;
 import com.senla.task1.service.OrderService;
 
 public class OrderController {
 
     private final OrderService orderService;
+    public final AutoService autoService;
 
     @Inject
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, AutoService autoService) {
         this.orderService = orderService;
+        this.autoService = autoService;
     }
 
     @PostConstruct
@@ -25,11 +28,11 @@ public class OrderController {
     }
 
     public void closeOrder(int id) {
-        orderService.closeOrder(id);
+        autoService.closeOrder(id);
     }
 
     public void cancelOrder(int id) {
-        orderService.cancelOrder(id);
+        autoService.cancelOrder(id);
     }
 
     public void shiftOrdersTime(int hours, int minutes) {
@@ -37,7 +40,7 @@ public class OrderController {
     }
 
     public void deleteOrder(int id) {
-        orderService.deleteOrder(id);
+        autoService.deleteOrder(id);
     }
 
     public void findOrderByMechanicId(int mechanicId) {

@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class GenericDAOImpl<T, PK extends Serializable> implements GenericDAO<T, PK> {
 
@@ -80,6 +81,22 @@ public abstract class GenericDAOImpl<T, PK extends Serializable> implements Gene
 //            throw new RuntimeException(e);
 //        }
 //    }
+
+    @Override
+    public Optional<T> findById(PK id) {
+        String sql = "SELECT * FROM " + getTableName() + " WHERE id=?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
+            preparedStatement.setInt(1, (Integer) id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                T entity = mapRow(resultSet);
+                return Optional.of(entity);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.empty();
+    }
 
     @Override
     public void update(T entity) {

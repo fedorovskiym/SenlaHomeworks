@@ -14,5 +14,5 @@ public interface GenericDAO<T, PK extends Serializable> {
 
     void update(T entity);
 
-    Optional<T> findBy(PK id);
+    Optional<T> findById(PK id);
 }

@@ -22,7 +22,7 @@ CREATE TABLE orders(
 	planned_completion_date_time TIMESTAMP,
 	completion_date_time TIMESTAMP,
 	end_date_time TIMESTAMP,
-	duration INTERVAL NOT NULL,
+	duration BIGINT NOT NULL,
 	price DECIMAL NOT NULL,
 	CONSTRAINT fk_mechanic FOREIGN KEY (mechanic_id) REFERENCES mechanic(id),
 	CONSTRAINT fk_garage_place FOREIGN KEY (garage_place_id) REFERENCES garage_place(id)

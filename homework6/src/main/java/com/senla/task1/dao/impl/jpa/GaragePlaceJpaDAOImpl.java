@@ -1,30 +1,37 @@
 package com.senla.task1.dao.impl.jpa;
 
-import com.senla.task1.dao.GenericDAO;
+import com.senla.task1.dao.GaragePlaceDAO;
+import com.senla.task1.models.GaragePlace;
 import com.senla.task1.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractJpaDAO<T, PK extends Serializable> implements GenericDAO<T, PK> {
+public class GaragePlaceJpaDAOImpl extends AbstractJpaDAO<GaragePlace, Integer> implements GaragePlaceDAO {
 
-    protected Class<T> type;
+    private static final String HQL_EXIST_PLACE_NUMBER = "SELECT g FROM GaragePlace g WHERE g.placeNumber = :placeNumber";
+    private static final String HQL_FREE_GARAGE_PLACE = "SELECT g FROM GaragePlace g WHERE g.isEmpty = true";
 
-    public AbstractJpaDAO(Class<T> type) {
-        this.type = type;
+    public GaragePlaceJpaDAOImpl(Class<GaragePlace> type) {
+        super(type);
+    }
+
+    public GaragePlaceJpaDAOImpl() {
+        super(GaragePlace.class);
     }
 
     @Override
-    public List<T> findAll() {
-        List<T> result;
+    public Boolean checkIsPlaceNumberExists(int placeNumber) {
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
-            result = session.createQuery("FROM " + type.getSimpleName(), type).getResultList();
+            if (session.createQuery(HQL_FREE_GARAGE_PLACE).setParameter("placeNumber", placeNumber) == null) {
+                return false;
+            }
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -32,16 +39,17 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
         } finally {
             session.close();
         }
-        return result;
+        return true;
     }
 
     @Override
-    public void save(T entity) {
+    public List<GaragePlace> findFreeGaragePlaces() {
+        List<GaragePlace> freeGaragePlaces = new ArrayList<>();
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
-            session.save(entity);
+            freeGaragePlaces = session.createQuery(HQL_FREE_GARAGE_PLACE).getResultList();
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -49,15 +57,19 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
         } finally {
             session.close();
         }
+        return freeGaragePlaces;
     }
 
     @Override
-    public void delete(T entity) {
+    public Optional<GaragePlace> findByPlaceNumber(int placeNumber) {
+        GaragePlace garagePlace;
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
-            session.remove(entity);
+            garagePlace = session.createQuery(HQL_EXIST_PLACE_NUMBER, GaragePlace.class)
+                    .setParameter("placeNumber", placeNumber)
+                    .uniqueResult();
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -65,15 +77,18 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
         } finally {
             session.close();
         }
+        return Optional.ofNullable(garagePlace);
     }
 
     @Override
-    public void update(T entity) {
+    public void importWithTransaction(List<GaragePlace> garagePlaces) {
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
-            session.merge(entity);
+            for (GaragePlace garagePlace : garagePlaces) {
+                session.saveOrUpdate(garagePlace);
+            }
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -81,24 +96,5 @@ public abstract class AbstractJpaDAO<T, PK extends Serializable> implements Gene
         } finally {
             session.close();
         }
-    }
-
-    @Override
-    public Optional<T> findById(PK id) {
-        T entity;
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        try {
-            transaction = session.beginTransaction();
-            entity = session.get(type, id);
-//            entity = (T) session.createQuery("FROM " + type.getSimpleName() + " u WHERE u.id = :id", type).setParameter("id", id);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
-        return Optional.ofNullable(entity);
     }
 }

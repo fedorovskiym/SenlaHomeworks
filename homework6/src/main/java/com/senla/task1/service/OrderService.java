@@ -3,6 +3,7 @@ package com.senla.task1.service;
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.dao.impl.jdbc.OrderDAOImpl;
+import com.senla.task1.dao.impl.jpa.OrderJpaDAOImpl;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
@@ -24,7 +25,7 @@ public class OrderService {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     private final String folderPath = "data";
     private final String fileName = "order.bin";
-    private final OrderDAOImpl orderDAO;
+    private final OrderJpaDAOImpl orderDAO;
     private final static Logger logger = LogManager.getLogger(OrderService.class);
 
     @PostConstruct
@@ -33,12 +34,12 @@ public class OrderService {
     }
 
     @Inject
-    public OrderService(OrderDAOImpl orderDAO) {
+    public OrderService(OrderJpaDAOImpl orderDAO) {
         this.orderDAO = orderDAO;
         registerShutdown();
     }
 
-    public OrderDAOImpl getOrderDAO() {
+    public OrderJpaDAOImpl getOrderDAO() {
         return orderDAO;
     }
 
@@ -66,7 +67,7 @@ public class OrderService {
 
     public void acceptOrder(Integer id) {
         logger.info("Обработка принятия заказа № {}", id);
-        Order order = orderDAO.findOrderById(id).orElseThrow(() -> new OrderException(
+        Order order = orderDAO.findById(id).orElseThrow(() -> new OrderException(
                 "Заказ с №" + id + " не найден"
         ));
 
@@ -87,29 +88,6 @@ public class OrderService {
         logger.info("Заказ № {} принят", id);
     }
 
-    public void closeOrder(Integer id) {
-        logger.info("Обработка закрытия заказа № {}", id);
-        Order order = orderDAO.findOrderById(id).orElseThrow(() -> new OrderException(
-                "Заказ с №" + id + " не найден"
-        ));
-
-        order.closeOrder();
-        orderDAO.update(order);
-        logger.info("Заказ № {} закрыт", id);
-        acceptOrder(id + 1);
-    }
-
-    public void cancelOrder(Integer id) {
-        logger.info("Обработка отмены заказа № {}", id);
-        Order order = orderDAO.findOrderById(id).orElseThrow(() -> new OrderException(
-                "Заказ с №" + id + " не найден"
-        ));
-
-        order.cancelOrder();
-        orderDAO.update(order);
-        logger.info("Заказ № {} отменен", id);
-    }
-
     public void shiftOrdersTime(Integer hours, Integer minutes) {
         logger.info("Обработка сдвига времени выполнения заказов на {} часов, {} минут", hours, minutes);
         Duration time = Duration.ofHours(hours).plusMinutes(minutes);
@@ -117,13 +95,6 @@ public class OrderService {
         orderList.forEach(order -> order.shiftTime(time));
         orderList.forEach(order -> orderDAO.update(order));
         logger.info("Изменено время выполнения всех заказов на {} часов, {} минут", hours, minutes);
-    }
-
-
-    public void deleteOrder(Integer id) {
-        logger.info("Обработка удаления заказа № {}", id);
-        orderDAO.delete(id);
-        logger.info("Заказ № {} удален", id);
     }
 
     // Вывод заказа по айдишнку механика
@@ -154,7 +125,7 @@ public class OrderService {
     // Вывод заказов по статусу
     public void findOrderByStatus(OrderStatus status) {
         logger.info("Обработка вывода заказов по статусу {}", status);
-        List<Order> ordersByStatus = orderDAO.finalOrderByStatus(status);
+        List<Order> ordersByStatus = orderDAO.findOrderByStatus(status);
 
         if (!ordersByStatus.isEmpty()) {
             showOrders(ordersByStatus);
@@ -257,7 +228,7 @@ public class OrderService {
     }
 
     public Order findOrderById(Integer id) {
-        return orderDAO.findOrderById(id).orElseThrow(() -> new OrderException(
+        return orderDAO.findById(id).orElseThrow(() -> new OrderException(
                 "Заказ с id - " + id + " не найден"
         ));
     }

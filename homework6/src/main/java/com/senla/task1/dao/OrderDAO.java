@@ -1,5 +1,6 @@
 package com.senla.task1.dao;
 
+import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
 
@@ -14,9 +15,10 @@ public interface OrderDAO extends GenericDAO<Order, Integer> {
 
     List<Order> findOrderByMechanicId(Integer mechanicId);
 
-    List<Order> finalOrderByStatus(OrderStatus status);
+    List<Order> findOrderByStatus(OrderStatus status);
 
     Boolean checkIsOrderExists(Integer id);
 
     List<Order> findOrderOverPeriodOfTime(LocalDateTime start, LocalDateTime end, String field, boolean flag);
+
 }

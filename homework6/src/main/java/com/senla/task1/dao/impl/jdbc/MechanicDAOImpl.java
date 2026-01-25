@@ -133,9 +133,4 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public Optional<Mechanic> findBy(Integer id) {
-        return Optional.empty();
-    }
 }

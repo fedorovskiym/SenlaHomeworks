@@ -3,6 +3,7 @@ package com.senla.task1.service;
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.dao.impl.jdbc.MechanicDAOImpl;
+import com.senla.task1.dao.impl.jpa.MechanicJpaDAOImpl;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
@@ -30,7 +31,7 @@ public class MechanicService {
 
     private final String folderPath = "data";
     private final String fileName = "mechanic.bin";
-    private final MechanicDAOImpl mechanicDAO;
+    private final MechanicJpaDAOImpl mechanicDAO;
     private static final Logger logger = LogManager.getLogger(MechanicService.class);
 
     @PostConstruct
@@ -39,7 +40,7 @@ public class MechanicService {
     }
 
     @Inject
-    public MechanicService(MechanicDAOImpl mechanicDAO) {
+    public MechanicService(MechanicJpaDAOImpl mechanicDAO) {
         this.mechanicDAO = mechanicDAO;
         registerShutdown();
     }
@@ -57,7 +58,8 @@ public class MechanicService {
 
     public void removeMechanicById(Integer id) {
         logger.info("Обработка удаления механика № {}", id);
-        mechanicDAO.delete(id);
+        Mechanic mechanic = mechanicDAO.findById(id).orElse(null);
+        mechanicDAO.delete(mechanic);
         logger.info("Механик № {} удален", id);
     }
 
@@ -169,7 +171,6 @@ public class MechanicService {
 
     public void updateMechanic(Mechanic mechanic) {
         mechanicDAO.update(mechanic);
-        System.out.println("Механик № " + mechanic.getId() + " обновлен");
     }
 
     public boolean isMechanicExists(Integer id) {

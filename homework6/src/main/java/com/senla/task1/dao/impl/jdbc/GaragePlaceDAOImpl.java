@@ -147,9 +147,4 @@ public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> imp
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public Optional<GaragePlace> findBy(Integer id) {
-        return Optional.empty();
-    }
 }
