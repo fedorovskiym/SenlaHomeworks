@@ -209,7 +209,7 @@ public class MechanicService {
         return String.format(
                 """
                         Механик №%d: %s %s
-                        Лет опыта: %d
+                        Лет опыта: %.2f
                         Статус: %s
                         """,
                 mechanic.getId(),
