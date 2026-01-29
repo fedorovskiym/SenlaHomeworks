@@ -1,16 +1,24 @@
 package com.senla.task1.service;
 
-import com.senla.task1.annotations.FieldInject;
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.dao.GaragePlaceDAO;
 import com.senla.task1.dao.GaragePlaceDAOImpl;
 import com.senla.task1.exceptions.GaragePlaceException;
-import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +30,7 @@ public class GaragePlaceService {
     private final String folderPath = "data";
     private final String fileName = "garage_places.bin";
     private final GaragePlaceDAOImpl garagePlaceDAO;
+    private static final Logger logger = LogManager.getLogger(GaragePlaceService.class);
 
     @PostConstruct
     public void postConstruct() {
@@ -47,19 +56,23 @@ public class GaragePlaceService {
 
 
     public void findFreeGaragePlaces() {
+        logger.info("Обработка поиска всех мест в гараже");
         List<GaragePlace> freeGaragePlaces = garagePlaceDAO.findFreeGaragePlaces();
         freeGaragePlaces.forEach(garagePlace -> showGaragePlaces(garagePlace));
+        logger.info("Выведены места в гараже и их статус");
     }
 
     public void addGaragePlace(Integer number) {
+        logger.info("Обработка добавления гаражного места № {}", number);
         GaragePlace garagePlace = new GaragePlace(number);
         garagePlaceDAO.save(garagePlace);
-        System.out.println("Добавлено место в гараж №" + number);
+        logger.info("Место № {} успешно добавлено", number);
     }
 
     public void removeGaragePlace(Integer id) {
+        logger.info("Обработка удаления гаражного места № {}", id);
         garagePlaceDAO.delete(id);
-        System.out.println("Место в гараже №" + id + " удалено");
+        logger.info("Место в гараже № {} удалено", id);
     }
 
     public boolean isGaragePlaceAvailable(GaragePlace garagePlace, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
@@ -75,6 +88,7 @@ public class GaragePlaceService {
     }
 
     public void importFromCSV(String resourceName) {
+        logger.info("Обработка импорта данных гаражных мест из файла {}", resourceName);
         List<GaragePlace> garagePlacesToSaveOrUpdate = new ArrayList<>();
 
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
@@ -101,23 +115,21 @@ public class GaragePlaceService {
                     garagePlacesToSaveOrUpdate.add(garagePlace);
                 }
             }
-
             // Транзакция
             garagePlaceDAO.importWithTransaction(garagePlacesToSaveOrUpdate);
-
-            System.out.println("Данные успешно импортированы из " + resourceName);
-
+            logger.info("Данные успешно импортированы из файла {}", resourceName);
         } catch (IOException e) {
-            throw new GaragePlaceException("Ошибка при импорте данных гаражных мест: " + e.getMessage());
+            logger.error("Ошибка при импорте данных из файла {}", resourceName);
+            throw new RuntimeException(e);
         }
     }
-
 
     public void updateGaragePlace(GaragePlace garagePlace) {
         garagePlaceDAO.update(garagePlace);
     }
 
     public void exportToCSV(String filePath) {
+        logger.info("Обработка экспорта данных гаражных мест в файл {}", filePath);
         try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
 
@@ -129,12 +141,10 @@ public class GaragePlaceService {
                                     garagePlace.getPlaceNumber(),
                                     garagePlace.isEmpty()))
                     .collect(Collectors.joining(System.lineSeparator()));
-
             bufferedWriter.write(lines);
-            System.out.println("Данные успешно экспортированы в " + filePath);
-
+            logger.info("Данные гаражных мест успешно записаны в файл {}", filePath);
         } catch (IOException e) {
-            throw new GaragePlaceException("Ошибка при экспорте данных");
+            logger.error("Ошибка при экспорте данных гаражных мест в файл {}", filePath);
         }
     }
 

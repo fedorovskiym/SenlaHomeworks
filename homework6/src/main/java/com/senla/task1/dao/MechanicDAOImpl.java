@@ -1,6 +1,8 @@
 package com.senla.task1.dao;
 
 import com.senla.task1.models.Mechanic;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implements MechanicDAO {
 
     private static final String SQL_ORDER_BY = "SELECT * FROM mechanic ORDER BY ";
+    private static final Logger logger = LogManager.getLogger(MechanicDAOImpl.class);
 
     @Override
     protected String getTableName() {
@@ -65,6 +68,7 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
                 return Optional.empty();
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при нахождении механика № {}", id, e);
             throw new RuntimeException(e);
         }
     }
@@ -85,6 +89,7 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
                 mechanicList.add(mechanic);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при сортировке механиков по {}", field, e);
             throw new RuntimeException(e);
         }
         return mechanicList;
@@ -100,6 +105,7 @@ public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implement
                 return true;
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при проверки существования механика № {}", id, e);
             throw new RuntimeException(e);
         }
         return false;

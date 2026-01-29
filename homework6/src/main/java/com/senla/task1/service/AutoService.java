@@ -2,14 +2,21 @@ package com.senla.task1.service;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.exceptions.MechanicException;
-import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,6 +30,7 @@ public class AutoService {
     private final OrderService orderService;
     private final MechanicService mechanicService;
     private final GaragePlaceService garagePlaceService;
+    private final static Logger logger = LogManager.getLogger(AutoService.class);
 
     @Inject
     public AutoService(OrderService orderService, MechanicService mechanicService, GaragePlaceService garagePlaceService) {
@@ -37,6 +45,7 @@ public class AutoService {
     }
 
     public void createOrder(String carModel, Integer mechanicId, Integer placeNumber, Double price, Integer hours, Integer minutes) {
+        logger.info("Обработка создания нового заказа");
         Mechanic mechanic = mechanicService.findMechanicById(mechanicId);
         GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(placeNumber);
 
@@ -59,25 +68,28 @@ public class AutoService {
             garagePlaceService.updateGaragePlace(garagePlace);
 
             orderService.addOrder(order);
-
             conn.commit();
+            logger.info("Заказ {} создан", order);
         } catch (Exception e) {
             try {
                 if (conn != null) conn.rollback();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            throw new RuntimeException("Ошибка при создании заказа", e);
+            logger.error("Ошибка при создании заказа {}", order);
+            throw new RuntimeException(e);
         } finally {
             try {
                 if (conn != null) conn.setAutoCommit(true);
             } catch (Exception ex) {
+                logger.error("Нарушение транзакции");
                 ex.printStackTrace();
             }
         }
     }
 
     public void getAvailableSlot(Integer year, Integer month, Integer day) {
+        logger.info("Обработка расчета количества свободных мест на дату {}, {}, {}", year, month, day);
         List<Order> orders = orderService.findAllOrders();
         LocalDateTime startDate = LocalDateTime.of(year, month, day, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(year, month, day, 23, 59);
@@ -91,9 +103,11 @@ public class AutoService {
                 .count();
 
         System.out.println("Количество свободных мест в сервисе на " + day + "." + month + "." + year + " - " + Math.min(availableMechanics, availableGaragePlaces));
+        logger.info("Получения расчета свободных мест на дату {}, {}, {} завершена", year, month, day);
     }
 
     public void importFromCSV(String resourceName) {
+        logger.info("Обработка импорта заказов из файла {}", resourceName);
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
 
             if (inputStream == null) {
@@ -166,25 +180,24 @@ public class AutoService {
                     }
 
                     connection.commit();
-                    System.out.println("Данные успешно импортированы из " + resourceName);
-
+                    logger.info("Данные импортированы из файла {}", resourceName);
                 } catch (Exception e) {
                     connection.rollback();
-                    throw new RuntimeException("Ошибка при импорте заказов", e);
+                    logger.info("Ошибка при импорте данных из файла {}", resourceName, e);
+                    throw new RuntimeException(e);
                 } finally {
                     connection.setAutoCommit(true);
                 }
-
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void exportOrdersToCSV(String filePath) {
+        logger.info("Обработка экспорта данных заказов в файл {}", filePath);
         try (BufferedWriter bufferedWriter = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
 
@@ -208,9 +221,10 @@ public class AutoService {
                     .collect(Collectors.joining(System.lineSeparator()));
 
             bufferedWriter.write(lines);
-            System.out.println("Заказы успешно экспортированы в " + filePath);
+            logger.info("Экспорт данных в файл {} завершен", filePath);
         } catch (IOException e) {
-            throw new OrderException("Ошибка при экспорте данных");
+            logger.error("Ошибка при экспорте данных в {}", filePath, e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -221,7 +235,7 @@ public class AutoService {
 
         Order order = orderService.findOrderById(id);
 
-//      Если для существующего заказа из файла считывается другой механик, то старому механику меняетс статус на свободный, а новому на занятый
+//      Если для существующего заказа из файла считывается другой механик, то старому механику меняется статус на свободный, а новому на занятый
         if (order.getMechanic().getId() != mechanic.getId()) {
             order.getMechanic().setBusy(false);
             mechanic.setBusy(true);
@@ -246,5 +260,4 @@ public class AutoService {
         orderService.update(order);
         System.out.println("Заказ №" + id + " обновлен");
     }
-
 }

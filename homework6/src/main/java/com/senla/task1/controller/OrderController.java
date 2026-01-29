@@ -72,5 +72,4 @@ public class OrderController {
     public void showNearestAvailableSlot() {
         orderService.showNearestAvailableDate();
     }
-
 }

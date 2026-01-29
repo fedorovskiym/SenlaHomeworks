@@ -1,6 +1,8 @@
 package com.senla.task1.dao;
 
 import com.senla.task1.util.JDBCUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -12,6 +14,7 @@ import java.util.List;
 
 public abstract class GenericDAOImpl<T extends Serializable, ID> implements GenericDAO<T, ID> {
 
+    private static final Logger logger = LogManager.getLogger(GenericDAOImpl.class);
     private Connection connection;
 
     protected abstract String getTableName();
@@ -37,13 +40,14 @@ public abstract class GenericDAOImpl<T extends Serializable, ID> implements Gene
     public List<T> findAll() {
         List<T> entities = new ArrayList<>();
         String sql = "SELECT * FROM " + getTableName();
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 T entity = mapRow(resultSet);
                 entities.add(entity);
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при нахождении сущностей", e);
             throw new RuntimeException(e);
         }
         return entities;
@@ -56,6 +60,7 @@ public abstract class GenericDAOImpl<T extends Serializable, ID> implements Gene
             fillPreparesStatementForInsert(preparedStatement, entity);
             preparedStatement.execute();
         } catch (SQLException e) {
+            logger.error("Ошибка при сохранении сущности", e);
             throw new RuntimeException(e);
         }
     }
@@ -70,6 +75,7 @@ public abstract class GenericDAOImpl<T extends Serializable, ID> implements Gene
                 throw new RuntimeException("Сущность с id = " + id + " не найдена");
             }
         } catch (SQLException e) {
+            logger.error("Ошибка при удалении сущности", e);
             throw new RuntimeException(e);
         }
     }
@@ -77,17 +83,12 @@ public abstract class GenericDAOImpl<T extends Serializable, ID> implements Gene
     @Override
     public void update(T entity) {
         String sql = getUpdateSql();
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)){
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             fillPreparesStatementForUpdate(preparedStatement, entity);
-            int updatedRows = preparedStatement.executeUpdate();
-            if(updatedRows == 0) {
-                throw new RuntimeException("Сущность не была обновлена");
-            } else {
-                System.out.println("Сущность была обновлена");
-            }
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            logger.error("Ошибка при обновлении сущности", e);
             throw new RuntimeException(e);
         }
     }
-
 }

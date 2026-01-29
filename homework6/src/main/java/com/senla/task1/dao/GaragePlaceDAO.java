@@ -6,9 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GaragePlaceDAO extends GenericDAO<GaragePlace, Integer> {
+
     Boolean checkIsPlaceNumberExists(int placeNumber);
+
     List<GaragePlace> findFreeGaragePlaces();
+
     Optional<GaragePlace> findByPlaceNumber(int placeNumber);
+
     Optional<GaragePlace> findById(Integer id);
+
     void importWithTransaction(List<GaragePlace> garagePlaces);
 }

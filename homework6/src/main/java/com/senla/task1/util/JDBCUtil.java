@@ -1,7 +1,6 @@
 package com.senla.task1.util;
 
 import com.senla.task1.annotations.ConfigProperty;
-import com.senla.task1.annotations.PostConstruct;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,7 +20,7 @@ public class JDBCUtil {
     }
 
     public static JDBCUtil getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new JDBCUtil();
         }
         return instance;

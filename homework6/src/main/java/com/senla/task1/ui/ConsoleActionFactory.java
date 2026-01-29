@@ -42,7 +42,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите опыт механика в годах: ");
                 double experienceYears = Double.parseDouble(scanner.nextLine());
                 mechanicController.addMechanic(name, surname, experienceYears);
-                System.out.println();
+                System.out.println("Добавлен механик " + name + " " + surname + ". Опыт: " + experienceYears + " лет/год(а/ов)");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -57,7 +57,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите ID механика: ");
                 int id = Integer.parseInt(scanner.nextLine());
                 mechanicController.removeMechanicById(id);
-                System.out.println();
+                System.out.println("Механик № " + id + " удален");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -106,6 +106,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите название файла: ");
                 String fileName = scanner.nextLine();
                 mechanicController.importMechanicFromCSV(fileName);
+                System.out.println("Данные успешно импортированы из " + fileName);
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -119,6 +120,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите путь: ");
                 String filePath = scanner.nextLine();
                 mechanicController.exportMechanicToCSV(filePath);
+                System.out.println("Данные успешно экспортированы в " + filePath);
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -138,7 +140,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 scanner.nextLine();
                 System.out.println();
                 garagePlaceController.addGaragePlace(placeNumber);
-                System.out.println();
+                System.out.println("Место в гараже № " + placeNumber + " добавлено");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -162,7 +164,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 scanner.nextLine();
                 System.out.println();
                 garagePlaceController.removeGaragePlace(placeNumber);
-                System.out.println();
+                System.out.println("Место в гараже № " + placeNumber + " удалено");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -176,6 +178,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите название файла: ");
                 String filePath = scanner.nextLine();
                 garagePlaceController.importGaragePlaceFromCSV(filePath);
+                System.out.println("Данные успешно импортированы из " + filePath);
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -189,6 +192,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите путь: ");
                 String filePath = scanner.nextLine();
                 garagePlaceController.exportGaragePlaceToCSV(filePath);
+                System.out.println("Данные успешно экспортированы из " + filePath);
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -247,6 +251,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите номер заказа: ");
                 int id = Integer.parseInt(scanner.nextLine());
                 orderController.acceptOrder(id);
+                System.out.println("Заказ № " + id + " принят");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -260,6 +265,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите номер заказа: ");
                 int id = Integer.parseInt(scanner.nextLine());
                 orderController.closeOrder(id);
+                System.out.println("Заказ № " + id + " закрыт");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -273,6 +279,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите номер заказа: ");
                 int id = Integer.parseInt(scanner.nextLine());
                 orderController.cancelOrder(id);
+                System.out.println("Заказ № " + id + " отменен");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -292,6 +299,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите минуты: ");
                 int minutes = Integer.parseInt(scanner.nextLine());
                 orderController.shiftOrdersTime(hours, minutes);
+                System.out.println("Время выполнения всех заказов подвинуто на " + hours + " часов, " + minutes + " минут");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -309,6 +317,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите номер заказа: ");
                 int id = Integer.parseInt(scanner.nextLine());
                 orderController.deleteOrder(id);
+                System.out.println("Заказ № " + id + " удален");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -515,6 +524,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите название файла: ");
                 String fileName = scanner.nextLine();
                 autoServiceController.importOrdersFromCSV(fileName);
+                System.out.println("Импорт заказов из файла завершен");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }
@@ -528,6 +538,7 @@ public class ConsoleActionFactory implements ActionFactory {
                 System.out.println("Введите путь: ");
                 String filePath = scanner.nextLine();
                 autoServiceController.exportOrdersToCSV(filePath);
+                System.out.println("Экспорт заказов в файл завершен");
             } catch (Exception e) {
                 ExceptionHandler.handle(e);
             }

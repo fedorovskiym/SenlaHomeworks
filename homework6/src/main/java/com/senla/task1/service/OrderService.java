@@ -4,17 +4,19 @@ import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.dao.OrderDAOImpl;
 import com.senla.task1.exceptions.OrderException;
-import com.senla.task1.models.GaragePlace;
-import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
 import com.senla.task1.models.enums.OrderSortType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.File;
+import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrderService {
@@ -23,6 +25,7 @@ public class OrderService {
     private final String folderPath = "data";
     private final String fileName = "order.bin";
     private final OrderDAOImpl orderDAO;
+    private final static Logger logger = LogManager.getLogger(OrderService.class);
 
     @PostConstruct
     public void postConstruct() {
@@ -62,6 +65,7 @@ public class OrderService {
     }
 
     public void acceptOrder(Integer id) {
+        logger.info("Обработка принятия заказа № {}", id);
         Order order = orderDAO.findOrderById(id).orElseThrow(() -> new OrderException(
                 "Заказ с №" + id + " не найден"
         ));
@@ -80,45 +84,51 @@ public class OrderService {
             order.setEndDateTime(order.getCompletionDateTime().plus(order.getDuration()));
         }
         orderDAO.update(order);
+        logger.info("Заказ № {} принят", id);
     }
 
     public void closeOrder(Integer id) {
+        logger.info("Обработка закрытия заказа № {}", id);
         Order order = orderDAO.findOrderById(id).orElseThrow(() -> new OrderException(
                 "Заказ с №" + id + " не найден"
         ));
 
         order.closeOrder();
         orderDAO.update(order);
-        System.out.println("Заказ №" + id + " закрыт\n");
+        logger.info("Заказ № {} закрыт", id);
         acceptOrder(id + 1);
     }
 
     public void cancelOrder(Integer id) {
+        logger.info("Обработка отмены заказа № {}", id);
         Order order = orderDAO.findOrderById(id).orElseThrow(() -> new OrderException(
                 "Заказ с №" + id + " не найден"
         ));
 
         order.cancelOrder();
         orderDAO.update(order);
-        System.out.println("Заказ №" + id + " закрыт\n");
+        logger.info("Заказ № {} отменен", id);
     }
 
     public void shiftOrdersTime(Integer hours, Integer minutes) {
+        logger.info("Обработка сдвига времени выполнения заказов на {} часов, {} минут", hours, minutes);
         Duration time = Duration.ofHours(hours).plusMinutes(minutes);
         List<Order> orderList = findAllOrders();
         orderList.forEach(order -> order.shiftTime(time));
         orderList.forEach(order -> orderDAO.update(order));
-        System.out.println("Изменено время выполнения всех заказов на " + time.toHours() + " час(а/ов) " + time.toMinutesPart() + " минут\n");
+        logger.info("Изменено время выполнения всех заказов на {} часов, {} минут", hours, minutes);
     }
 
 
     public void deleteOrder(Integer id) {
+        logger.info("Обработка удаления заказа № {}", id);
         orderDAO.delete(id);
-        System.out.println("Заказ №" + id + " удален");
+        logger.info("Заказ № {} удален", id);
     }
 
     // Вывод заказа по айдишнку механика
     public void findOrderByMechanicId(Integer mechanicId) {
+        logger.info("Обработка поиска заказов по механику № {}", mechanicId);
         List<Order> mechanicOrders = orderDAO.findOrderByMechanicId(mechanicId);
 
         if (!mechanicOrders.isEmpty()) {
@@ -126,7 +136,7 @@ public class OrderService {
         } else {
             System.out.println("У данного мастера в данный момент нет заказов");
         }
-
+        logger.info("Поиск заказов по механику № {} завершен", mechanicId);
     }
 
     // Получение времени окончания последнего активного заказа
@@ -143,6 +153,7 @@ public class OrderService {
 
     // Вывод заказов по статусу
     public void findOrderByStatus(OrderStatus status) {
+        logger.info("Обработка вывода заказов по статусу {}", status);
         List<Order> ordersByStatus = orderDAO.finalOrderByStatus(status);
 
         if (!ordersByStatus.isEmpty()) {
@@ -150,6 +161,7 @@ public class OrderService {
         } else {
             System.out.println("Заказов с таким статусом нет");
         }
+        logger.info("Поиск заказов по статусу {} завершен", status);
     }
 
     // Вывод всех заказов
@@ -160,32 +172,41 @@ public class OrderService {
 
     // Сортировка по дате подачи заявки (flag - определяет отображение)
     public void sortOrdersByDateOfSubmission(Boolean flag) {
+        logger.info("Обработка сортировки заказов по дате подачи");
         showOrders(orderDAO.sortBy(OrderSortType.DATE_OF_SUBMISSION.getDisplayName(), flag));
+        logger.info("Сортировка заказов по дате подачи завершена");
     }
 
     // Сортировка по дате выполнения (flag - определяет отображение), если у заказа нет даты выполнения, а только планируемая, то они становятся в конец
     public void sortOrdersByDateOfCompletion(Boolean flag) {
+        logger.info("Обработка сортировки заказов по дате выполнения");
         showOrders(orderDAO.sortBy(OrderSortType.DATE_OF_COMPLETION.getDisplayName(), flag));
+        logger.info("Сортировка заказов по дате выполнения завершена");
     }
 
     // Сортировка по цене (flag - определяет отображение)
     public void sortOrdersByPrice(Boolean flag) {
+        logger.info("Обработка сортировки заказов по цене");
         showOrders(orderDAO.sortBy(OrderSortType.PRICE.getDisplayName(), flag));
+        logger.info("Сортировка заказов по цене завершена");
     }
 
     // Метод для определения каким способом сортировать и выводить заявки за период времени
     public void findOrdersOverPeriodOfTime(Integer fromYear, Integer fromMonth, Integer fromDay, Integer toYear, Integer toMonth, Integer toDay, OrderSortType sortType, Boolean flag) {
+        logger.info("Обработка поиска заказов за период времени");
         LocalDateTime startTime = LocalDateTime.of(fromYear, fromMonth, fromDay, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
         System.out.println("Заказы в период с " + startTime.format(dateTimeFormatter) + " по " + endTime.format(dateTimeFormatter));
         System.out.println();
         List<Order> sortedOrdersOverPeriod = orderDAO.findOrderOverPeriodOfTime(startTime, endTime, sortType.toString(), flag);
-
         showOrders(sortedOrdersOverPeriod);
+        logger.info("Поиск заказов за период времени завершен");
     }
 
     public void showNearestAvailableDate() {
+        logger.info("Обработка поиска ближайшей свободной даты");
         System.out.println("Ближайшая свободная дата: " + getEndDateTimeLastOrder().format(dateTimeFormatter));
+        logger.info("Поиск ближайшей свободной даты завершен");
     }
 
     private String formatOrderInfo(Order order) {
@@ -282,7 +303,6 @@ public class OrderService {
     private void registerShutdown() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::save));
     }
-
 }
 
 
