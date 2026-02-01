@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ApplicationContext {
+public class CustomApplicationContext {
 
     private final Map<Class<?>, Object> beanMap = new HashMap<>();
 
-    public ApplicationContext() {
+    public CustomApplicationContext() {
     }
 
     public void init(String basePackage) {

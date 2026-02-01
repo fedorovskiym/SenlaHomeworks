@@ -1,21 +1,17 @@
 package com.senla.task1.controller;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.service.AutoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class AutoServiceController {
 
     private final AutoService autoService;
 
-    @Inject
+    @Autowired
     public AutoServiceController(AutoService autoService) {
         this.autoService = autoService;
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Контроллер сервиса создался");
     }
 
     public void createOrder(String carModel, int mechanicId, int placeNumber, double price, int hours, int minutes) {

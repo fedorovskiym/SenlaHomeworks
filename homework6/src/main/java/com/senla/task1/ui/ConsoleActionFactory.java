@@ -1,6 +1,5 @@
 package com.senla.task1.ui;
 
-import com.senla.task1.annotations.Inject;
 import com.senla.task1.config.AutoServiceConfig;
 import com.senla.task1.controller.AutoServiceController;
 import com.senla.task1.controller.GaragePlaceController;
@@ -10,9 +9,12 @@ import com.senla.task1.exceptions.ExceptionHandler;
 import com.senla.task1.exceptions.InvalidInputException;
 import com.senla.task1.models.enums.OrderSortType;
 import com.senla.task1.models.enums.OrderStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
+@Component
 public class ConsoleActionFactory implements ActionFactory {
 
     private final MechanicController mechanicController;
@@ -22,7 +24,7 @@ public class ConsoleActionFactory implements ActionFactory {
     private final AutoServiceConfig autoServiceConfig;
     private final Scanner scanner = new Scanner(System.in);
 
-    @Inject
+    @Autowired
     public ConsoleActionFactory(MechanicController mechanicController, GaragePlaceController garagePlaceController, OrderController orderController, AutoServiceController autoServiceController, AutoServiceConfig autoServiceConfig) {
         this.mechanicController = mechanicController;
         this.garagePlaceController = garagePlaceController;

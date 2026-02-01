@@ -9,12 +9,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
+@Qualifier("orderJpaDAO")
 public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements OrderDAO {
 
     private static final String HQL_SORT_BY = "SELECT o FROM Order o ORDER BY ";

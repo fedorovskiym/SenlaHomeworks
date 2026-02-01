@@ -1,14 +1,15 @@
 package com.senla.task1.service;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.dao.impl.jpa.OrderJpaDAOImpl;
+import com.senla.task1.dao.OrderDAO;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
 import com.senla.task1.models.enums.OrderSortType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,26 +20,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Service
 public class OrderService {
 
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     private final String folderPath = "data";
     private final String fileName = "order.bin";
-    private final OrderJpaDAOImpl orderDAO;
+    private final OrderDAO orderDAO;
     private final static Logger logger = LogManager.getLogger(OrderService.class);
 
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Сервис заказов создался");
-    }
-
-    @Inject
-    public OrderService(OrderJpaDAOImpl orderDAO) {
+    @Autowired
+    public OrderService(@Qualifier("orderJpaDAO") OrderDAO orderDAO) {
         this.orderDAO = orderDAO;
         registerShutdown();
     }
 
-    public OrderJpaDAOImpl getOrderDAO() {
+    public OrderDAO getOrderDAO() {
         return orderDAO;
     }
 

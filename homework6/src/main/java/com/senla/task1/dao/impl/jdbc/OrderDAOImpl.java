@@ -8,6 +8,7 @@ import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements OrderDAO {
 
     private final MechanicDAOImpl mechanicDAO;

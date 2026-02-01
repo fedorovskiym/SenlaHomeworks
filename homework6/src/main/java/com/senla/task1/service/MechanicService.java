@@ -1,7 +1,6 @@
 package com.senla.task1.service;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
+import com.senla.task1.dao.MechanicDAO;
 import com.senla.task1.dao.impl.jpa.MechanicJpaDAOImpl;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
@@ -9,6 +8,9 @@ import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.MechanicSortType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,20 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class MechanicService {
 
     private final String folderPath = "data";
     private final String fileName = "mechanic.bin";
-    private final MechanicJpaDAOImpl mechanicDAO;
+    private final MechanicDAO mechanicDAO;
     private static final Logger logger = LogManager.getLogger(MechanicService.class);
 
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Сервис механиков создался");
-    }
-
-    @Inject
-    public MechanicService(MechanicJpaDAOImpl mechanicDAO) {
+    @Autowired
+    public MechanicService(@Qualifier("mechanicJpaDAO") MechanicDAO mechanicDAO) {
         this.mechanicDAO = mechanicDAO;
         registerShutdown();
     }

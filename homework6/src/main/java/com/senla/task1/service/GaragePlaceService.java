@@ -1,13 +1,15 @@
 package com.senla.task1.service;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
+import com.senla.task1.dao.GaragePlaceDAO;
 import com.senla.task1.dao.impl.jpa.GaragePlaceJpaDAOImpl;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,23 +27,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class GaragePlaceService {
 
     private final String folderPath = "data";
     private final String fileName = "garage_places.bin";
-    private final GaragePlaceJpaDAOImpl garagePlaceDAO;
+    private final GaragePlaceDAO garagePlaceDAO;
     private static final Logger logger = LogManager.getLogger(GaragePlaceService.class);
 
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Сервис гаражных мест создался");
-    }
-
-    @Inject
-    public GaragePlaceService(GaragePlaceJpaDAOImpl garagePlaceDAO) {
-        this.garagePlaceDAO = garagePlaceDAO;
+    @Autowired
+    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceDAO garagePlaceDAO) {
 //        load();
         registerShutdown();
+        this.garagePlaceDAO = garagePlaceDAO;
     }
 
     public List<GaragePlace> findAllGaragePlace() {
@@ -192,10 +190,10 @@ public class GaragePlaceService {
     public String formatGaragePlace(GaragePlace garagePlace) {
         return String.format(
                 """
-                Id: %d
-                Номер места: %d
-                Статус: %s
-                """,
+                        Id: %d
+                        Номер места: %d
+                        Статус: %s
+                        """,
                 garagePlace.getId(),
                 garagePlace.getPlaceNumber(),
                 garagePlace.isEmpty() ? "Не занято" : "Занято"

@@ -1,21 +1,17 @@
 package com.senla.task1.controller;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.service.GaragePlaceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class GaragePlaceController {
 
     private final GaragePlaceService garagePlaceService;
 
-    @Inject
+    @Autowired
     public GaragePlaceController(GaragePlaceService garagePlaceService) {
         this.garagePlaceService = garagePlaceService;
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Контроллер мест создался");
     }
 
     public void showFreeGaragePlaces() {

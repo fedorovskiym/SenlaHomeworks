@@ -1,26 +1,22 @@
 package com.senla.task1.controller;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.models.enums.OrderSortType;
 import com.senla.task1.models.enums.OrderStatus;
 import com.senla.task1.service.AutoService;
 import com.senla.task1.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class OrderController {
 
     private final OrderService orderService;
     public final AutoService autoService;
 
-    @Inject
+    @Autowired
     public OrderController(OrderService orderService, AutoService autoService) {
         this.orderService = orderService;
         this.autoService = autoService;
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Контроллер заказов создался");
     }
 
     public void acceptOrder(int id) {

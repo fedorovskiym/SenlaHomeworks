@@ -1,7 +1,5 @@
 package com.senla.task1.service;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
@@ -9,6 +7,8 @@ import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class AutoService {
 
     private final OrderService orderService;
@@ -31,16 +32,11 @@ public class AutoService {
     private final GaragePlaceService garagePlaceService;
     private final static Logger logger = LogManager.getLogger(AutoService.class);
 
-    @Inject
+    @Autowired
     public AutoService(OrderService orderService, MechanicService mechanicService, GaragePlaceService garagePlaceService) {
         this.orderService = orderService;
         this.mechanicService = mechanicService;
         this.garagePlaceService = garagePlaceService;
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Общий сервис создался");
     }
 
     public void createOrder(String carModel, Integer mechanicId, Integer placeNumber, Double price, Integer hours, Integer minutes) {

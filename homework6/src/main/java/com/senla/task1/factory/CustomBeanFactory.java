@@ -3,7 +3,6 @@ package com.senla.task1.factory;
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.FieldInject;
 import com.senla.task1.annotations.PostConstruct;
-import com.senla.task1.config.Configurator;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -13,12 +12,12 @@ import java.lang.reflect.Modifier;
 public class CustomBeanFactory {
 
     @FieldInject
-    private ApplicationContext context;
+    private CustomApplicationContext context;
 
     public CustomBeanFactory() {
     }
 
-    public void setContext(ApplicationContext context) {
+    public void setContext(CustomApplicationContext context) {
         this.context = context;
     }
 
