@@ -4,7 +4,8 @@ import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
-import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.OrderStatus;
+import com.senla.task1.models.enums.OrderStatusType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,15 @@ public class AutoService {
     private final OrderService orderService;
     private final MechanicService mechanicService;
     private final GaragePlaceService garagePlaceService;
+    private final OrderStatusService orderStatusService;
     private final static Logger logger = LogManager.getLogger(AutoService.class);
 
     @Autowired
-    public AutoService(OrderService orderService, MechanicService mechanicService, GaragePlaceService garagePlaceService) {
+    public AutoService(OrderService orderService, MechanicService mechanicService, GaragePlaceService garagePlaceService, OrderStatusService orderStatusService) {
         this.orderService = orderService;
         this.mechanicService = mechanicService;
         this.garagePlaceService = garagePlaceService;
+        this.orderStatusService = orderStatusService;
     }
 
     public void createOrder(String carModel, Integer mechanicId, Integer placeNumber, Double price, Integer hours, Integer minutes) {
@@ -50,12 +53,13 @@ public class AutoService {
         }
 
         Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
-        Order order = new Order(carModel, mechanic, garagePlace, duration, price);
+        OrderStatus orderStatus = orderStatusService.findByCode(OrderStatusType.WAITING);
+        System.out.println(orderStatus);
+        Order order = new Order(carModel, mechanic, garagePlace, duration, price, orderStatus);
         mechanic.setBusy(true);
         garagePlace.setEmpty(false);
         mechanicService.updateMechanic(mechanic);
         garagePlaceService.updateGaragePlace(garagePlace);
-
         orderService.addOrder(order);
         logger.info("Заказ {} создан", order);
     }
@@ -103,7 +107,7 @@ public class AutoService {
                         String carName = parts[1].trim();
 
                         if (!mechanicService.isMechanicExists(Integer.parseInt(parts[2].trim()))) {
-                            System.out.println("Механика с айди " + parts[2].trim() + " не существует, заказ не может быть добавлен");
+                            System.out.println("Механика с id " + parts[2].trim() + " не существует, заказ не может быть добавлен");
                             continue;
                         }
                         Mechanic mechanic = mechanicService.findMechanicById(Integer.parseInt(parts[2].trim()));
@@ -114,7 +118,12 @@ public class AutoService {
                         }
                         GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(Integer.parseInt(parts[3].trim()));
 
-                        OrderStatus status = OrderStatus.valueOf(parts[4].trim());
+                        if (!orderStatusService.checkIsOrderStatusExists(Integer.parseInt(parts[4].trim()))) {
+                            System.out.println("Заказа с id " + parts[4].trim() + " не найдено, заказ не может быть добавлен");
+                            continue;
+                        }
+                        OrderStatus orderStatus = orderStatusService.findById(Integer.parseInt(parts[4].trim()));
+
                         LocalDateTime submissionDateTime = LocalDateTime.parse(parts[5].trim());
                         LocalDateTime plannedCompletionDateTime = parts[6].trim().isEmpty() ? null :
                                 LocalDateTime.parse(parts[6].trim());
@@ -125,13 +134,13 @@ public class AutoService {
                         Duration duration = Duration.ofMinutes(Long.parseLong(parts[9].trim()));
                         double price = Double.parseDouble(parts[10].trim().replace(',', '.'));
 
-                        if (status.equals(OrderStatus.ACCEPTED) || status.equals(OrderStatus.WAITING)) {
+                        if (orderStatus.getCode().equals(OrderStatusType.ACCEPTED) || orderStatus.getCode().equals(OrderStatusType.WAITING)) {
                             mechanic.setBusy(true);
                             garagePlace.setEmpty(false);
                         }
 
                         if (orderService.isOrdersExists(id)) {
-                            updateOrder(id, carName, mechanic, garagePlace, status,
+                            updateOrder(id, carName, mechanic, garagePlace, orderStatus,
                                     submissionDateTime, plannedCompletionDateTime, completionDateTime,
                                     endDateTime, duration, price);
                         } else {
@@ -139,7 +148,7 @@ public class AutoService {
                                 System.out.println("Механик или место занято, заказ не может быть добавлен");
                                 continue;
                             }
-                            Order order = new Order(id, carName, mechanic, garagePlace, status, submissionDateTime,
+                            Order order = new Order(id, carName, mechanic, garagePlace, orderStatus, submissionDateTime,
                                     plannedCompletionDateTime, completionDateTime, endDateTime, duration, price);
                             orderService.addOrder(order);
                         }
@@ -192,7 +201,7 @@ public class AutoService {
     }
 
     public void updateOrder(Integer id, String carName, Mechanic mechanic,
-                            GaragePlace garagePlace, OrderStatus status, LocalDateTime submissionDateTime,
+                            GaragePlace garagePlace, OrderStatus orderStatus, LocalDateTime submissionDateTime,
                             LocalDateTime plannedCompletionDateTime, LocalDateTime completionDateTime,
                             LocalDateTime endDateTime, Duration duration, Double price) {
 
@@ -213,7 +222,7 @@ public class AutoService {
         order.setCarName(carName);
         order.setMechanic(mechanic);
         order.setGaragePlace(garagePlace);
-        order.setStatus(status);
+        order.setStatus(orderStatus);
         order.setSubmissionDateTime(submissionDateTime);
         order.setPlannedCompletionDateTime(plannedCompletionDateTime);
         order.setCompletionDateTime(completionDateTime);
@@ -226,10 +235,7 @@ public class AutoService {
 
     public void deleteOrder(Integer id) {
         logger.info("Обработка удаления заказа № {}", id);
-        Order order = orderService.getOrderDAO().findById(id).orElseThrow(() -> new OrderException(
-                "Заказ с №" + id + " не найден"
-        ));
-        orderService.getOrderDAO().delete(order);
+        orderService.deleteOrder(id);
         logger.info("Заказ № {} удален", id);
     }
 
@@ -239,8 +245,8 @@ public class AutoService {
                 "Заказ с №" + id + " не найден"
         ));
 
-        order.closeOrder();
-        orderService.getOrderDAO().update(order);
+        order.setStatus(orderStatusService.findByCode(OrderStatusType.DONE));
+        orderService.update(order);
         logger.info("Заказ № {} закрыт", id);
         orderService.acceptOrder(id + 1);
     }
@@ -250,9 +256,10 @@ public class AutoService {
         Order order = orderService.getOrderDAO().findById(id).orElseThrow(() -> new OrderException(
                 "Заказ с №" + id + " не найден"
         ));
-
+        order.setStatus(orderStatusService.findByCode(OrderStatusType.CANCEL));
         order.cancelOrder();
         orderService.getOrderDAO().update(order);
         logger.info("Заказ № {} отменен", id);
     }
+
 }

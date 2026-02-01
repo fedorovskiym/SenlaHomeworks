@@ -7,11 +7,17 @@ INSERT INTO garage_place (place_number, is_empty) VALUES
 
 INSERT INTO mechanic (name, surname, experience_years, is_busy) VALUES 
     ('Иван', 'Иванов', 10, true),
-    ('Сергей', 'Сергевв', 5, true),
+    ('Сергей', 'Сергеев', 5, true),
     ('Алексей', 'Алексеев', 23, false);
 
-INSERT INTO orders (car_name, mechanic_id, garage_place_id, order_status, submission_date_time, planned_completion_date_time, completion_date_time, end_date_time, duration, price) VALUES
-	('BMW M5', 1, 1, 'ACCEPTED', '2025-11-16 21:48:27.167842', NULL, '2025-11-16 21:48:27.167842', '2025-11-16 23:18:27.167842',5400, 10000.00),
-	('Kio Rio', 2, 2, 'WAITING', '2025-11-16 21:49:19.368844', '2025-11-16 23:18:27.167842' ,NULL, '2025-11-17 00:18:27.167842', 3600, 5500.00);
+INSERT INTO order_status(code, name) VALUES
+    ('WAITING', 'Ожидает'),
+    ('ACCEPTED', 'Принят'),
+    ('DONE', 'Выполнен'),
+    ('CANCEL', 'Отменен');
+
+INSERT INTO orders (car_name, mechanic_id, garage_place_id, order_status_id, submission_date_time, planned_completion_date_time, completion_date_time, end_date_time, duration, price) VALUES
+	('BMW M5', 1, 1, 2, '2025-11-16 21:48:27.167842', NULL, '2025-11-16 21:48:27.167842', '2025-11-16 23:18:27.167842',5400, 10000.00),
+	('Kio Rio', 2, 2, 1, '2025-11-16 21:49:19.368844', '2025-11-16 23:18:27.167842' ,NULL, '2025-11-17 00:18:27.167842', 3600, 5500.00);
 
 COMMIT;

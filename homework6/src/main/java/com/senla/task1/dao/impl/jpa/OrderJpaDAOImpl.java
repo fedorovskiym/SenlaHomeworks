@@ -1,9 +1,11 @@
 package com.senla.task1.dao.impl.jpa;
 
 import com.senla.task1.dao.OrderDAO;
+import com.senla.task1.dao.OrderStatusDAO;
 import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.models.Order;
-import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.OrderStatus;
+import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.util.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,8 +28,11 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
     private static final String HQL_FIND_BY_STATUS = "SELECT o FROM Order o WHERE o.status = :status";
     private static final String HQL_PERIOD_OF_TIME = "SELECT o FROM Order o WHERE submissionDDateTime BETWEEN :start" +
             " AND :end ORDER BY ";
-    private static final String HQL_END_DATE_TIME = "SELECT o FROM Order o WHERE" +
-            " o.status = :waiting OR o.status = :accepted ORDER BY submissionDateTime DESC";
+    private static final String HQL_END_DATE_TIME = "SELECT o FROM Order o " +
+                    "INNER JOIN o.status s " +
+                    "WHERE s.code = :waiting OR s.code = :accepted " +
+                    "ORDER BY o.submissionDateTime DESC";
+
     private static final Logger logger = LogManager.getLogger(OrderJpaDAOImpl.class);
 
     public OrderJpaDAOImpl(Class<Order> type) {
@@ -46,8 +51,8 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
         try {
             transaction = session.beginTransaction();
             order = session.createQuery(HQL_END_DATE_TIME, Order.class)
-                    .setParameter("waiting", OrderStatus.WAITING)
-                    .setParameter("accepted", OrderStatus.ACCEPTED)
+                    .setParameter("waiting", OrderStatusType.WAITING)
+                    .setParameter("accepted", OrderStatusType.ACCEPTED)
                     .setMaxResults(1)
                     .uniqueResult();
             transaction.commit();
@@ -100,19 +105,19 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
     }
 
     @Override
-    public List<Order> findOrderByStatus(OrderStatus status) {
+    public List<Order> findOrderByStatus(OrderStatus orderStatus) {
         List<Order> orderList = new ArrayList<>();
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
             orderList = session.createQuery(HQL_FIND_BY_STATUS, Order.class)
-                    .setParameter("status", status)
+                    .setParameter("status", orderStatus)
                     .getResultList();
             transaction.commit();
         } catch (JpaException e) {
             transaction.rollback();
-            logger.error("Ошибка при нахождении заказов по статусу {}", status, e);
+            logger.error("Ошибка при нахождении заказов по статусу {}", orderStatus, e);
         } finally {
             session.close();
         }

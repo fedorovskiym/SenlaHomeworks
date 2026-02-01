@@ -1,13 +1,10 @@
 package com.senla.task1.models;
 
-import com.senla.task1.models.enums.OrderStatus;
 import com.senla.task1.util.DurationConverter;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,8 +31,8 @@ public class Order implements Serializable {
     @ManyToOne
     @JoinColumn(name = "garage_place_id")
     private GaragePlace garagePlace;
-    @Column(name = "order_status")
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "order_status_id")
     private OrderStatus status;
     @Column(name = "submission_date_time")
     private LocalDateTime submissionDateTime;
@@ -54,17 +51,17 @@ public class Order implements Serializable {
     public Order() {
     }
 
-    public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, Duration duration, Double price) {
+    public Order(String carName, Mechanic mechanic, GaragePlace garagePlace, Duration duration, Double price, OrderStatus orderStatus) {
         this.carName = carName;
         this.mechanic = mechanic;
         this.garagePlace = garagePlace;
-        this.status = OrderStatus.WAITING;
+        this.status = orderStatus;
         this.submissionDateTime = LocalDateTime.now();
         this.price = price;
         this.duration = duration;
     }
 
-    public Order(Integer id, String carName, Mechanic mechanic, GaragePlace garagePlace, OrderStatus status,
+    public Order(Integer id, String carName, Mechanic mechanic, GaragePlace garagePlace, OrderStatus orderStatus,
                  LocalDateTime submissionDateTime, LocalDateTime plannedCompletionDateTime,
                  LocalDateTime completionDateTime, LocalDateTime endDateTime,
                  Duration duration, Double price) {
@@ -72,7 +69,7 @@ public class Order implements Serializable {
         this.carName = carName;
         this.mechanic = mechanic;
         this.garagePlace = garagePlace;
-        this.status = status;
+        this.status = orderStatus;
         this.submissionDateTime = submissionDateTime;
         this.plannedCompletionDateTime = plannedCompletionDateTime;
         this.completionDateTime = completionDateTime;
@@ -82,19 +79,16 @@ public class Order implements Serializable {
     }
 
     public void acceptOrder() {
-        status = OrderStatus.ACCEPTED;
         mechanic.setBusy(true);
         garagePlace.setEmpty(false);
     }
 
     public void closeOrder() {
-        status = OrderStatus.DONE;
         mechanic.setBusy(false);
         garagePlace.setEmpty(true);
     }
 
     public void cancelOrder() {
-        status = OrderStatus.CANCEL;
         mechanic.setBusy(false);
         garagePlace.setEmpty(true);
     }
@@ -141,7 +135,7 @@ public class Order implements Serializable {
         return status;
     }
 
-    public void setStatus(OrderStatus orderStatus) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 

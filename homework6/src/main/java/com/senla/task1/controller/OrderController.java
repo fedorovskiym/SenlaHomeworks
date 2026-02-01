@@ -1,7 +1,8 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderSortType;
-import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.service.AutoService;
 import com.senla.task1.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class OrderController {
         orderService.findOrderByMechanicId(mechanicId);
     }
 
-    public void showOrdersByStatus(OrderStatus status) {
+    public void showOrdersByStatus(OrderStatusType status) {
         orderService.findOrderByStatus(status);
     }
 

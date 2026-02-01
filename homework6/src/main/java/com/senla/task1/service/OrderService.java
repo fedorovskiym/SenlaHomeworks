@@ -1,9 +1,11 @@
 package com.senla.task1.service;
 
 import com.senla.task1.dao.OrderDAO;
+import com.senla.task1.dao.OrderStatusDAO;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.Order;
-import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.OrderStatus;
+import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.models.enums.OrderSortType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,11 +29,13 @@ public class OrderService {
     private final String folderPath = "data";
     private final String fileName = "order.bin";
     private final OrderDAO orderDAO;
+    private final OrderStatusService orderStatusService;
     private final static Logger logger = LogManager.getLogger(OrderService.class);
 
     @Autowired
-    public OrderService(@Qualifier("orderJpaDAO") OrderDAO orderDAO) {
+    public OrderService(@Qualifier("orderJpaDAO") OrderDAO orderDAO, OrderStatusService orderStatusService) {
         this.orderDAO = orderDAO;
+        this.orderStatusService = orderStatusService;
         registerShutdown();
     }
 
@@ -54,7 +58,7 @@ public class OrderService {
             orderDAO.save(order);
         }
         System.out.println("Заказ: " + order.getCarName() + " принят в гараж №" + order.getGaragePlace().getPlaceNumber() + ". Назначен механик " + order.getMechanic().getName());
-        System.out.println("Статус заказа: '" + order.getStatus().getDisplayName() + "'");
+        System.out.println("Статус заказа: '" + order.getStatus().getName() + "'");
         if (order.getPlannedCompletionDateTime() != null) {
             System.out.println("Примерное начало выполнения заказа: " + order.getPlannedCompletionDateTime().format(dateTimeFormatter));
         }
@@ -67,7 +71,7 @@ public class OrderService {
                 "Заказ с №" + id + " не найден"
         ));
 
-        if (order.getStatus() == OrderStatus.ACCEPTED) {
+        if (order.getStatus().getCode() == OrderStatusType.ACCEPTED) {
             System.out.println("Заказ №" + id + " уже принят");
             return;
         }
@@ -82,6 +86,15 @@ public class OrderService {
         }
         orderDAO.update(order);
         logger.info("Заказ № {} принят", id);
+    }
+
+    public void deleteOrder(Integer id) {
+        logger.info("Обработка удаления заказа № {}", id);
+        Order order = orderDAO.findById(id).orElseThrow(() -> new OrderException(
+                "Заказ с №" + id + " не найден"
+        ));
+        orderDAO.delete(order);
+        logger.info("Заказ № {} удален", id);
     }
 
     public void shiftOrdersTime(Integer hours, Integer minutes) {
@@ -119,9 +132,9 @@ public class OrderService {
 
 
     // Вывод заказов по статусу
-    public void findOrderByStatus(OrderStatus status) {
+    public void findOrderByStatus(OrderStatusType status) {
         logger.info("Обработка вывода заказов по статусу {}", status);
-        List<Order> ordersByStatus = orderDAO.findOrderByStatus(status);
+        List<Order> ordersByStatus = orderDAO.findOrderByStatus(orderStatusService.findByCode(status));
 
         if (!ordersByStatus.isEmpty()) {
             showOrders(ordersByStatus);
@@ -192,14 +205,14 @@ public class OrderService {
                         Цена: %.2f руб. \n
                         """,
                 order.getId(),
-                order.getStatus().getDisplayName(),
+                order.getStatus().getName(),
                 order.getMechanic().getName(),
                 order.getMechanic().getSurname(),
                 order.getCarName(),
                 order.getGaragePlace().getPlaceNumber(),
                 order.getSubmissionDateTime().format(dateTimeFormatter),
 
-                order.getStatus().equals(OrderStatus.WAITING)
+                order.getStatus().equals(OrderStatusType.WAITING)
                         ? String.format("Планируемая дата выполнения заказа: %s\n",
                         order.getPlannedCompletionDateTime().format(dateTimeFormatter))
                         : "",

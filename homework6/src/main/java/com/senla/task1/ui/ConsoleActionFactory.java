@@ -8,7 +8,7 @@ import com.senla.task1.controller.OrderController;
 import com.senla.task1.exceptions.ExceptionHandler;
 import com.senla.task1.exceptions.InvalidInputException;
 import com.senla.task1.models.enums.OrderSortType;
-import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.enums.OrderStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -353,16 +353,16 @@ public class ConsoleActionFactory implements ActionFactory {
                 int status = Integer.parseInt(scanner.nextLine());
                 switch (status) {
                     case 1:
-                        orderController.showOrdersByStatus(OrderStatus.WAITING);
+                        orderController.showOrdersByStatus(OrderStatusType.WAITING);
                         break;
                     case 2:
-                        orderController.showOrdersByStatus(OrderStatus.ACCEPTED);
+                        orderController.showOrdersByStatus(OrderStatusType.ACCEPTED);
                         break;
                     case 3:
-                        orderController.showOrdersByStatus(OrderStatus.DONE);
+                        orderController.showOrdersByStatus(OrderStatusType.DONE);
                         break;
                     case 4:
-                        orderController.showOrdersByStatus(OrderStatus.CANCEL);
+                        orderController.showOrdersByStatus(OrderStatusType.CANCEL);
                         break;
                     default:
                         throw new InvalidInputException("Неожиданное значение: " + status);
