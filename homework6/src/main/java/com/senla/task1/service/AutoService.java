@@ -261,5 +261,4 @@ public class AutoService {
         orderService.getOrderDAO().update(order);
         logger.info("Заказ № {} отменен", id);
     }
-
 }

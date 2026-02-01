@@ -54,7 +54,7 @@ public class OrderStatusJpaDAOImpl extends AbstractJpaDAO<OrderStatus, Integer> 
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
-            if(session.get(OrderStatus.class, id) == null) {
+            if (session.get(OrderStatus.class, id) == null) {
                 return false;
             }
             transaction.commit();

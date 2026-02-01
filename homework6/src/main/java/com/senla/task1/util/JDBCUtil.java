@@ -1,6 +1,5 @@
 package com.senla.task1.util;
 
-import com.senla.task1.annotations.ConfigProperty;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.sql.Connection;

@@ -2,8 +2,6 @@ package com.senla.task1.dao.impl.jdbc;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.dao.OrderDAO;
-import com.senla.task1.models.GaragePlace;
-import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
@@ -15,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

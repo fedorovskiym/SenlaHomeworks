@@ -1,7 +1,6 @@
 package com.senla.task1.dao.impl.jpa;
 
 import com.senla.task1.dao.OrderDAO;
-import com.senla.task1.dao.OrderStatusDAO;
 import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;

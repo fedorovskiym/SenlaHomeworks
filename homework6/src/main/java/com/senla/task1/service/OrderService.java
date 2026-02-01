@@ -1,10 +1,8 @@
 package com.senla.task1.service;
 
 import com.senla.task1.dao.OrderDAO;
-import com.senla.task1.dao.OrderStatusDAO;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.Order;
-import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.models.enums.OrderSortType;
 import org.apache.logging.log4j.LogManager;

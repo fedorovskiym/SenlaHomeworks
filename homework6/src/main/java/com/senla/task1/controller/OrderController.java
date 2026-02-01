@@ -1,6 +1,5 @@
 package com.senla.task1.controller;
 
-import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderSortType;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.service.AutoService;

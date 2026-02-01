@@ -1,7 +1,6 @@
 package com.senla.task1.service;
 
 import com.senla.task1.dao.GaragePlaceDAO;
-import com.senla.task1.dao.impl.jpa.GaragePlaceJpaDAOImpl;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;

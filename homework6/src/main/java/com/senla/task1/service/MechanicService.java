@@ -1,7 +1,6 @@
 package com.senla.task1.service;
 
 import com.senla.task1.dao.MechanicDAO;
-import com.senla.task1.dao.impl.jpa.MechanicJpaDAOImpl;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
