@@ -1,6 +1,7 @@
 package com.senla.task1.util;
 
 import com.senla.task1.annotations.ConfigProperty;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,11 +10,11 @@ import java.sql.SQLException;
 public class JDBCUtil {
 
     private static JDBCUtil instance;
-    @ConfigProperty(propertyName = "JDBCUtil.datasource.url")
+    @Value("${JDBCUtil.datasource.url}")
     private static String jdbcUrl;
-    @ConfigProperty(propertyName = "JDBCUtil.datasource.username")
+    @Value("${JDBCUtil.datasource.username}")
     private static String username;
-    @ConfigProperty(propertyName = "JDBCUtil.datasource.password")
+    @Value("${JDBCUtil.datasource.password}")
     private static String password;
 
     public JDBCUtil() {
