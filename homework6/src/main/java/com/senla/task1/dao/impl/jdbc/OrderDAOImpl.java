@@ -2,23 +2,23 @@ package com.senla.task1.dao.impl.jdbc;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.dao.OrderDAO;
-import com.senla.task1.models.GaragePlace;
-import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
-import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.OrderStatus;
+import com.senla.task1.models.enums.OrderStatusType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements OrderDAO {
 
     private final MechanicDAOImpl mechanicDAO;
@@ -81,28 +81,28 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
 
     @Override
     protected Order mapRow(ResultSet resultSet) throws SQLException {
-        Mechanic mechanic = mechanicDAO.findById(resultSet.getInt("mechanic_id")).orElse(null);
-
-        GaragePlace garagePlace = garagePlaceDAO.findById(resultSet.getInt("garage_place_id")).orElse(null);
-
-        Timestamp submission = resultSet.getTimestamp("submission_date_time");
-        Timestamp planned = resultSet.getTimestamp("planned_completion_date_time");
-        Timestamp completion = resultSet.getTimestamp("completion_date_time");
-        Timestamp end = resultSet.getTimestamp("end_date_time");
-
-        return new Order(
-                resultSet.getInt("id"),
-                resultSet.getString("car_name"),
-                mechanic,
-                garagePlace,
-                OrderStatus.valueOf(resultSet.getString("order_status")),
-                submission != null ? submission.toLocalDateTime() : null,
-                planned != null ? planned.toLocalDateTime() : null,
-                completion != null ? completion.toLocalDateTime() : null,
-                end != null ? end.toLocalDateTime() : null,
-                Duration.ofSeconds(resultSet.getLong("duration_seconds")),
-                resultSet.getDouble("price")
-        );
+//        Mechanic mechanic = mechanicDAO.findById(resultSet.getInt("mechanic_id")).orElse(null);
+//
+//        GaragePlace garagePlace = garagePlaceDAO.findById(resultSet.getInt("garage_place_id")).orElse(null);
+//
+//        Timestamp submission = resultSet.getTimestamp("submission_date_time");
+//        Timestamp planned = resultSet.getTimestamp("planned_completion_date_time");
+//        Timestamp completion = resultSet.getTimestamp("completion_date_time");
+//        Timestamp end = resultSet.getTimestamp("end_date_time");
+//
+//        return new Order(
+//                resultSet.getInt("id"),
+//                resultSet.getString("car_name"),
+//                mechanic,
+//                garagePlace,
+//                submission != null ? submission.toLocalDateTime() : null,
+//                planned != null ? planned.toLocalDateTime() : null,
+//                completion != null ? completion.toLocalDateTime() : null,
+//                end != null ? end.toLocalDateTime() : null,
+//                Duration.ofSeconds(resultSet.getLong("duration_seconds")),
+//                resultSet.getDouble("price")
+//        );
+        return new Order();
     }
 
     @Override
@@ -135,7 +135,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
     @Override
     public Optional<Order> getEndDateTimeLastActiveOrder() {
         String sql = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM " + getTableName() +
-                " WHERE order_status IN('" + OrderStatus.WAITING + "', '" + OrderStatus.ACCEPTED + "')" +
+                " WHERE order_status IN('" + OrderStatusType.WAITING + "', '" + OrderStatusType.ACCEPTED + "')" +
                 "ORDER BY submission_date_time DESC " +
                 "LIMIT 1";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {

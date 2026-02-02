@@ -1,7 +1,7 @@
 package com.senla.task1.dao;
 
 import com.senla.task1.models.Order;
-import com.senla.task1.models.enums.OrderStatus;
+import com.senla.task1.models.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;

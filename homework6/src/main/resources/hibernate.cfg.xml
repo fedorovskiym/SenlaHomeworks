@@ -14,5 +14,6 @@
         <mapping class="com.senla.task1.models.Mechanic"/>
         <mapping class="com.senla.task1.models.Order"/>
         <mapping class="com.senla.task1.models.GaragePlace"/>
+        <mapping class="com.senla.task1.models.OrderStatus"/>
     </session-factory>
 </hibernate-configuration>

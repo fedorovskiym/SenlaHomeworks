@@ -1,14 +1,17 @@
 package com.senla.task1.ui;
 
-import com.senla.task1.annotations.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 
+@Component
 public class MenuController {
 
     private final Builder builder;
     private final Navigator navigator;
 
-    @Inject
+    @Autowired
     public MenuController(Builder builder, Navigator navigator) {
         this.builder = builder;
         this.navigator = navigator;

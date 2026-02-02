@@ -4,6 +4,7 @@ import com.senla.task1.dao.MechanicDAO;
 import com.senla.task1.models.Mechanic;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implements MechanicDAO {
 
     private static final String SQL_ORDER_BY = "SELECT * FROM mechanic ORDER BY ";

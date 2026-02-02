@@ -1,16 +1,18 @@
 package com.senla.task1.config;
 
-import com.senla.task1.annotations.ConfigProperty;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class AutoServiceConfig {
 
-    @ConfigProperty(propertyName = "AutoServiceConfig.allowAddGaragePlace")
+    @Value("${AutoServiceConfig.allowAddGaragePlace}")
     private boolean allowAddGaragePlace;
-    @ConfigProperty(propertyName = "AutoServiceConfig.allowDeleteGaragePlaces")
+    @Value("${AutoServiceConfig.allowDeleteGaragePlaces}")
     private boolean allowDeleteGaragePlace;
-    @ConfigProperty(propertyName = "AutoServiceConfig.allowShiftOrdersTime")
+    @Value("${AutoServiceConfig.allowShiftOrdersTime}")
     private boolean allowShiftOrdersTime;
-    @ConfigProperty(propertyName = "AutoServiceConfig.allowDeleteOrder")
+    @Value("${AutoServiceConfig.allowDeleteOrder}")
     private boolean allowDeleteOrder;
 
     public boolean isAllowAddGaragePlace() {

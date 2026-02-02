@@ -1,24 +1,20 @@
 package com.senla.task1.controller;
 
-import com.senla.task1.annotations.Inject;
-import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.service.MechanicService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
+@Controller
 public class MechanicController {
 
     private final MechanicService mechanicService;
 
-    @Inject
+    @Autowired
     public MechanicController(MechanicService mechanicService) {
         this.mechanicService = mechanicService;
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-        System.out.println("Контроллер механиков создался");
     }
 
     public void addMechanic(String name, String surname, double experienceYears) {

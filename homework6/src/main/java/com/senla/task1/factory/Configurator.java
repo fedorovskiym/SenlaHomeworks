@@ -1,4 +1,4 @@
-package com.senla.task1.config;
+package com.senla.task1.factory;
 
 import com.senla.task1.annotations.ConfigProperty;
 

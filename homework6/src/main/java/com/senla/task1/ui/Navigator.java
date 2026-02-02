@@ -1,12 +1,14 @@
 package com.senla.task1.ui;
 
-import com.senla.task1.annotations.FieldInject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class Navigator {
 
-    @FieldInject
+    @Autowired
     private Menu rootMenu;
 
     public Navigator() {

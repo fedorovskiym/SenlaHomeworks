@@ -1,9 +1,11 @@
 package com.senla.task1.ui;
 
-import com.senla.task1.annotations.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+@Component
 public class Builder {
 
     private final Menu rootMenu;
@@ -11,14 +13,13 @@ public class Builder {
     private final Menu menu;
     private final ConsoleActionFactory actionFactory;
 
-    @Inject
+    @Autowired
     public Builder(Menu rootMenu, MenuItem menuItem, Menu menu, ConsoleActionFactory actionFactory) {
         this.rootMenu = rootMenu;
         this.menuItem = menuItem;
         this.menu = menu;
         this.actionFactory = actionFactory;
     }
-
 
     public void build() {
         rootMenu.setName("Главное меню");

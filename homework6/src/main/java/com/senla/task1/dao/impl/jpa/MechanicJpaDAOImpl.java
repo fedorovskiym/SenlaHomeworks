@@ -8,10 +8,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
+@Qualifier("mechanicJpaDAO")
 public class MechanicJpaDAOImpl extends AbstractJpaDAO<Mechanic, Integer> implements MechanicDAO {
 
     private static final String HQL_SORT_BY = "SELECT m FROM Mechanic m ORDER BY ";
