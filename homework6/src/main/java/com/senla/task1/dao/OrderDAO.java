@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderDAO extends GenericDAO<Order, Integer> {
+
     Optional<Order> getEndDateTimeLastActiveOrder();
 
     List<Order> sortBy(String field, boolean flag);
