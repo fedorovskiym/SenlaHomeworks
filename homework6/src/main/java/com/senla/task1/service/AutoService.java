@@ -2,6 +2,7 @@ package com.senla.task1.service;
 
 import com.senla.task1.annotations.Inject;
 import com.senla.task1.annotations.PostConstruct;
+import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
@@ -18,8 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,36 +55,13 @@ public class AutoService {
 
         Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
         Order order = new Order(carModel, mechanic, garagePlace, duration, price);
+        mechanic.setBusy(true);
+        garagePlace.setEmpty(false);
+        mechanicService.updateMechanic(mechanic);
+        garagePlaceService.updateGaragePlace(garagePlace);
 
-        Connection conn = null;
-        try {
-            conn = orderService.getOrderDAO().getConnection();
-            conn.setAutoCommit(false);
-
-            mechanic.setBusy(true);
-            garagePlace.setEmpty(false);
-            mechanicService.updateMechanic(mechanic);
-            garagePlaceService.updateGaragePlace(garagePlace);
-
-            orderService.addOrder(order);
-            conn.commit();
-            logger.info("Заказ {} создан", order);
-        } catch (Exception e) {
-            try {
-                if (conn != null) conn.rollback();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            logger.error("Ошибка при создании заказа {}", order);
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (conn != null) conn.setAutoCommit(true);
-            } catch (Exception ex) {
-                logger.error("Нарушение транзакции");
-                ex.printStackTrace();
-            }
-        }
+        orderService.addOrder(order);
+        logger.info("Заказ {} создан", order);
     }
 
     public void getAvailableSlot(Integer year, Integer month, Integer day) {
@@ -117,9 +93,6 @@ public class AutoService {
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                 String line;
                 boolean firstLine = true;
-
-                Connection connection = orderService.getOrderDAO().getConnection();
-                connection.setAutoCommit(false);
 
                 try {
                     while ((line = bufferedReader.readLine()) != null) {
@@ -179,17 +152,11 @@ public class AutoService {
                         garagePlaceService.updateGaragePlace(garagePlace);
                     }
 
-                    connection.commit();
                     logger.info("Данные импортированы из файла {}", resourceName);
                 } catch (Exception e) {
-                    connection.rollback();
                     logger.info("Ошибка при импорте данных из файла {}", resourceName, e);
                     throw new RuntimeException(e);
-                } finally {
-                    connection.setAutoCommit(true);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -259,5 +226,37 @@ public class AutoService {
         order.setPrice(price);
         orderService.update(order);
         System.out.println("Заказ №" + id + " обновлен");
+    }
+
+    public void deleteOrder(Integer id) {
+        logger.info("Обработка удаления заказа № {}", id);
+        Order order = orderService.getOrderDAO().findById(id).orElseThrow(() -> new OrderException(
+                "Заказ с №" + id + " не найден"
+        ));
+        orderService.getOrderDAO().delete(order);
+        logger.info("Заказ № {} удален", id);
+    }
+
+    public void closeOrder(Integer id) {
+        logger.info("Обработка закрытия заказа № {}", id);
+        Order order = orderService.getOrderDAO().findById(id).orElseThrow(() -> new OrderException(
+                "Заказ с №" + id + " не найден"
+        ));
+
+        order.closeOrder();
+        orderService.getOrderDAO().update(order);
+        logger.info("Заказ № {} закрыт", id);
+        orderService.acceptOrder(id + 1);
+    }
+
+    public void cancelOrder(Integer id) {
+        logger.info("Обработка отмены заказа № {}", id);
+        Order order = orderService.getOrderDAO().findById(id).orElseThrow(() -> new OrderException(
+                "Заказ с №" + id + " не найден"
+        ));
+
+        order.cancelOrder();
+        orderService.getOrderDAO().update(order);
+        logger.info("Заказ № {} отменен", id);
     }
 }

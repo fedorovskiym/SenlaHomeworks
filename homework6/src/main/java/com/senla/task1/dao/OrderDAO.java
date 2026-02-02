@@ -11,13 +11,11 @@ public interface OrderDAO extends GenericDAO<Order, Integer> {
 
     Optional<Order> getEndDateTimeLastActiveOrder();
 
-    Optional<Order> findOrderById(Integer id);
-
     List<Order> sortBy(String field, boolean flag);
 
     List<Order> findOrderByMechanicId(Integer mechanicId);
 
-    List<Order> finalOrderByStatus(OrderStatus status);
+    List<Order> findOrderByStatus(OrderStatus status);
 
     Boolean checkIsOrderExists(Integer id);
 

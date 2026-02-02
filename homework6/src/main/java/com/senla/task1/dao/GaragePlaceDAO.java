@@ -13,7 +13,5 @@ public interface GaragePlaceDAO extends GenericDAO<GaragePlace, Integer> {
 
     Optional<GaragePlace> findByPlaceNumber(int placeNumber);
 
-    Optional<GaragePlace> findById(Integer id);
-
     void importWithTransaction(List<GaragePlace> garagePlaces);
 }

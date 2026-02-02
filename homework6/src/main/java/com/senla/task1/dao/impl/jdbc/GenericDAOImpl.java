@@ -1,5 +1,6 @@
-package com.senla.task1.dao;
+package com.senla.task1.dao.impl.jdbc;
 
+import com.senla.task1.dao.GenericDAO;
 import com.senla.task1.util.JDBCUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,8 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public abstract class GenericDAOImpl<T extends Serializable, ID> implements GenericDAO<T, ID> {
+public abstract class GenericDAOImpl<T, PK extends Serializable> implements GenericDAO<T, PK> {
 
     private static final Logger logger = LogManager.getLogger(GenericDAOImpl.class);
     private Connection connection;
@@ -65,19 +67,35 @@ public abstract class GenericDAOImpl<T extends Serializable, ID> implements Gene
         }
     }
 
+//    @Override
+//    public void delete(T entity) {
+//        String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
+//        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
+//            preparedStatement.setInt(1, T.);
+//            int deletedRows = preparedStatement.executeUpdate();
+//            if (deletedRows == 0) {
+//                throw new RuntimeException("Сущность с id = " + id + " не найдена");
+//            }
+//        } catch (SQLException e) {
+//            logger.error("Ошибка при удалении сущности", e);
+//            throw new RuntimeException(e);
+//        }
+//    }
+
     @Override
-    public void delete(ID id) {
-        String sql = "DELETE FROM " + getTableName() + " WHERE id=?";
+    public Optional<T> findById(PK id) {
+        String sql = "SELECT * FROM " + getTableName() + " WHERE id=?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, (Integer) id);
-            int deletedRows = preparedStatement.executeUpdate();
-            if (deletedRows == 0) {
-                throw new RuntimeException("Сущность с id = " + id + " не найдена");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                T entity = mapRow(resultSet);
+                return Optional.of(entity);
             }
         } catch (SQLException e) {
-            logger.error("Ошибка при удалении сущности", e);
             throw new RuntimeException(e);
         }
+        return Optional.empty();
     }
 
     @Override
