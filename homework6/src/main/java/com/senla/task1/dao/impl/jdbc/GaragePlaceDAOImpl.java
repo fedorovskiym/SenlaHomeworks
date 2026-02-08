@@ -1,6 +1,5 @@
 package com.senla.task1.dao.impl.jdbc;
 
-import com.senla.task1.annotations.PostConstruct;
 import com.senla.task1.dao.GaragePlaceDAO;
 import com.senla.task1.models.GaragePlace;
 import org.apache.logging.log4j.LogManager;
@@ -19,11 +18,6 @@ import java.util.Optional;
 public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> implements GaragePlaceDAO {
 
     private static final Logger logger = LogManager.getLogger(GaragePlaceDAOImpl.class);
-
-    @PostConstruct
-    public void post() {
-        System.out.println("GaragePlaceDAOImpl создался");
-    }
 
     @Override
     public String getTableName() {

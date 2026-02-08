@@ -1,12 +1,12 @@
 package com.senla.task1.dao.impl.jdbc;
 
-import com.senla.task1.annotations.Inject;
 import com.senla.task1.dao.OrderDAO;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
@@ -27,7 +27,7 @@ public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements Orde
     private static final Logger logger = LogManager.getLogger(OrderDAOImpl.class);
 
 
-    @Inject
+    @Autowired
     public OrderDAOImpl(MechanicDAOImpl mechanicDAO, GaragePlaceDAOImpl garagePlaceDAO) {
         this.mechanicDAO = mechanicDAO;
         this.garagePlaceDAO = garagePlaceDAO;
