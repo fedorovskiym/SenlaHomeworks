@@ -1,9 +1,9 @@
-package com.senla.task1.dao.impl.jpa;
+package com.senla.task1.repository.impl.jpa;
 
-import com.senla.task1.dao.OrderStatusDAO;
 import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
+import com.senla.task1.repository.OrderStatusRepository;
 import com.senla.task1.util.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class OrderStatusJpaDAOImpl extends AbstractJpaDAO<OrderStatus, Integer> implements OrderStatusDAO {
+public class OrderStatusJpaRepositoryImpl extends AbstractJpaRepository<OrderStatus, Integer> implements OrderStatusRepository {
 
     private static final String HQL_FIND_BY_CODE = "SELECT o from OrderStatus o WHERE code = :code";
-    private static final Logger logger = LogManager.getLogger(OrderStatusJpaDAOImpl.class);
+    private static final Logger logger = LogManager.getLogger(OrderStatusJpaRepositoryImpl.class);
 
-    public OrderStatusJpaDAOImpl(Class<OrderStatus> type) {
+    public OrderStatusJpaRepositoryImpl(Class<OrderStatus> type) {
         super(type);
     }
 
-    public OrderStatusJpaDAOImpl() {
+    public OrderStatusJpaRepositoryImpl() {
         super(OrderStatus.class);
     }
 

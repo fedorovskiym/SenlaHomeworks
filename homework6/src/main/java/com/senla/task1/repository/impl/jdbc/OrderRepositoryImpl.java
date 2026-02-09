@@ -1,9 +1,9 @@
-package com.senla.task1.dao.impl.jdbc;
+package com.senla.task1.repository.impl.jdbc;
 
-import com.senla.task1.dao.OrderDAO;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
+import com.senla.task1.repository.OrderRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +19,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class OrderDAOImpl extends GenericDAOImpl<Order, Integer> implements OrderDAO {
+public class OrderRepositoryImpl extends GenericRepositoryImpl<Order, Integer> implements OrderRepository {
 
-    private final MechanicDAOImpl mechanicDAO;
-    private final GaragePlaceDAOImpl garagePlaceDAO;
+    private final MechanicRepositoryImpl mechanicRepository;
+    private final GaragePlaceRepositoryImpl garagePlaceRepository;
     private static final String SQL_ORDER_BY = "SELECT *, EXTRACT(EPOCH FROM duration) AS duration_seconds FROM orders ORDER BY ";
-    private static final Logger logger = LogManager.getLogger(OrderDAOImpl.class);
-
+    private static final Logger logger = LogManager.getLogger(OrderRepositoryImpl.class);
 
     @Autowired
-    public OrderDAOImpl(MechanicDAOImpl mechanicDAO, GaragePlaceDAOImpl garagePlaceDAO) {
-        this.mechanicDAO = mechanicDAO;
-        this.garagePlaceDAO = garagePlaceDAO;
+    public OrderRepositoryImpl(MechanicRepositoryImpl mechanicRepository, GaragePlaceRepositoryImpl garagePlaceRepository) {
+        this.mechanicRepository = mechanicRepository;
+        this.garagePlaceRepository = garagePlaceRepository;
     }
 
     @Override

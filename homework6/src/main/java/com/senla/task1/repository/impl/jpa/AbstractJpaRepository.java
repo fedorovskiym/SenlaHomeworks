@@ -1,7 +1,7 @@
-package com.senla.task1.dao.impl.jpa;
+package com.senla.task1.repository.impl.jpa;
 
-import com.senla.task1.dao.GenericDAO;
 import com.senla.task1.exceptions.JpaException;
+import com.senla.task1.repository.GenericRepository;
 import com.senla.task1.util.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractJpaDAO<T, PK extends Serializable> implements GenericDAO<T, PK> {
+public abstract class AbstractJpaRepository<T, PK extends Serializable> implements GenericRepository<T, PK> {
 
     protected Class<T> type;
-    private static final Logger logger = LogManager.getLogger(AbstractJpaDAO.class);
+    private static final Logger logger = LogManager.getLogger(AbstractJpaRepository.class);
 
-    public AbstractJpaDAO(Class<T> type) {
+    public AbstractJpaRepository(Class<T> type) {
         this.type = type;
     }
 

@@ -1,10 +1,10 @@
-package com.senla.task1.dao.impl.jpa;
+package com.senla.task1.repository.impl.jpa;
 
-import com.senla.task1.dao.OrderDAO;
 import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
+import com.senla.task1.repository.OrderRepository;
 import com.senla.task1.util.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Repository
 @Qualifier("orderJpaDAO")
-public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements OrderDAO {
+public class OrderJpaRepositoryImpl extends AbstractJpaRepository<Order, Integer> implements OrderRepository {
 
     private static final String HQL_SORT_BY = "SELECT o FROM Order o ORDER BY ";
     private static final String HQL_FIND_BY_MECHANIC = "SELECT o FROM Order o WHERE o.Mechanic.Id = :mechanicId";
@@ -32,13 +32,13 @@ public class OrderJpaDAOImpl extends AbstractJpaDAO<Order, Integer> implements O
                     "WHERE s.code = :waiting OR s.code = :accepted " +
                     "ORDER BY o.submissionDateTime DESC";
 
-    private static final Logger logger = LogManager.getLogger(OrderJpaDAOImpl.class);
+    private static final Logger logger = LogManager.getLogger(OrderJpaRepositoryImpl.class);
 
-    public OrderJpaDAOImpl(Class<Order> type) {
+    public OrderJpaRepositoryImpl(Class<Order> type) {
         super(type);
     }
 
-    public OrderJpaDAOImpl() {
+    public OrderJpaRepositoryImpl() {
         super(Order.class);
     }
 

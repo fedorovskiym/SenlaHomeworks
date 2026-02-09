@@ -1,11 +1,11 @@
-package com.senla.task1.dao;
+package com.senla.task1.repository;
 
 import com.senla.task1.models.GaragePlace;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface GaragePlaceDAO extends GenericDAO<GaragePlace, Integer> {
+public interface GaragePlaceRepository extends GenericRepository<GaragePlace, Integer> {
     Boolean checkIsPlaceNumberExists(int placeNumber);
 
     List<GaragePlace> findFreeGaragePlaces();

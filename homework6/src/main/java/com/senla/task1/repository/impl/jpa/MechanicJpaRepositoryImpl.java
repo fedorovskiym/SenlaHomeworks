@@ -1,8 +1,8 @@
-package com.senla.task1.dao.impl.jpa;
+package com.senla.task1.repository.impl.jpa;
 
-import com.senla.task1.dao.MechanicDAO;
 import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.models.Mechanic;
+import com.senla.task1.repository.MechanicRepository;
 import com.senla.task1.util.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,16 +16,16 @@ import java.util.List;
 
 @Repository
 @Qualifier("mechanicJpaDAO")
-public class MechanicJpaDAOImpl extends AbstractJpaDAO<Mechanic, Integer> implements MechanicDAO {
+public class MechanicJpaRepositoryImpl extends AbstractJpaRepository<Mechanic, Integer> implements MechanicRepository {
 
     private static final String HQL_SORT_BY = "SELECT m FROM Mechanic m ORDER BY ";
-    private static final Logger logger = LogManager.getLogger(MechanicJpaDAOImpl.class);
+    private static final Logger logger = LogManager.getLogger(MechanicJpaRepositoryImpl.class);
 
-    public MechanicJpaDAOImpl(Class<Mechanic> type) {
+    public MechanicJpaRepositoryImpl(Class<Mechanic> type) {
         super(type);
     }
 
-    public MechanicJpaDAOImpl() {
+    public MechanicJpaRepositoryImpl() {
         super(Mechanic.class);
     }
 

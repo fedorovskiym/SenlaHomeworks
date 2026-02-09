@@ -1,10 +1,10 @@
 package com.senla.task1.service;
 
-import com.senla.task1.dao.OrderDAO;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.models.enums.OrderSortType;
+import com.senla.task1.repository.OrderRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,23 +26,23 @@ public class OrderService {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
     private final String folderPath = "data";
     private final String fileName = "order.bin";
-    private final OrderDAO orderDAO;
+    private final OrderRepository orderRepository;
     private final OrderStatusService orderStatusService;
     private final static Logger logger = LogManager.getLogger(OrderService.class);
 
     @Autowired
-    public OrderService(@Qualifier("orderJpaDAO") OrderDAO orderDAO, OrderStatusService orderStatusService) {
-        this.orderDAO = orderDAO;
+    public OrderService(@Qualifier("orderJpaDAO") OrderRepository orderRepository, OrderStatusService orderStatusService) {
+        this.orderRepository = orderRepository;
         this.orderStatusService = orderStatusService;
         registerShutdown();
     }
 
-    public OrderDAO getOrderDAO() {
-        return orderDAO;
+    public OrderRepository getOrderDAO() {
+        return orderRepository;
     }
 
     public List<Order> findAllOrders() {
-        return orderDAO.findAll();
+        return orderRepository.findAll();
     }
 
     public void addOrder(Order order) {
@@ -50,10 +50,10 @@ public class OrderService {
         if (endTimeLastOrder != null) {
             order.setPlannedCompletionDateTime(endTimeLastOrder);
             order.setEndDateTime(endTimeLastOrder.plus(order.getDuration()));
-            orderDAO.save(order);
+            orderRepository.save(order);
         } else {
             acceptOrder(order.getId());
-            orderDAO.save(order);
+            orderRepository.save(order);
         }
         System.out.println("Заказ: " + order.getCarName() + " принят в гараж №" + order.getGaragePlace().getPlaceNumber() + ". Назначен механик " + order.getMechanic().getName());
         System.out.println("Статус заказа: '" + order.getStatus().getName() + "'");
@@ -65,7 +65,7 @@ public class OrderService {
 
     public void acceptOrder(Integer id) {
         logger.info("Обработка принятия заказа № {}", id);
-        Order order = orderDAO.findById(id).orElseThrow(() -> new OrderException(
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderException(
                 "Заказ с №" + id + " не найден"
         ));
 
@@ -82,16 +82,16 @@ public class OrderService {
             order.setCompletionDateTime(LocalDateTime.now());
             order.setEndDateTime(order.getCompletionDateTime().plus(order.getDuration()));
         }
-        orderDAO.update(order);
+        orderRepository.update(order);
         logger.info("Заказ № {} принят", id);
     }
 
     public void deleteOrder(Integer id) {
         logger.info("Обработка удаления заказа № {}", id);
-        Order order = orderDAO.findById(id).orElseThrow(() -> new OrderException(
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderException(
                 "Заказ с №" + id + " не найден"
         ));
-        orderDAO.delete(order);
+        orderRepository.delete(order);
         logger.info("Заказ № {} удален", id);
     }
 
@@ -100,14 +100,14 @@ public class OrderService {
         Duration time = Duration.ofHours(hours).plusMinutes(minutes);
         List<Order> orderList = findAllOrders();
         orderList.forEach(order -> order.shiftTime(time));
-        orderList.forEach(order -> orderDAO.update(order));
+        orderList.forEach(order -> orderRepository.update(order));
         logger.info("Изменено время выполнения всех заказов на {} часов, {} минут", hours, minutes);
     }
 
     // Вывод заказа по айдишнку механика
     public void findOrderByMechanicId(Integer mechanicId) {
         logger.info("Обработка поиска заказов по механику № {}", mechanicId);
-        List<Order> mechanicOrders = orderDAO.findOrderByMechanicId(mechanicId);
+        List<Order> mechanicOrders = orderRepository.findOrderByMechanicId(mechanicId);
 
         if (!mechanicOrders.isEmpty()) {
             showOrders(mechanicOrders);
@@ -119,7 +119,7 @@ public class OrderService {
 
     // Получение времени окончания последнего активного заказа
     public LocalDateTime getEndDateTimeLastOrder() {
-        Order order = orderDAO.getEndDateTimeLastActiveOrder().orElse(null);
+        Order order = orderRepository.getEndDateTimeLastActiveOrder().orElse(null);
 
         if (order == null) {
             return null;
@@ -132,7 +132,7 @@ public class OrderService {
     // Вывод заказов по статусу
     public void findOrderByStatus(OrderStatusType status) {
         logger.info("Обработка вывода заказов по статусу {}", status);
-        List<Order> ordersByStatus = orderDAO.findOrderByStatus(orderStatusService.findByCode(status));
+        List<Order> ordersByStatus = orderRepository.findOrderByStatus(orderStatusService.findByCode(status));
 
         if (!ordersByStatus.isEmpty()) {
             showOrders(ordersByStatus);
@@ -151,21 +151,21 @@ public class OrderService {
     // Сортировка по дате подачи заявки (flag - определяет отображение)
     public void sortOrdersByDateOfSubmission(Boolean flag) {
         logger.info("Обработка сортировки заказов по дате подачи");
-        showOrders(orderDAO.sortBy(OrderSortType.DATE_OF_SUBMISSION.getDisplayName(), flag));
+        showOrders(orderRepository.sortBy(OrderSortType.DATE_OF_SUBMISSION.getDisplayName(), flag));
         logger.info("Сортировка заказов по дате подачи завершена");
     }
 
     // Сортировка по дате выполнения (flag - определяет отображение), если у заказа нет даты выполнения, а только планируемая, то они становятся в конец
     public void sortOrdersByDateOfCompletion(Boolean flag) {
         logger.info("Обработка сортировки заказов по дате выполнения");
-        showOrders(orderDAO.sortBy(OrderSortType.DATE_OF_COMPLETION.getDisplayName(), flag));
+        showOrders(orderRepository.sortBy(OrderSortType.DATE_OF_COMPLETION.getDisplayName(), flag));
         logger.info("Сортировка заказов по дате выполнения завершена");
     }
 
     // Сортировка по цене (flag - определяет отображение)
     public void sortOrdersByPrice(Boolean flag) {
         logger.info("Обработка сортировки заказов по цене");
-        showOrders(orderDAO.sortBy(OrderSortType.PRICE.getDisplayName(), flag));
+        showOrders(orderRepository.sortBy(OrderSortType.PRICE.getDisplayName(), flag));
         logger.info("Сортировка заказов по цене завершена");
     }
 
@@ -176,7 +176,7 @@ public class OrderService {
         LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
         System.out.println("Заказы в период с " + startTime.format(dateTimeFormatter) + " по " + endTime.format(dateTimeFormatter));
         System.out.println();
-        List<Order> sortedOrdersOverPeriod = orderDAO.findOrderOverPeriodOfTime(startTime, endTime, sortType.toString(), flag);
+        List<Order> sortedOrdersOverPeriod = orderRepository.findOrderOverPeriodOfTime(startTime, endTime, sortType.toString(), flag);
         showOrders(sortedOrdersOverPeriod);
         logger.info("Поиск заказов за период времени завершен");
     }
@@ -235,17 +235,17 @@ public class OrderService {
     }
 
     public Order findOrderById(Integer id) {
-        return orderDAO.findById(id).orElseThrow(() -> new OrderException(
+        return orderRepository.findById(id).orElseThrow(() -> new OrderException(
                 "Заказ с id - " + id + " не найден"
         ));
     }
 
     public boolean isOrdersExists(Integer id) {
-        return orderDAO.checkIsOrderExists(id);
+        return orderRepository.checkIsOrderExists(id);
     }
 
     public void update(Order order) {
-        orderDAO.update(order);
+        orderRepository.update(order);
     }
 
     public void save() {

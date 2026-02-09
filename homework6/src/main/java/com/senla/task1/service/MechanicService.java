@@ -1,10 +1,10 @@
 package com.senla.task1.service;
 
-import com.senla.task1.dao.MechanicDAO;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.MechanicSortType;
+import com.senla.task1.repository.MechanicRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,35 +32,35 @@ public class MechanicService {
 
     private final String folderPath = "data";
     private final String fileName = "mechanic.bin";
-    private final MechanicDAO mechanicDAO;
+    private final MechanicRepository mechanicRepository;
     private static final Logger logger = LogManager.getLogger(MechanicService.class);
 
     @Autowired
-    public MechanicService(@Qualifier("mechanicJpaDAO") MechanicDAO mechanicDAO) {
-        this.mechanicDAO = mechanicDAO;
+    public MechanicService(@Qualifier("mechanicJpaDAO") MechanicRepository mechanicRepository) {
+        this.mechanicRepository = mechanicRepository;
         registerShutdown();
     }
 
     public List<Mechanic> findAllMechanic() {
-        return mechanicDAO.findAll();
+        return mechanicRepository.findAll();
     }
 
     public void addMechanic(String name, String surname, Double experienceYears) {
         logger.info("Обработка добавления нового механика");
         Mechanic mechanic = new Mechanic(name, surname, experienceYears);
-        mechanicDAO.save(mechanic);
+        mechanicRepository.save(mechanic);
         logger.info("Добавлен новый механик {}", mechanic);
     }
 
     public void removeMechanicById(Integer id) {
         logger.info("Обработка удаления механика № {}", id);
-        Mechanic mechanic = mechanicDAO.findById(id).orElse(null);
-        mechanicDAO.delete(mechanic);
+        Mechanic mechanic = mechanicRepository.findById(id).orElse(null);
+        mechanicRepository.delete(mechanic);
         logger.info("Механик № {} удален", id);
     }
 
     public Mechanic findMechanicById(Integer id) {
-        return mechanicDAO.findById(id).orElseThrow(() -> new MechanicException(
+        return mechanicRepository.findById(id).orElseThrow(() -> new MechanicException(
                 "Механик с id - " + id + " не существует"
         ));
     }
@@ -71,14 +71,14 @@ public class MechanicService {
 
     public void showSortedMechanicByAlphabet(Boolean flag) {
         logger.info("Обработка сортировки механиков по алфавиту");
-        List<Mechanic> sortedList = mechanicDAO.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag);
+        List<Mechanic> sortedList = mechanicRepository.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag);
         logger.info("Механики отсортированы по алфавиту");
         showAllMechanic(sortedList);
     }
 
     public void showSortedMechanicByBusy() {
         logger.info("Обработка сортировки механиков по занятости");
-        List<Mechanic> sortedList = mechanicDAO.sortBy(MechanicSortType.BUSY.getDisplayName(), true);
+        List<Mechanic> sortedList = mechanicRepository.sortBy(MechanicSortType.BUSY.getDisplayName(), true);
         logger.info("Механики отсортированы по занятости");
         showAllMechanic(sortedList);
     }
@@ -126,7 +126,7 @@ public class MechanicService {
             }
 
             // Транзакция
-            mechanicDAO.importWithTransaction(mechanicsToSaveOrUpdate);
+            mechanicRepository.importWithTransaction(mechanicsToSaveOrUpdate);
 
             logger.info("Данные успешно импортированы из файла {}", resourceName);
         } catch (IOException e) {
@@ -161,11 +161,11 @@ public class MechanicService {
     }
 
     public void updateMechanic(Mechanic mechanic) {
-        mechanicDAO.update(mechanic);
+        mechanicRepository.update(mechanic);
     }
 
     public boolean isMechanicExists(Integer id) {
-        return mechanicDAO.checkIsMechanicExists(id);
+        return mechanicRepository.checkIsMechanicExists(id);
     }
 
     public void save() {

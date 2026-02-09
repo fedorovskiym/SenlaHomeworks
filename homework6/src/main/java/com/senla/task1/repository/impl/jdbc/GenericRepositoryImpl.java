@@ -1,6 +1,6 @@
-package com.senla.task1.dao.impl.jdbc;
+package com.senla.task1.repository.impl.jdbc;
 
-import com.senla.task1.dao.GenericDAO;
+import com.senla.task1.repository.GenericRepository;
 import com.senla.task1.util.JDBCUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class GenericDAOImpl<T, PK extends Serializable> implements GenericDAO<T, PK> {
+public abstract class GenericRepositoryImpl<T, PK extends Serializable> implements GenericRepository<T, PK> {
 
-    private static final Logger logger = LogManager.getLogger(GenericDAOImpl.class);
+    private static final Logger logger = LogManager.getLogger(GenericRepositoryImpl.class);
     private Connection connection;
 
     protected abstract String getTableName();

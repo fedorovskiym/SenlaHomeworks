@@ -1,7 +1,7 @@
-package com.senla.task1.dao.impl.jdbc;
+package com.senla.task1.repository.impl.jdbc;
 
-import com.senla.task1.dao.GaragePlaceDAO;
 import com.senla.task1.models.GaragePlace;
+import com.senla.task1.repository.GaragePlaceRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class GaragePlaceDAOImpl extends GenericDAOImpl<GaragePlace, Integer> implements GaragePlaceDAO {
+public class GaragePlaceRepositoryImpl extends GenericRepositoryImpl<GaragePlace, Integer> implements GaragePlaceRepository {
 
-    private static final Logger logger = LogManager.getLogger(GaragePlaceDAOImpl.class);
+    private static final Logger logger = LogManager.getLogger(GaragePlaceRepositoryImpl.class);
 
     @Override
     public String getTableName() {

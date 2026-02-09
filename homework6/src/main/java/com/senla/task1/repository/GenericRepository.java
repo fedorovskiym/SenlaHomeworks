@@ -1,10 +1,10 @@
-package com.senla.task1.dao;
+package com.senla.task1.repository;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public interface GenericDAO<T, PK extends Serializable> {
+public interface GenericRepository<T, PK extends Serializable> {
 
     List<T> findAll();
 

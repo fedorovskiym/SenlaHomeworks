@@ -1,7 +1,7 @@
-package com.senla.task1.dao.impl.jdbc;
+package com.senla.task1.repository.impl.jdbc;
 
-import com.senla.task1.dao.MechanicDAO;
 import com.senla.task1.models.Mechanic;
+import com.senla.task1.repository.MechanicRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MechanicDAOImpl extends GenericDAOImpl<Mechanic, Integer> implements MechanicDAO {
+public class MechanicRepositoryImpl extends GenericRepositoryImpl<Mechanic, Integer> implements MechanicRepository {
 
     private static final String SQL_ORDER_BY = "SELECT * FROM mechanic ORDER BY ";
-    private static final Logger logger = LogManager.getLogger(MechanicDAOImpl.class);
+    private static final Logger logger = LogManager.getLogger(MechanicRepositoryImpl.class);
 
     @Override
     protected String getTableName() {

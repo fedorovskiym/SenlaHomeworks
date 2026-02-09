@@ -1,4 +1,4 @@
-package com.senla.task1.dao;
+package com.senla.task1.repository;
 
 import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface OrderDAO extends GenericDAO<Order, Integer> {
+public interface OrderRepository extends GenericRepository<Order, Integer> {
     Optional<Order> getEndDateTimeLastActiveOrder();
 
     List<Order> sortBy(String field, boolean flag);

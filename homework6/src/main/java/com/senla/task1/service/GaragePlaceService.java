@@ -1,9 +1,9 @@
 package com.senla.task1.service;
 
-import com.senla.task1.dao.GaragePlaceDAO;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;
+import com.senla.task1.repository.GaragePlaceRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,22 +31,22 @@ public class GaragePlaceService {
 
     private final String folderPath = "data";
     private final String fileName = "garage_places.bin";
-    private final GaragePlaceDAO garagePlaceDAO;
+    private final GaragePlaceRepository garagePlaceRepository;
     private static final Logger logger = LogManager.getLogger(GaragePlaceService.class);
 
     @Autowired
-    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceDAO garagePlaceDAO) {
+    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceRepository garagePlaceRepository) {
 //        load();
         registerShutdown();
-        this.garagePlaceDAO = garagePlaceDAO;
+        this.garagePlaceRepository = garagePlaceRepository;
     }
 
     public List<GaragePlace> findAllGaragePlace() {
-        return garagePlaceDAO.findAll();
+        return garagePlaceRepository.findAll();
     }
 
     public GaragePlace findPlaceByNumber(Integer placeNumber) {
-        return garagePlaceDAO.findByPlaceNumber(placeNumber).orElseThrow(() -> new GaragePlaceException(
+        return garagePlaceRepository.findByPlaceNumber(placeNumber).orElseThrow(() -> new GaragePlaceException(
                 "Место в гараже № " + placeNumber + " не существует"
         ));
     }
@@ -54,7 +54,7 @@ public class GaragePlaceService {
 
     public void findFreeGaragePlaces() {
         logger.info("Обработка поиска всех мест в гараже");
-        List<GaragePlace> freeGaragePlaces = garagePlaceDAO.findFreeGaragePlaces();
+        List<GaragePlace> freeGaragePlaces = garagePlaceRepository.findFreeGaragePlaces();
         freeGaragePlaces.forEach(garagePlace -> System.out.println(formatGaragePlace(garagePlace)));
         logger.info("Выведены места в гараже и их статус");
     }
@@ -62,16 +62,16 @@ public class GaragePlaceService {
     public void addGaragePlace(Integer number) {
         logger.info("Обработка добавления гаражного места № {}", number);
         GaragePlace garagePlace = new GaragePlace(number);
-        garagePlaceDAO.save(garagePlace);
+        garagePlaceRepository.save(garagePlace);
         logger.info("Место № {} успешно добавлено", number);
     }
 
     public void removeGaragePlace(Integer id) {
         logger.info("Обработка удаления гаражного места № {}", id);
-        GaragePlace garagePlace = garagePlaceDAO.findById(id).orElseThrow(() -> new GaragePlaceException(
+        GaragePlace garagePlace = garagePlaceRepository.findById(id).orElseThrow(() -> new GaragePlaceException(
                 "Места в гараже c id " + id + " не найдено"
         ));
-        garagePlaceDAO.delete(garagePlace);
+        garagePlaceRepository.delete(garagePlace);
         logger.info("Место в гараже № {} удалено", id);
     }
 
@@ -116,7 +116,7 @@ public class GaragePlaceService {
                 }
             }
             // Транзакция
-            garagePlaceDAO.importWithTransaction(garagePlacesToSaveOrUpdate);
+            garagePlaceRepository.importWithTransaction(garagePlacesToSaveOrUpdate);
             logger.info("Данные успешно импортированы из файла {}", resourceName);
         } catch (IOException e) {
             logger.error("Ошибка при импорте данных из файла {}", resourceName);
@@ -125,7 +125,7 @@ public class GaragePlaceService {
     }
 
     public void updateGaragePlace(GaragePlace garagePlace) {
-        garagePlaceDAO.update(garagePlace);
+        garagePlaceRepository.update(garagePlace);
     }
 
     public void exportToCSV(String filePath) {
@@ -149,7 +149,7 @@ public class GaragePlaceService {
     }
 
     public boolean isGaragePlaceExists(Integer placeNumber) {
-        return garagePlaceDAO.checkIsPlaceNumberExists(placeNumber);
+        return garagePlaceRepository.checkIsPlaceNumberExists(placeNumber);
     }
 
     public void save() {
@@ -161,7 +161,7 @@ public class GaragePlaceService {
 
             File file = new File(folder, fileName);
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(garagePlaceDAO.findAll());
+                oos.writeObject(garagePlaceRepository.findAll());
                 System.out.println("Состояние мест в гараже сохранено");
             }
         } catch (IOException e) {

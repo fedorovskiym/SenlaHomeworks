@@ -36,5 +36,4 @@ public class MenuController implements InitializingBean {
         builder.build();
         navigator.setCurrentMenu(builder.getRootMenu());
     }
-
 }

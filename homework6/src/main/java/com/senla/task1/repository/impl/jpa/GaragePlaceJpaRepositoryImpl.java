@@ -1,8 +1,8 @@
-package com.senla.task1.dao.impl.jpa;
+package com.senla.task1.repository.impl.jpa;
 
-import com.senla.task1.dao.GaragePlaceDAO;
 import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.models.GaragePlace;
+import com.senla.task1.repository.GaragePlaceRepository;
 import com.senla.task1.util.HibernateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,17 +17,17 @@ import java.util.Optional;
 
 @Repository
 @Qualifier("garagePlaceJpaDAO")
-public class GaragePlaceJpaDAOImpl extends AbstractJpaDAO<GaragePlace, Integer> implements GaragePlaceDAO {
+public class GaragePlaceJpaRepositoryImpl extends AbstractJpaRepository<GaragePlace, Integer> implements GaragePlaceRepository {
 
     private static final String HQL_EXIST_PLACE_NUMBER = "SELECT g FROM GaragePlace g WHERE g.placeNumber = :placeNumber";
     private static final String HQL_FREE_GARAGE_PLACE = "SELECT g FROM GaragePlace g WHERE g.isEmpty = true";
-    private static final Logger logger = LogManager.getLogger(GaragePlaceJpaDAOImpl.class);
+    private static final Logger logger = LogManager.getLogger(GaragePlaceJpaRepositoryImpl.class);
 
-    public GaragePlaceJpaDAOImpl(Class<GaragePlace> type) {
+    public GaragePlaceJpaRepositoryImpl(Class<GaragePlace> type) {
         super(type);
     }
 
-    public GaragePlaceJpaDAOImpl() {
+    public GaragePlaceJpaRepositoryImpl() {
         super(GaragePlace.class);
     }
 
