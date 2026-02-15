@@ -26,7 +26,6 @@ public class LiquibaseConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        System.out.println(environment.getProperty("JDBCUtil.datasource.password"));
         dataSource.setDriverClassName("org.postgresql.Driver");
         dataSource.setUrl(environment.getProperty("JDBCUtil.datasource.url"));
         dataSource.setUsername(environment.getProperty("JDBCUtil.datasource.username"));
