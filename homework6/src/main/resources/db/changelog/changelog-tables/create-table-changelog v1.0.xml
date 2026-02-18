@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1771158667892-1" author="fedor">
+        <createTable tableName="garage_place">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_garage_place"/>
+            </column>
+            <column name="place_number" type="INT"/>
+            <column name="is_empty" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771158667892-2" author="fedor">
+        <createTable tableName="mechanic">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_mechanic"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="surname" type="VARCHAR(255)"/>
+            <column name="experience_years" type="DOUBLE"/>
+            <column name="is_busy" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771158667892-3" author="fedor">
+        <createTable tableName="order_status">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_order_status"/>
+            </column>
+            <column name="code" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771158667892-4" author="fedor">
+        <createTable tableName="orders">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_orders"/>
+            </column>
+            <column name="car_name" type="VARCHAR(255)"/>
+            <column name="mechanic_id" type="INT"/>
+            <column name="garage_place_id" type="INT"/>
+            <column name="order_status_id" type="INT"/>
+            <column name="submission_date_time" type="DATETIME"/>
+            <column name="planned_completion_date_time" type="DATETIME"/>
+            <column name="completion_date_time" type="DATETIME"/>
+            <column name="end_date_time" type="DATETIME"/>
+            <column name="duration" type="BIGINT"/>
+            <column name="price" type="DOUBLE"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771158667892-5" author="fedor">
+        <addForeignKeyConstraint baseColumnNames="garage_place_id" baseTableName="orders"
+                                 constraintName="FK_ORDERS_ON_GARAGE_PLACE" referencedColumnNames="id"
+                                 referencedTableName="garage_place"/>
+    </changeSet>
+    <changeSet id="1771158667892-6" author="fedor">
+        <addForeignKeyConstraint baseColumnNames="mechanic_id" baseTableName="orders"
+                                 constraintName="FK_ORDERS_ON_MECHANIC" referencedColumnNames="id"
+                                 referencedTableName="mechanic"/>
+    </changeSet>
+    <changeSet id="1771158667892-7" author="fedor">
+        <addForeignKeyConstraint baseColumnNames="order_status_id" baseTableName="orders"
+                                 constraintName="FK_ORDERS_ON_ORDER_STATUS" referencedColumnNames="id"
+                                 referencedTableName="order_status"/>
+    </changeSet>
+
+</databaseChangeLog>
