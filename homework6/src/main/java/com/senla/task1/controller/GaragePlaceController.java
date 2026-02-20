@@ -1,10 +1,26 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.dto.GaragePlaceDTORequest;
+import com.senla.task1.models.GaragePlace;
 import com.senla.task1.service.GaragePlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/garage_place")
 public class GaragePlaceController {
 
     private final GaragePlaceService garagePlaceService;
@@ -14,23 +30,35 @@ public class GaragePlaceController {
         this.garagePlaceService = garagePlaceService;
     }
 
-    public void showFreeGaragePlaces() {
-        garagePlaceService.findFreeGaragePlaces();
+    @GetMapping(value = "/free")
+    public List<GaragePlace> showFreeGaragePlaces() {
+        return garagePlaceService.findFreeGaragePlaces();
     }
 
-    public void addGaragePlace(int placeNumber) {
-        garagePlaceService.addGaragePlace(placeNumber);
+    @PostMapping(value = "/create")
+    public ResponseEntity<HttpStatus> addGaragePlace(@RequestBody GaragePlaceDTORequest garagePlaceDTORequest) {
+        garagePlaceService.addGaragePlace(garagePlaceDTORequest.placeNumber());
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    public void removeGaragePlace(int placeNumber) {
-        garagePlaceService.removeGaragePlace(placeNumber);
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<HttpStatus> removeGaragePlace(@PathVariable("id") Integer id) {
+        garagePlaceService.removeGaragePlace(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    public void importGaragePlaceFromCSV(String filePath) {
-        garagePlaceService.importFromCSV(filePath);
+    @PostMapping(value = "/import")
+    public ResponseEntity<HttpStatus> importGaragePlaceFromCSV(@RequestParam("fileName") String fileName) {
+        garagePlaceService.importFromCSV(fileName);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public void exportGaragePlaceToCSV(String filePath) {
-        garagePlaceService.exportToCSV(filePath);
+    @GetMapping(value = "/export")
+    public ResponseEntity<?> exportGaragePlaceToCSV() {
+        String csv = garagePlaceService.exportToCSV();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"places.csv\"")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(csv);
     }
 }

@@ -32,12 +32,12 @@ public class GaragePlaceJpaRepositoryImpl extends AbstractJpaRepository<GaragePl
     }
 
     @Override
-    public Boolean checkIsPlaceNumberExists(int placeNumber) {
+    public Boolean checkIsPlaceNumberExists(Integer placeNumber) {
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.getTransaction();
         try {
             transaction = session.beginTransaction();
-            if (session.createQuery(HQL_FREE_GARAGE_PLACE).setParameter("placeNumber", placeNumber) == null) {
+            if (session.createQuery(HQL_EXIST_PLACE_NUMBER).setParameter("placeNumber", placeNumber) == null) {
                 return false;
             }
             transaction.commit();
@@ -88,21 +88,4 @@ public class GaragePlaceJpaRepositoryImpl extends AbstractJpaRepository<GaragePl
         return Optional.ofNullable(garagePlace);
     }
 
-    @Override
-    public void importWithTransaction(List<GaragePlace> garagePlaces) {
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        try {
-            transaction = session.beginTransaction();
-            for (GaragePlace garagePlace : garagePlaces) {
-                session.saveOrUpdate(garagePlace);
-            }
-            transaction.commit();
-        } catch (JpaException e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
-    }
 }

@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GaragePlaceRepository extends GenericRepository<GaragePlace, Integer> {
-    Boolean checkIsPlaceNumberExists(int placeNumber);
+    Boolean checkIsPlaceNumberExists(Integer placeNumber);
 
     List<GaragePlace> findFreeGaragePlaces();
 
     Optional<GaragePlace> findByPlaceNumber(int placeNumber);
 
-    void importWithTransaction(List<GaragePlace> garagePlaces);
 }

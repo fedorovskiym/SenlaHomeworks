@@ -1,5 +1,6 @@
 package com.senla.task1.service;
 
+import com.senla.task1.config.AutoServiceConfig;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;
@@ -11,33 +12,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.File;
-import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class GaragePlaceService {
 
-    private final String folderPath = "data";
-    private final String fileName = "garage_places.bin";
     private final GaragePlaceRepository garagePlaceRepository;
+    private final AutoServiceConfig autoServiceConfig;
     private static final Logger logger = LogManager.getLogger(GaragePlaceService.class);
 
     @Autowired
-    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceRepository garagePlaceRepository) {
-//        load();
-        registerShutdown();
+    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceRepository garagePlaceRepository, AutoServiceConfig autoServiceConfig) {
+        this.autoServiceConfig = autoServiceConfig;
         this.garagePlaceRepository = garagePlaceRepository;
     }
 
@@ -52,14 +44,17 @@ public class GaragePlaceService {
     }
 
 
-    public void findFreeGaragePlaces() {
+    public List<GaragePlace> findFreeGaragePlaces() {
         logger.info("Обработка поиска всех мест в гараже");
         List<GaragePlace> freeGaragePlaces = garagePlaceRepository.findFreeGaragePlaces();
-        freeGaragePlaces.forEach(garagePlace -> System.out.println(formatGaragePlace(garagePlace)));
-        logger.info("Выведены места в гараже и их статус");
+        logger.info("Получены места в гараже и их статус");
+        return freeGaragePlaces;
     }
 
     public void addGaragePlace(Integer number) {
+        if (!autoServiceConfig.isAllowAddGaragePlace()) {
+            throw new GaragePlaceException("Добавление новых мест в гараже отключено!");
+        }
         logger.info("Обработка добавления гаражного места № {}", number);
         GaragePlace garagePlace = new GaragePlace(number);
         garagePlaceRepository.save(garagePlace);
@@ -67,6 +62,9 @@ public class GaragePlaceService {
     }
 
     public void removeGaragePlace(Integer id) {
+        if (!autoServiceConfig.isAllowDeleteGaragePlace()) {
+            throw new GaragePlaceException("Удаление мест в гараже отключено!");
+        }
         logger.info("Обработка удаления гаражного места № {}", id);
         GaragePlace garagePlace = garagePlaceRepository.findById(id).orElseThrow(() -> new GaragePlaceException(
                 "Места в гараже c id " + id + " не найдено"
@@ -89,7 +87,6 @@ public class GaragePlaceService {
 
     public void importFromCSV(String resourceName) {
         logger.info("Обработка импорта данных гаражных мест из файла {}", resourceName);
-        List<GaragePlace> garagePlacesToSaveOrUpdate = new ArrayList<>();
 
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
             if (inputStream == null) {
@@ -110,13 +107,14 @@ public class GaragePlaceService {
                     Integer id = Integer.parseInt(parts[0].trim());
                     int placeNumber = Integer.parseInt(parts[1].trim());
                     boolean isEmpty = Boolean.parseBoolean(parts[2].trim());
-
                     GaragePlace garagePlace = new GaragePlace(id, placeNumber, isEmpty);
-                    garagePlacesToSaveOrUpdate.add(garagePlace);
+                    if (isGaragePlaceExists(placeNumber)) {
+                        garagePlaceRepository.update(garagePlace);
+                    } else {
+                        garagePlaceRepository.save(garagePlace);
+                    }
                 }
             }
-            // Транзакция
-            garagePlaceRepository.importWithTransaction(garagePlacesToSaveOrUpdate);
             logger.info("Данные успешно импортированы из файла {}", resourceName);
         } catch (IOException e) {
             logger.error("Ошибка при импорте данных из файла {}", resourceName);
@@ -128,74 +126,23 @@ public class GaragePlaceService {
         garagePlaceRepository.update(garagePlace);
     }
 
-    public void exportToCSV(String filePath) {
-        logger.info("Обработка экспорта данных гаражных мест в файл {}", filePath);
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+    public String exportToCSV() {
+        logger.info("Обработка экспорта данных гаражных мест в файл");
+        List<GaragePlace> garagePlaces = garagePlaceRepository.findAll();
 
-            bufferedWriter.write("placeNumber;isEmpty");
-            bufferedWriter.newLine();
-
-            String lines = findAllGaragePlace().stream().map(garagePlace ->
-                            String.format("%d%b",
-                                    garagePlace.getPlaceNumber(),
-                                    garagePlace.isEmpty()))
-                    .collect(Collectors.joining(System.lineSeparator()));
-            bufferedWriter.write(lines);
-            logger.info("Данные гаражных мест успешно записаны в файл {}", filePath);
-        } catch (IOException e) {
-            logger.error("Ошибка при экспорте данных гаражных мест в файл {}", filePath);
-        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("id;placeNumber;isEmpty").append(System.lineSeparator());
+        garagePlaces.forEach(garagePlace -> stringBuilder.append(String.format("%d;%d;%b",
+                        garagePlace.getId(),
+                        garagePlace.getPlaceNumber(),
+                        garagePlace.isEmpty()))
+                .append(System.lineSeparator()));
+        logger.info("Данные гаражных мест успешно записаны в файл");
+        return stringBuilder.toString();
     }
 
     public boolean isGaragePlaceExists(Integer placeNumber) {
         return garagePlaceRepository.checkIsPlaceNumberExists(placeNumber);
     }
 
-    public void save() {
-        try {
-            File folder = new File(folderPath);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            File file = new File(folder, fileName);
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(garagePlaceRepository.findAll());
-                System.out.println("Состояние мест в гараже сохранено");
-            }
-        } catch (IOException e) {
-            System.out.println("Ошибка при сериализации файла");
-        }
-    }
-
-//    private void load() {
-//        File file = new File(folderPath, fileName);
-//        if (!file.exists()) return;
-//
-//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-//            List<GaragePlace> loadedList = (List<GaragePlace>) ois.readObject();
-//            placeList.clear();
-//            placeList.addAll(loadedList);
-//        } catch (IOException | ClassNotFoundException e) {
-//            System.out.println("Ошибка при десериализации файла");
-//        }
-//    }
-
-    private void registerShutdown() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
-    }
-
-    public String formatGaragePlace(GaragePlace garagePlace) {
-        return String.format(
-                """
-                        Id: %d
-                        Номер места: %d
-                        Статус: %s
-                        """,
-                garagePlace.getId(),
-                garagePlace.getPlaceNumber(),
-                garagePlace.isEmpty() ? "Не занято" : "Занято"
-        );
-    }
 }

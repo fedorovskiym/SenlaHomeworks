@@ -54,7 +54,7 @@ public class GaragePlaceRepositoryImpl extends GenericRepositoryImpl<GaragePlace
     }
 
     @Override
-    public Boolean checkIsPlaceNumberExists(int placeNumber) {
+    public Boolean checkIsPlaceNumberExists(Integer placeNumber) {
         String sql = "SELECT * FROM " + getTableName() + " WHERE place_number=?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, placeNumber);
@@ -101,35 +101,6 @@ public class GaragePlaceRepositoryImpl extends GenericRepositoryImpl<GaragePlace
         } catch (SQLException e) {
             logger.error("Ошибка нахождения места по номеру {}", placeNumber);
             throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void importWithTransaction(List<GaragePlace> garagePlaces) {
-        Connection conn = getConnection();
-        try {
-            conn.setAutoCommit(false);
-            for (GaragePlace garagePlace : garagePlaces) {
-                if (checkIsPlaceNumberExists(garagePlace.getPlaceNumber())) {
-                    update(garagePlace);
-                } else {
-                    save(garagePlace);
-                }
-            }
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                conn.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 

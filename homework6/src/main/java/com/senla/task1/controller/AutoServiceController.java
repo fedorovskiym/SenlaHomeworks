@@ -3,8 +3,11 @@ package com.senla.task1.controller;
 import com.senla.task1.service.AutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/autoservice")
 public class AutoServiceController {
 
     private final AutoService autoService;
