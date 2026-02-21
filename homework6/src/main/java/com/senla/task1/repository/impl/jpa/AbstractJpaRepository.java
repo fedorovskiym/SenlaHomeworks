@@ -1,20 +1,19 @@
 package com.senla.task1.repository.impl.jpa;
 
-import com.senla.task1.exceptions.JpaException;
 import com.senla.task1.repository.GenericRepository;
-import com.senla.task1.util.HibernateUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractJpaRepository<T, PK extends Serializable> implements GenericRepository<T, PK> {
 
+    @PersistenceContext
+    private EntityManager entityManager;
     protected Class<T> type;
     private static final Logger logger = LogManager.getLogger(AbstractJpaRepository.class);
 
@@ -22,87 +21,41 @@ public abstract class AbstractJpaRepository<T, PK extends Serializable> implemen
         this.type = type;
     }
 
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
     @Override
     public List<T> findAll() {
-        List<T> result = new ArrayList<>();
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        try {
-            transaction = session.beginTransaction();
-            result = session.createQuery("FROM " + type.getSimpleName(), type).getResultList();
-            transaction.commit();
-        } catch (JpaException e) {
-            transaction.rollback();
-            logger.error("Ошибка при нахождении сущностей класса {}", type.getSimpleName(), e);
-        } finally {
-            session.close();
-        }
+        EntityManager em = getEntityManager();
+        List<T> result;
+        result = entityManager.createQuery("FROM " + type.getSimpleName(), type).getResultList();
         return result;
     }
 
     @Override
     public void save(T entity) {
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        try {
-            transaction = session.beginTransaction();
-            session.save(entity);
-            transaction.commit();
-        } catch (JpaException e) {
-            transaction.rollback();
-            logger.error("Ошибка при сохранении сущности {}", type.getSimpleName(), e);
-        } finally {
-            session.close();
-        }
+        EntityManager em = getEntityManager();
+        em.persist(entity);
     }
 
     @Override
     public void delete(T entity) {
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        try {
-            transaction = session.beginTransaction();
-            session.remove(entity);
-            transaction.commit();
-        } catch (JpaException e) {
-            transaction.rollback();
-            logger.error("Ошибка при удалении сущности класса {}", type.getSimpleName(), e);
-        } finally {
-            session.close();
-        }
+        EntityManager em = getEntityManager();
+        em.remove(entity);
     }
 
     @Override
     public void update(T entity) {
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        try {
-            transaction = session.beginTransaction();
-            session.merge(entity);
-            transaction.commit();
-        } catch (JpaException e) {
-            transaction.rollback();
-            logger.error("Ошибка при обновлении сущности класса {}", type.getSimpleName(), e);
-        } finally {
-            session.close();
-        }
+        EntityManager em = getEntityManager();
+        em.merge(entity);
     }
 
     @Override
     public Optional<T> findById(PK id) {
-        T entity = null;
-        Session session = HibernateUtil.getSession();
-        Transaction transaction = session.getTransaction();
-        try {
-            transaction = session.beginTransaction();
-            entity = session.get(type, id);
-            transaction.commit();
-        } catch (JpaException e) {
-            transaction.rollback();
-            logger.error("Ошибка при нахождении по id сущности {}", type.getSimpleName(), e);
-        } finally {
-            session.close();
-        }
-        return Optional.ofNullable(entity);
+        EntityManager em = getEntityManager();
+        Optional<T> entity;
+        entity = Optional.ofNullable(em.find(type, id));
+        return entity;
     }
 }

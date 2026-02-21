@@ -11,5 +11,4 @@ public interface GaragePlaceRepository extends GenericRepository<GaragePlace, In
     List<GaragePlace> findFreeGaragePlaces();
 
     Optional<GaragePlace> findByPlaceNumber(int placeNumber);
-
 }

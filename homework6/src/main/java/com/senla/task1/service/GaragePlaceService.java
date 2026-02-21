@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,17 +34,19 @@ public class GaragePlaceService {
         this.garagePlaceRepository = garagePlaceRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<GaragePlace> findAllGaragePlace() {
         return garagePlaceRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public GaragePlace findPlaceByNumber(Integer placeNumber) {
         return garagePlaceRepository.findByPlaceNumber(placeNumber).orElseThrow(() -> new GaragePlaceException(
                 "Место в гараже № " + placeNumber + " не существует"
         ));
     }
 
-
+    @Transactional(readOnly = true)
     public List<GaragePlace> findFreeGaragePlaces() {
         logger.info("Обработка поиска всех мест в гараже");
         List<GaragePlace> freeGaragePlaces = garagePlaceRepository.findFreeGaragePlaces();
@@ -51,6 +54,7 @@ public class GaragePlaceService {
         return freeGaragePlaces;
     }
 
+    @Transactional
     public void addGaragePlace(Integer number) {
         if (!autoServiceConfig.isAllowAddGaragePlace()) {
             throw new GaragePlaceException("Добавление новых мест в гараже отключено!");
@@ -61,6 +65,7 @@ public class GaragePlaceService {
         logger.info("Место № {} успешно добавлено", number);
     }
 
+    @Transactional
     public void removeGaragePlace(Integer id) {
         if (!autoServiceConfig.isAllowDeleteGaragePlace()) {
             throw new GaragePlaceException("Удаление мест в гараже отключено!");
@@ -85,6 +90,7 @@ public class GaragePlaceService {
                 });
     }
 
+    @Transactional
     public void importFromCSV(String resourceName) {
         logger.info("Обработка импорта данных гаражных мест из файла {}", resourceName);
 
@@ -122,10 +128,12 @@ public class GaragePlaceService {
         }
     }
 
+    @Transactional
     public void updateGaragePlace(GaragePlace garagePlace) {
         garagePlaceRepository.update(garagePlace);
     }
 
+    @Transactional
     public String exportToCSV() {
         logger.info("Обработка экспорта данных гаражных мест в файл");
         List<GaragePlace> garagePlaces = garagePlaceRepository.findAll();
@@ -141,8 +149,8 @@ public class GaragePlaceService {
         return stringBuilder.toString();
     }
 
+    @Transactional(readOnly = true)
     public boolean isGaragePlaceExists(Integer placeNumber) {
         return garagePlaceRepository.checkIsPlaceNumberExists(placeNumber);
     }
-
 }
