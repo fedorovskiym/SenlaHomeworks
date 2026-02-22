@@ -1,0 +1,15 @@
+INSERT INTO public.product (maker,model,"type") VALUES
+	 ('C','PR3','Printer'),
+	 ('D','PC1','PC'),
+	 ('A','PC4','PC'),
+	 ('A','PC2','PC'),
+	 ('A','PC6','PC'),
+	 ('A','PR4','Printer'),
+	 ('A','PC3','PC'),
+	 ('C','PC5','PC'),
+	 ('A','L1','Laptop'),
+	 ('B','L2','Laptop'),
+	 ('B','L3','Laptop'),
+	 ('C','L4','Laptop'),
+	 ('A','PR1','Printer'),
+	 ('B','PR2','Printer');
