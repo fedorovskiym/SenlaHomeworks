@@ -1,6 +1,9 @@
 package com.senla.task1.service;
 
+import com.senla.task1.dto.AutoServiceRequestDTO;
+import com.senla.task1.dto.OrderDTO;
 import com.senla.task1.exceptions.OrderException;
+import com.senla.task1.mapper.OrderMapper;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
@@ -10,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -32,39 +36,44 @@ public class AutoService {
     private final MechanicService mechanicService;
     private final GaragePlaceService garagePlaceService;
     private final OrderStatusService orderStatusService;
+    private final OrderMapper orderMapper;
     private final static Logger logger = LogManager.getLogger(AutoService.class);
 
     @Autowired
-    public AutoService(OrderService orderService, MechanicService mechanicService, GaragePlaceService garagePlaceService, OrderStatusService orderStatusService) {
+    public AutoService(OrderService orderService, MechanicService mechanicService, GaragePlaceService garagePlaceService, OrderStatusService orderStatusService, OrderMapper orderMapper) {
         this.orderService = orderService;
         this.mechanicService = mechanicService;
         this.garagePlaceService = garagePlaceService;
         this.orderStatusService = orderStatusService;
+        this.orderMapper = orderMapper;
     }
 
-    public void createOrder(String carModel, Integer mechanicId, Integer placeNumber, Double price, Integer hours, Integer minutes) {
+    @Transactional
+    public OrderDTO createOrder(AutoServiceRequestDTO autoServiceRequestDTO) {
         logger.info("Обработка создания нового заказа");
-        Mechanic mechanic = mechanicService.findMechanicById(mechanicId);
-        GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(placeNumber);
+        Mechanic mechanic = mechanicService.findMechanicById(autoServiceRequestDTO.mechanicId());
+        GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(autoServiceRequestDTO.placeNumber());
 
         if (mechanic.isBusy() || !garagePlace.isEmpty()) {
             System.out.println("Механик или место занято!");
-            return;
+            return null;
         }
 
-        Duration duration = Duration.ofHours(hours).plusMinutes(minutes);
+        Duration duration = Duration.ofHours(autoServiceRequestDTO.hours()).plusMinutes(autoServiceRequestDTO.minutes());
         OrderStatus orderStatus = orderStatusService.findByCode(OrderStatusType.WAITING);
         System.out.println(orderStatus);
-        Order order = new Order(carModel, mechanic, garagePlace, duration, price, orderStatus);
+        Order order = new Order(autoServiceRequestDTO.carModel(), mechanic, garagePlace, duration, autoServiceRequestDTO.price(), orderStatus);
         mechanic.setBusy(true);
         garagePlace.setEmpty(false);
         mechanicService.updateMechanic(mechanic);
         garagePlaceService.updateGaragePlace(garagePlace);
         orderService.addOrder(order);
         logger.info("Заказ {} создан", order);
+        return orderMapper.orderToOrderDTO(order);
     }
 
-    public void getAvailableSlot(Integer year, Integer month, Integer day) {
+    @Transactional(readOnly = true)
+    public Integer getAvailableSlot(Integer year, Integer month, Integer day) {
         logger.info("Обработка расчета количества свободных мест на дату {}, {}, {}", year, month, day);
         List<Order> orders = orderService.findAllOrders();
         LocalDateTime startDate = LocalDateTime.of(year, month, day, 0, 0);
@@ -78,10 +87,11 @@ public class AutoService {
                 .filter(garagePlace -> garagePlaceService.isGaragePlaceAvailable(garagePlace, orders, startDate, endDate))
                 .count();
 
-        System.out.println("Количество свободных мест в сервисе на " + day + "." + month + "." + year + " - " + Math.min(availableMechanics, availableGaragePlaces));
         logger.info("Получения расчета свободных мест на дату {}, {}, {} завершена", year, month, day);
+        return (int) Math.min(availableMechanics, availableGaragePlaces);
     }
 
+    @Transactional
     public void importFromCSV(String resourceName) {
         logger.info("Обработка импорта заказов из файла {}", resourceName);
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
@@ -168,44 +178,38 @@ public class AutoService {
         }
     }
 
-    public void exportOrdersToCSV(String filePath) {
-        logger.info("Обработка экспорта данных заказов в файл {}", filePath);
-        try (BufferedWriter bufferedWriter = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+    @Transactional
+    public String exportOrdersToCSV() {
+        logger.info("Обработка экспорта данных заказов в файл {}");
+        List<Order> orders = orderService.findAllOrders();
 
-            bufferedWriter.write("id;carName;mechanicId;garagePlaceNumber;status;submissionDateTime;plannedCompletionDateTime;completionDateTime;endDateTime;duration;price");
-            bufferedWriter.newLine();
-
-            String lines = orderService.findAllOrders().stream()
-                    .map(order -> String.format("%d;%s;%d;%d;%s;%s;%s;%s;%s;%d;%.2f",
-                            order.getId(),
-                            order.getCarName(),
-                            order.getMechanic().getId(),
-                            order.getGaragePlace().getId(),
-                            order.getStatus(),
-                            order.getSubmissionDateTime(),
-                            order.getPlannedCompletionDateTime() != null ? order.getPlannedCompletionDateTime().toString() : "",
-                            order.getCompletionDateTime() != null ? order.getCompletionDateTime().toString() : "",
-                            order.getEndDateTime(),
-                            order.getDuration().toMinutes(),
-                            order.getPrice()
-                    ))
-                    .collect(Collectors.joining(System.lineSeparator()));
-
-            bufferedWriter.write(lines);
-            logger.info("Экспорт данных в файл {} завершен", filePath);
-        } catch (IOException e) {
-            logger.error("Ошибка при экспорте данных в {}", filePath, e);
-            throw new RuntimeException(e);
-        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("id;carName;mechanicId;garagePlaceNumber;status;submissionDateTime;plannedCompletionDateTime;" +
+                "completionDateTime;endDateTime;Duration;price").append(System.lineSeparator());
+        orders.forEach(order -> stringBuilder.append(String.format("%d;%s;%d;%d;%s;%s;%s;%s;%s;%d;%.2f",
+                        order.getId(),
+                        order.getCarName(),
+                        order.getMechanic().getId(),
+                        order.getGaragePlace().getId(),
+                        order.getStatus(),
+                        order.getSubmissionDateTime(),
+                        order.getPlannedCompletionDateTime() != null ? order.getPlannedCompletionDateTime().toString() : "",
+                        order.getCompletionDateTime() != null ? order.getCompletionDateTime().toString() : "",
+                        order.getEndDateTime(),
+                        order.getDuration().toMinutes(),
+                        order.getPrice()))
+                .append(System.lineSeparator()));
+        logger.info("Экспорт данных в файл завершен");
+        return stringBuilder.toString();
     }
 
+    @Transactional
     public void updateOrder(Integer id, String carName, Mechanic mechanic,
                             GaragePlace garagePlace, OrderStatus orderStatus, LocalDateTime submissionDateTime,
                             LocalDateTime plannedCompletionDateTime, LocalDateTime completionDateTime,
                             LocalDateTime endDateTime, Duration duration, Double price) {
 
-        Order order = orderService.findOrderById(id);
+        Order order = orderService.findOrderByIdIsExists(id).orElse(null);
 
 //      Если для существующего заказа из файла считывается другой механик, то старому механику меняется статус на свободный, а новому на занятый
         if (order.getMechanic().getId() != mechanic.getId()) {
@@ -233,12 +237,14 @@ public class AutoService {
         System.out.println("Заказ №" + id + " обновлен");
     }
 
+    @Transactional
     public void deleteOrder(Integer id) {
         logger.info("Обработка удаления заказа № {}", id);
         orderService.deleteOrder(id);
         logger.info("Заказ № {} удален", id);
     }
 
+    @Transactional
     public void closeOrder(Integer id) {
         logger.info("Обработка закрытия заказа № {}", id);
         Order order = orderService.getOrderDAO().findById(id).orElseThrow(() -> new OrderException(
@@ -251,6 +257,7 @@ public class AutoService {
         orderService.acceptOrder(id + 1);
     }
 
+    @Transactional
     public void cancelOrder(Integer id) {
         logger.info("Обработка отмены заказа № {}", id);
         Order order = orderService.getOrderDAO().findById(id).orElseThrow(() -> new OrderException(

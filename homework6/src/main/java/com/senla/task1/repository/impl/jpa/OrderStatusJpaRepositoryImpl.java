@@ -35,6 +35,17 @@ public class OrderStatusJpaRepositoryImpl extends AbstractJpaRepository<OrderSta
     }
 
     @Override
+    public Optional<OrderStatus> findByCodeString(String code) {
+        EntityManager em = getEntityManager();
+        OrderStatusType orderStatusType = OrderStatusType.valueOf(code.trim().toUpperCase());
+        Optional<OrderStatus> orderStatus;
+        orderStatus = Optional.ofNullable(em.createQuery(HQL_FIND_BY_CODE, OrderStatus.class)
+                .setParameter("code", orderStatusType)
+                .getSingleResult());
+        return orderStatus;
+    }
+
+    @Override
     public Boolean checkIsOrderStatusExists(Integer id) {
         EntityManager em = getEntityManager();
         if (em.find(OrderStatus.class, id) == null) {

@@ -1,6 +1,8 @@
 package com.senla.task1.service;
 
+import com.senla.task1.dto.MechanicDTO;
 import com.senla.task1.exceptions.MechanicException;
+import com.senla.task1.mapper.MechanicMapper;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.MechanicSortType;
@@ -20,19 +22,26 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MechanicService {
 
     private final MechanicRepository mechanicRepository;
+    private final MechanicMapper mechanicMapper;
     private static final Logger logger = LogManager.getLogger(MechanicService.class);
 
     @Autowired
-    public MechanicService(@Qualifier("mechanicJpaDAO") MechanicRepository mechanicRepository) {
+    public MechanicService(@Qualifier("mechanicJpaDAO") MechanicRepository mechanicRepository, MechanicMapper mechanicMapper) {
         this.mechanicRepository = mechanicRepository;
+        this.mechanicMapper = mechanicMapper;
     }
 
     @Transactional(readOnly = true)
+    public List<MechanicDTO> findAllMechanicDTO() {
+        return mechanicRepository.findAll().stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
+    }
+
     public List<Mechanic> findAllMechanic() {
         return mechanicRepository.findAll();
     }
@@ -61,17 +70,19 @@ public class MechanicService {
     }
 
     @Transactional(readOnly = true)
-    public List<Mechanic> showSortedMechanicByAlphabet(Boolean flag) {
+    public List<MechanicDTO> showSortedMechanicByAlphabet(Boolean flag) {
         logger.info("Обработка сортировки механиков по алфавиту");
-        List<Mechanic> sortedList = mechanicRepository.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag);
+        List<MechanicDTO> sortedList = mechanicRepository.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag)
+                .stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
         logger.info("Механики отсортированы по алфавиту");
         return sortedList;
     }
 
     @Transactional(readOnly = true)
-    public List<Mechanic> showSortedMechanicByBusy() {
+    public List<MechanicDTO> showSortedMechanicByBusy() {
         logger.info("Обработка сортировки механиков по занятости");
-        List<Mechanic> sortedList = mechanicRepository.sortBy(MechanicSortType.BUSY.getDisplayName(), true);
+        List<MechanicDTO> sortedList = mechanicRepository.sortBy(MechanicSortType.BUSY.getDisplayName(), true)
+                .stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
         logger.info("Механики отсортированы по занятости");
         return sortedList;
     }

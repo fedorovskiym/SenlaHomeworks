@@ -1,5 +1,6 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.dto.GaragePlaceDTO;
 import com.senla.task1.dto.GaragePlaceDTORequest;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.service.GaragePlaceService;
@@ -31,7 +32,7 @@ public class GaragePlaceController {
     }
 
     @GetMapping(value = "/free")
-    public List<GaragePlace> showFreeGaragePlaces() {
+    public List<GaragePlaceDTO> showFreeGaragePlaces() {
         return garagePlaceService.findFreeGaragePlaces();
     }
 

@@ -1,7 +1,9 @@
 package com.senla.task1.service;
 
 import com.senla.task1.config.AutoServiceConfig;
+import com.senla.task1.dto.GaragePlaceDTO;
 import com.senla.task1.exceptions.GaragePlaceException;
+import com.senla.task1.mapper.GaragePlaceMapper;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Order;
 import com.senla.task1.repository.GaragePlaceRepository;
@@ -20,18 +22,21 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GaragePlaceService {
 
     private final GaragePlaceRepository garagePlaceRepository;
     private final AutoServiceConfig autoServiceConfig;
+    private final GaragePlaceMapper garagePlaceMapper;
     private static final Logger logger = LogManager.getLogger(GaragePlaceService.class);
 
     @Autowired
-    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceRepository garagePlaceRepository, AutoServiceConfig autoServiceConfig) {
+    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceRepository garagePlaceRepository, AutoServiceConfig autoServiceConfig, GaragePlaceMapper garagePlaceMapper) {
         this.autoServiceConfig = autoServiceConfig;
         this.garagePlaceRepository = garagePlaceRepository;
+        this.garagePlaceMapper = garagePlaceMapper;
     }
 
     @Transactional(readOnly = true)
@@ -47,9 +52,10 @@ public class GaragePlaceService {
     }
 
     @Transactional(readOnly = true)
-    public List<GaragePlace> findFreeGaragePlaces() {
+    public List<GaragePlaceDTO> findFreeGaragePlaces() {
         logger.info("Обработка поиска всех мест в гараже");
-        List<GaragePlace> freeGaragePlaces = garagePlaceRepository.findFreeGaragePlaces();
+        List<GaragePlaceDTO> freeGaragePlaces = garagePlaceRepository.findFreeGaragePlaces().stream()
+                .map(garagePlaceMapper::garagePlaceToGaragePlaceDTO).collect(Collectors.toList());
         logger.info("Получены места в гараже и их статус");
         return freeGaragePlaces;
     }

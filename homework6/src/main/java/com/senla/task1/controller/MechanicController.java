@@ -1,5 +1,6 @@
 package com.senla.task1.controller;
 
+import com.senla.task1.dto.MechanicDTO;
 import com.senla.task1.dto.MechanicDTORequest;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.service.MechanicService;
@@ -37,8 +38,8 @@ public class MechanicController {
     }
 
     @GetMapping(value = "/")
-    public List<Mechanic> findAllMechanic() {
-        return mechanicService.findAllMechanic();
+    public ResponseEntity<List<MechanicDTO>> findAllMechanic() {
+        return ResponseEntity.status(HttpStatus.OK).body(mechanicService.findAllMechanicDTO());
     }
 
     @DeleteMapping(value = "/delete/{id}")
@@ -48,17 +49,17 @@ public class MechanicController {
     }
 
     @GetMapping(value = "/sort/alphabet")
-    public List<Mechanic> showSortedMechanicByAlphabet(@RequestParam("flag") boolean flag) {
-        return mechanicService.showSortedMechanicByAlphabet(flag);
+    public ResponseEntity<List<MechanicDTO>> showSortedMechanicByAlphabet(@RequestParam("flag") boolean flag) {
+        return ResponseEntity.status(HttpStatus.OK).body(mechanicService.showSortedMechanicByAlphabet(flag));
     }
 
     @GetMapping(value = "/sort/busy")
-    public List<Mechanic> showSortedMechanicByBusy() {
-        return mechanicService.showSortedMechanicByBusy();
+    public ResponseEntity<List<MechanicDTO>> showSortedMechanicByBusy() {
+        return ResponseEntity.status(HttpStatus.OK).body(mechanicService.showSortedMechanicByBusy());
     }
 
     @PostMapping(value = "/import")
-    public ResponseEntity<HttpStatus> importMechanicFromCSV(String filePath) {
+    public ResponseEntity<HttpStatus> importMechanicFromCSV(@RequestParam("path") String filePath) {
         mechanicService.importFromCSV(filePath);
         return new ResponseEntity<>(HttpStatus.OK);
     }
