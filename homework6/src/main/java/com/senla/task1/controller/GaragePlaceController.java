@@ -2,6 +2,9 @@ package com.senla.task1.controller;
 
 import com.senla.task1.dto.GaragePlaceDTO;
 import com.senla.task1.dto.GaragePlaceDTORequest;
+import com.senla.task1.exceptions.EntityAlreadyExistsException;
+import com.senla.task1.exceptions.EntityNotFoundException;
+import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.service.GaragePlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -61,5 +66,21 @@ public class GaragePlaceController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"places.csv\"")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(csv);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseBody
+    public String handleIllegalArgument(IllegalArgumentException exception) {
+        return "Wrong argument: " + exception.getMessage();
+    }
+
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<String> handleAlreadyExists(EntityAlreadyExistsException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleNotFound(EntityNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 }
