@@ -1,0 +1,581 @@
+16:45:07.298 [main] WARN  org.springframework.context.annotation.AnnotationConfigApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'builder' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\ui\Builder.class]: Unsatisfied dependency expressed through constructor parameter 3: Error creating bean with name 'consoleActionFactory' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\ui\ConsoleActionFactory.class]: Unsatisfied dependency expressed through constructor parameter 4: No qualifying bean of type 'com.senla.task1.config.AutoServiceConfig' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+16:45:07.361 [Thread-2] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:45:07.643 [Thread-2] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:45:07.728 [Thread-2] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:45:07.731 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:45:07.731 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:45:07.731 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:45:07.733 [Thread-2] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:45:07.991 [Thread-2] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:45:08.319 [Thread-2] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:45:57.831 [main] WARN  org.springframework.context.annotation.AnnotationConfigApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'builder' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\ui\Builder.class]: Unsatisfied dependency expressed through constructor parameter 3: Error creating bean with name 'consoleActionFactory' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\ui\ConsoleActionFactory.class]: Unsatisfied dependency expressed through constructor parameter 4: No qualifying bean of type 'com.senla.task1.config.AutoServiceConfig' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+16:45:57.886 [Thread-1] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:45:58.084 [Thread-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:45:58.160 [Thread-1] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:45:58.162 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:45:58.162 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:45:58.162 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:45:58.163 [Thread-1] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:45:58.278 [Thread-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:45:58.563 [Thread-1] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:54:09.952 [main] WARN  org.springframework.context.annotation.AnnotationConfigApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'autoServiceController' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\controller\AutoServiceController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'autoService' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\service\AutoService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'mechanicService' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\service\MechanicService.class]: Unsatisfied dependency expressed through constructor parameter 0: No qualifying bean of type 'com.senla.task1.repository.MechanicDAO' available: expected single matching bean but found 2: mechanicDAOImpl,mechanicJpaDAOImpl
+16:54:10.011 [Thread-0] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:54:10.232 [Thread-0] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:54:10.310 [Thread-0] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:54:10.311 [Thread-0] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:54:10.311 [Thread-0] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:54:10.312 [Thread-0] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:54:10.313 [Thread-0] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:54:10.538 [Thread-0] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:54:10.823 [Thread-0] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:57:13.135 [main] WARN  org.springframework.context.annotation.AnnotationConfigApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'builder' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\ui\Builder.class]: Unsatisfied dependency expressed through constructor parameter 3: Error creating bean with name 'consoleActionFactory' defined in file [C:\Users\fedor\IdeaProjects\SenlaHomeworks\homework6\target\classes\com\senla\task1\ui\ConsoleActionFactory.class]: Unsatisfied dependency expressed through constructor parameter 4: No qualifying bean of type 'com.senla.task1.config.AutoServiceConfig' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+16:57:13.192 [Thread-0] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:57:13.388 [Thread-0] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:57:13.464 [Thread-0] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:57:13.465 [Thread-0] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:57:13.466 [Thread-0] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:57:13.466 [Thread-0] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:57:13.467 [Thread-0] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:57:13.584 [Thread-0] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:57:13.874 [Thread-0] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:00:34.404 [Thread-1] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:00:34.604 [Thread-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:00:34.677 [Thread-1] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:00:34.680 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:00:34.680 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:00:34.680 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:00:34.682 [Thread-1] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:00:34.794 [Thread-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:00:35.080 [Thread-1] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:00:42.504 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:00:42.706 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:00:42.777 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:00:42.779 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:00:42.779 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:00:42.779 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:00:42.781 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:00:42.890 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:00:43.175 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:01:02.936 [Thread-2] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:01:03.149 [Thread-2] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:01:03.219 [Thread-2] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:01:03.220 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:01:03.221 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:01:03.221 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:01:03.222 [Thread-2] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:01:03.329 [Thread-2] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:01:03.631 [Thread-2] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:01:35.012 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:01:35.212 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:01:35.283 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:01:35.285 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:01:35.285 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:01:35.285 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:01:35.287 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:01:35.397 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:01:35.691 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:01:42.738 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+17:01:42.744 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+17:02:00.730 [main] INFO  com.senla.task1.service.OrderService - Обработка сортировки заказов по дате подачи
+17:02:00.744 [main] INFO  com.senla.task1.service.OrderService - Сортировка заказов по дате подачи завершена
+15:56:43.826 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+15:56:44.121 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+15:56:44.182 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+15:56:44.185 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+15:56:44.185 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+15:56:44.185 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+15:56:44.187 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+15:56:44.313 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+15:56:44.395 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001008: Cleaning up connection pool [jdbc:postgresql://localhost:5432/autoservice_db]
+15:59:09.904 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+15:59:10.107 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+15:59:10.177 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+15:59:10.179 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+15:59:10.179 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+15:59:10.179 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+15:59:10.181 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+15:59:10.391 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+15:59:10.704 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+15:59:21.483 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+15:59:21.487 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+15:59:31.464 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:04:48.313 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:04:48.515 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:04:48.586 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:04:48.588 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:04:48.588 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:04:48.588 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:04:48.589 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:04:48.704 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:04:48.997 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:05:27.432 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:05:27.641 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:05:27.711 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:05:27.712 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:05:27.713 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:05:27.713 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:05:27.714 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:05:27.928 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:05:28.221 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:05:35.663 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:05:35.666 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:05:38.865 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:07:11.693 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:07:11.895 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:07:11.966 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:07:11.968 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:07:11.968 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:07:11.968 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:07:11.969 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:07:12.077 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:07:12.366 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:08:16.509 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:08:16.742 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:08:16.825 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:08:16.827 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:08:16.827 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:08:16.827 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:08:16.829 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:08:17.042 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:08:17.334 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:08:20.204 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:08:20.208 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:08:22.466 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:09:41.626 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:09:41.832 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:09:41.901 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:09:41.903 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:09:41.903 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:09:41.903 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:09:41.904 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:09:42.018 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:09:42.311 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:09:43.874 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:09:43.877 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:09:46.959 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:12:32.296 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:12:32.505 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:12:32.575 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:12:32.577 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:12:32.577 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:12:32.577 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:12:32.579 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:12:32.693 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:12:32.990 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:12:36.548 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:12:36.552 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:12:38.248 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:13:23.327 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:13:23.554 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:13:23.634 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:13:23.636 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:13:23.636 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:13:23.636 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:13:23.638 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:13:23.766 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:13:24.088 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:13:24.174 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:13:24.178 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:13:28.790 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:14:00.684 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:14:00.911 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:14:00.991 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:14:00.993 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:14:00.994 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:14:00.994 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:14:00.995 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:14:01.114 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:14:01.429 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:14:01.516 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:14:01.520 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:14:04.504 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:16:19.973 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:16:20.174 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:16:20.243 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:16:20.245 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:16:20.245 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:16:20.246 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:16:20.247 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:16:20.364 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:16:20.447 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001008: Cleaning up connection pool [jdbc:postgresql://localhost:5432/autoservice_db]
+16:18:52.821 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:18:53.019 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:18:53.089 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:18:53.091 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:18:53.091 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:18:53.091 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:18:53.093 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:18:53.203 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:18:53.503 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:18:55.583 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:18:55.586 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:18:57.399 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:22:20.698 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:22:20.901 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:22:20.971 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:22:20.973 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:22:20.973 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:22:20.974 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:22:20.975 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:22:21.089 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:22:21.389 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:22:24.339 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:22:24.342 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:22:27.004 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:22:56.801 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:22:57.001 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:22:57.073 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:22:57.075 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:22:57.076 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:22:57.076 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:22:57.077 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:22:57.290 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:22:57.578 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:22:59.277 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:22:59.280 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:23:02.850 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:25:24.996 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:25:25.199 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:25:25.269 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:25:25.271 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:25:25.271 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:25:25.271 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:25:25.272 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:25:25.482 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:25:25.779 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:25:27.152 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:25:27.155 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:25:29.860 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:28:08.184 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:28:08.388 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:28:08.458 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:28:08.460 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:28:08.460 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:28:08.460 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:28:08.461 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:28:08.681 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:28:08.970 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:28:12.792 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:28:12.796 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:28:14.525 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:28:41.373 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:28:41.575 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:28:41.645 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:28:41.647 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:28:41.648 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:28:41.648 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:28:41.649 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:28:41.760 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:28:42.057 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:28:42.149 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:28:42.152 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:28:45.400 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:31:13.515 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:31:13.720 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:31:13.791 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:31:13.793 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:31:13.793 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:31:13.793 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:31:13.794 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:31:13.911 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:31:14.205 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:31:14.297 [main] WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 0, SQLState: 22003
+16:31:14.297 [main] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Bad value for type int : ACCEPTED
+16:31:14.298 [main] INFO  org.hibernate.event.internal.DefaultLoadEventListener - HHH000327: Error performing load command
+org.hibernate.exception.DataException: Could not read entity state from ResultSet : EntityKey[com.senla.task1.models.OrderStatus#2]
+	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:115)
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:37)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:113)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:99)
+	at org.hibernate.loader.plan.exec.process.internal.EntityReferenceInitializerImpl.loadFromResultSet(EntityReferenceInitializerImpl.java:357)
+	at org.hibernate.loader.plan.exec.process.internal.EntityReferenceInitializerImpl.hydrateEntityState(EntityReferenceInitializerImpl.java:269)
+	at org.hibernate.loader.plan.exec.process.internal.AbstractRowReader.readRow(AbstractRowReader.java:80)
+	at org.hibernate.loader.plan.exec.internal.EntityLoadQueryDetails$EntityLoaderRowReader.readRow(EntityLoadQueryDetails.java:288)
+	at org.hibernate.loader.plan.exec.process.internal.ResultSetProcessorImpl.extractRows(ResultSetProcessorImpl.java:157)
+	at org.hibernate.loader.plan.exec.process.internal.ResultSetProcessorImpl.extractResults(ResultSetProcessorImpl.java:94)
+	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:105)
+	at org.hibernate.loader.entity.plan.AbstractLoadPlanBasedEntityLoader.load(AbstractLoadPlanBasedEntityLoader.java:285)
+	at org.hibernate.persister.entity.AbstractEntityPersister.doLoad(AbstractEntityPersister.java:4550)
+	at org.hibernate.persister.entity.AbstractEntityPersister.load(AbstractEntityPersister.java:4540)
+	at org.hibernate.event.internal.DefaultLoadEventListener.loadFromDatasource(DefaultLoadEventListener.java:571)
+	at org.hibernate.event.internal.DefaultLoadEventListener.doLoad(DefaultLoadEventListener.java:539)
+	at org.hibernate.event.internal.DefaultLoadEventListener.load(DefaultLoadEventListener.java:208)
+	at org.hibernate.event.internal.DefaultLoadEventListener.proxyOrLoad(DefaultLoadEventListener.java:327)
+	at org.hibernate.event.internal.DefaultLoadEventListener.doOnLoad(DefaultLoadEventListener.java:108)
+	at org.hibernate.event.internal.DefaultLoadEventListener.onLoad(DefaultLoadEventListener.java:74)
+	at org.hibernate.event.service.internal.EventListenerGroupImpl.fireEventOnEachListener(EventListenerGroupImpl.java:118)
+	at org.hibernate.internal.SessionImpl.fireLoadNoChecks(SessionImpl.java:1231)
+	at org.hibernate.internal.SessionImpl.internalLoad(SessionImpl.java:1096)
+	at org.hibernate.type.EntityType.resolveIdentifier(EntityType.java:706)
+	at org.hibernate.type.EntityType.resolve(EntityType.java:465)
+	at org.hibernate.type.ManyToOneType.resolve(ManyToOneType.java:265)
+	at org.hibernate.engine.internal.TwoPhaseLoad$EntityResolver.lambda$static$0(TwoPhaseLoad.java:576)
+	at org.hibernate.engine.internal.TwoPhaseLoad.initializeEntityEntryLoadedState(TwoPhaseLoad.java:221)
+	at org.hibernate.engine.internal.TwoPhaseLoad.initializeEntity(TwoPhaseLoad.java:155)
+	at org.hibernate.engine.internal.TwoPhaseLoad.initializeEntity(TwoPhaseLoad.java:126)
+	at org.hibernate.loader.Loader.initializeEntitiesAndCollections(Loader.java:1201)
+	at org.hibernate.loader.Loader.processResultSet(Loader.java:1009)
+	at org.hibernate.loader.Loader.doQuery(Loader.java:967)
+	at org.hibernate.loader.Loader.doQueryAndInitializeNonLazyCollections(Loader.java:357)
+	at org.hibernate.loader.Loader.doList(Loader.java:2868)
+	at org.hibernate.loader.Loader.doList(Loader.java:2850)
+	at org.hibernate.loader.Loader.listIgnoreQueryCache(Loader.java:2682)
+	at org.hibernate.loader.Loader.list(Loader.java:2677)
+	at org.hibernate.loader.hql.QueryLoader.list(QueryLoader.java:540)
+	at org.hibernate.hql.internal.ast.QueryTranslatorImpl.list(QueryTranslatorImpl.java:400)
+	at org.hibernate.engine.query.spi.HQLQueryPlan.performList(HQLQueryPlan.java:218)
+	at org.hibernate.internal.SessionImpl.list(SessionImpl.java:1459)
+	at org.hibernate.query.internal.AbstractProducedQuery.doList(AbstractProducedQuery.java:1649)
+	at org.hibernate.query.internal.AbstractProducedQuery.list(AbstractProducedQuery.java:1617)
+	at org.hibernate.query.Query.getResultList(Query.java:165)
+	at com.senla.task1.repository.impl.jpa.AbstractJpaDAO.findAll(AbstractJpaDAO.java:32)
+	at com.senla.task1.service.OrderService.findAllOrders(OrderService.java:47)
+	at com.senla.task1.controller.OrderController.showAllOrders(OrderController.java:52)
+	at com.senla.task1.ui.MenuItem.doAction(MenuItem.java:44)
+	at com.senla.task1.ui.Navigator.navigate(Navigator.java:48)
+	at com.senla.task1.ui.MenuController.run(MenuController.java:31)
+	at com.senla.task1.AutoServiceMain.main(AutoServiceMain.java:12)
+Caused by: org.postgresql.util.PSQLException: Bad value for type int : ACCEPTED
+	at org.postgresql.jdbc.PgResultSet.toInt(PgResultSet.java:3474)
+	at org.postgresql.jdbc.PgResultSet.getInt(PgResultSet.java:2680)
+	at org.postgresql.jdbc.PgResultSet.getInt(PgResultSet.java:3068)
+	at org.hibernate.type.descriptor.sql.IntegerTypeDescriptor$2.doExtract(IntegerTypeDescriptor.java:62)
+	at org.hibernate.type.descriptor.sql.BasicExtractor.extract(BasicExtractor.java:47)
+	at org.hibernate.metamodel.model.convert.internal.OrdinalEnumValueConverter.readValue(OrdinalEnumValueConverter.java:66)
+	at org.hibernate.type.EnumType.nullSafeGet(EnumType.java:250)
+	at org.hibernate.type.CustomType.nullSafeGet(CustomType.java:119)
+	at org.hibernate.type.AbstractType.hydrate(AbstractType.java:91)
+	at org.hibernate.persister.entity.AbstractEntityPersister.hydrate(AbstractEntityPersister.java:3214)
+	at org.hibernate.persister.entity.Loadable.hydrate(Loadable.java:94)
+	at org.hibernate.loader.plan.exec.process.internal.EntityReferenceInitializerImpl.loadFromResultSet(EntityReferenceInitializerImpl.java:342)
+	... 47 more
+16:31:53.467 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:31:53.667 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:31:53.738 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:31:53.740 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:31:53.740 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:31:53.740 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:31:53.741 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:31:53.855 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:31:54.153 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:31:57.581 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:31:57.584 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:32:04.577 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:32:49.984 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:32:50.185 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:32:50.255 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:32:50.257 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:32:50.257 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:32:50.257 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:32:50.258 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:32:50.478 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:32:50.771 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:32:52.704 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:32:52.707 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:32:56.854 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:37:35.172 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:37:35.373 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:37:35.443 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:37:35.445 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:37:35.445 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:37:35.445 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:37:35.446 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:37:35.666 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:37:35.949 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:37:37.438 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:37:37.441 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:37:39.711 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:39:40.993 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:39:41.197 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:39:41.267 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:39:41.269 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:39:41.269 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:39:41.269 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:39:41.270 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:39:41.486 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:39:41.563 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001008: Cleaning up connection pool [jdbc:postgresql://localhost:5432/autoservice_db]
+16:40:02.787 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:40:02.995 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:40:03.065 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:40:03.067 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:40:03.067 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:40:03.067 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:40:03.069 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:40:03.183 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:40:03.481 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:40:04.784 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:40:04.787 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:40:08.946 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:40:36.660 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:40:36.869 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:40:36.941 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:40:36.943 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:40:36.943 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:40:36.943 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:40:36.944 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:40:37.054 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:40:37.341 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:40:39.641 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:40:39.644 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:40:42.836 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:42:42.147 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:42:42.348 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:42:42.420 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:42:42.421 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:42:42.422 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:42:42.422 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:42:42.423 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:42:42.648 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:42:42.927 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:42:44.656 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:42:44.659 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:42:48.136 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:43:14.191 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:43:14.395 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:43:14.469 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:43:14.470 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:43:14.471 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:43:14.471 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:43:14.472 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:43:14.581 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:43:14.862 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:43:14.952 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:43:14.955 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:44:20.618 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:44:20.825 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:44:20.896 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:44:20.898 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:44:20.898 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:44:20.898 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:44:20.900 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:44:21.123 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:44:21.411 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:44:21.502 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:44:21.506 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:44:23.848 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:48:18.940 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:48:19.142 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:48:19.211 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:48:19.212 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:48:19.212 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:48:19.212 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:48:19.214 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:48:19.324 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:48:19.620 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:48:21.105 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:48:21.108 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:48:42.414 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:48:42.618 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:48:42.689 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:48:42.691 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:48:42.691 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:48:42.691 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:48:42.692 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:48:42.807 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:48:43.106 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:48:44.160 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:48:44.164 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:48:47.010 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:52:11.738 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:52:11.941 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:52:12.012 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:52:12.014 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:52:12.014 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:52:12.014 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:52:12.015 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:52:12.224 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:52:12.522 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:52:17.489 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:52:17.493 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:52:20.550 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+16:57:41.300 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+16:57:41.509 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+16:57:41.583 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+16:57:41.585 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+16:57:41.585 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+16:57:41.585 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+16:57:41.586 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+16:57:41.696 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+16:57:41.989 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+16:57:42.079 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+16:57:42.082 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+16:57:46.273 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+17:00:00.645 [Thread-2] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:00:00.851 [Thread-2] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:00:00.920 [Thread-2] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:00:00.922 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:00:00.923 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:00:00.923 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:00:00.924 [Thread-2] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:00:01.034 [Thread-2] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:00:01.376 [Thread-2] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:00:04.334 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:00:04.542 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:00:04.613 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:00:04.615 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:00:04.615 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:00:04.615 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:00:04.617 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:00:04.733 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:00:05.029 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:00:05.894 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+17:00:05.897 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+17:00:08.383 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+17:01:26.093 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:01:26.294 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:01:26.364 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:01:26.366 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:01:26.366 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:01:26.366 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:01:26.367 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:01:26.486 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:01:26.784 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:01:27.528 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+17:01:27.531 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+17:01:29.218 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+17:01:29.243 [main] WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 0, SQLState: 42703
+17:01:29.243 [main] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - ОШИБКА: столбец "submissiondatetime" не существует
+  Подсказка: Возможно, предполагалась ссылка на столбец "order0_.submission_date_time".
+  Позиция: 589
+17:03:25.108 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:03:25.311 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:03:25.383 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:03:25.385 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:03:25.386 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:03:25.386 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:03:25.387 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:03:25.500 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:03:25.809 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:03:25.895 [main] INFO  com.senla.task1.service.GaragePlaceService - Обработка поиска всех мест в гараже
+17:03:25.899 [main] INFO  com.senla.task1.service.GaragePlaceService - Выведены места в гараже и их статус
+17:03:29.888 [main] INFO  com.senla.task1.service.AutoService - Обработка создания нового заказа
+17:03:29.925 [main] INFO  com.senla.task1.service.AutoService - Заказ Order{index=3, carName='3', mechanic=Mechanic{index=3, name='Алексей', surname='Алексеев', experienceYears=23.0, isBusy=true}, garagePlace=GaragePlace{placeNumber=3, isEmpty=false}, status=OrderStatus{id=1, name='Ожидает', code='WAITING'}, submissionDateTime=2026-02-01T17:03:29.900281700, plannedCompletionDateTime=2025-11-17T00:18:27.167842, completionDateTime=null, endDateTime=2025-11-17T03:21:27.167842, duration=PT3H3M, price=3.0} создан
+17:03:42.833 [main] INFO  com.senla.task1.service.OrderService - Обработка вывода заказов по статусу WAITING
+17:03:42.839 [main] INFO  com.senla.task1.service.OrderService - Поиск заказов по статусу WAITING завершен
+18:18:39.299 [Thread-2] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+18:18:39.602 [Thread-2] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+18:18:39.664 [Thread-2] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+18:18:39.666 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+18:18:39.667 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+18:18:39.667 [Thread-2] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+18:18:39.668 [Thread-2] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+18:18:39.816 [Thread-2] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+18:18:40.181 [Thread-2] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+17:43:57.682 [Thread-1] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+17:43:57.979 [Thread-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+17:43:58.039 [Thread-1] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+17:43:58.042 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+17:43:58.042 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+17:43:58.042 [Thread-1] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+17:43:58.043 [Thread-1] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+17:43:58.518 [Thread-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+17:43:58.855 [Thread-1] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+01:06:46.768 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+01:06:47.059 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+01:06:47.122 [main] WARN  org.hibernate.orm.connections.pooling - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+01:06:47.125 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/autoservice_db]
+01:06:47.125 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001001: Connection properties: {password=****, user=postgres}
+01:06:47.125 [main] INFO  org.hibernate.orm.connections.pooling - HHH10001003: Autocommit mode: false
+01:06:47.127 [main] INFO  org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl - HHH000115: Hibernate connection pool size: 20 (min=1)
+01:06:47.289 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+01:06:47.617 [main] INFO  org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]

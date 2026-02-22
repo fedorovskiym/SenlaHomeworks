@@ -1,0 +1,4 @@
+16:31:14.297 [main] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Bad value for type int : ACCEPTED
+17:01:29.243 [main] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - ОШИБКА: столбец "submissiondatetime" не существует
+  Подсказка: Возможно, предполагалась ссылка на столбец "order0_.submission_date_time".
+  Позиция: 589
