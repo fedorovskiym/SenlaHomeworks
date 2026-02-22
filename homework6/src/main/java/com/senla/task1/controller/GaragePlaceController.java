@@ -4,8 +4,6 @@ import com.senla.task1.dto.GaragePlaceDTO;
 import com.senla.task1.dto.GaragePlaceDTORequest;
 import com.senla.task1.exceptions.EntityAlreadyExistsException;
 import com.senla.task1.exceptions.EntityNotFoundException;
-import com.senla.task1.exceptions.GaragePlaceException;
-import com.senla.task1.models.GaragePlace;
 import com.senla.task1.service.GaragePlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

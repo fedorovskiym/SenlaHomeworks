@@ -4,7 +4,6 @@ import com.senla.task1.dto.MechanicDTO;
 import com.senla.task1.dto.MechanicDTORequest;
 import com.senla.task1.exceptions.EntityAlreadyExistsException;
 import com.senla.task1.exceptions.EntityNotFoundException;
-import com.senla.task1.models.Mechanic;
 import com.senla.task1.service.MechanicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

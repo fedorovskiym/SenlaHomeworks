@@ -4,7 +4,6 @@ import com.senla.task1.dto.OrderDTO;
 import com.senla.task1.dto.OrderDTORequest;
 import com.senla.task1.exceptions.EntityAlreadyExistsException;
 import com.senla.task1.exceptions.EntityNotFoundException;
-import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.service.AutoService;
 import com.senla.task1.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/shift_time")
-    public ResponseEntity<List<OrderDTO>> shiftOrdersTime(@RequestParam("hours") Integer hours,@RequestParam("minutes") Integer minutes) {
+    public ResponseEntity<List<OrderDTO>> shiftOrdersTime(@RequestParam("hours") Integer hours, @RequestParam("minutes") Integer minutes) {
         orderService.shiftOrdersTime(hours, minutes);
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getAllOrders());
     }

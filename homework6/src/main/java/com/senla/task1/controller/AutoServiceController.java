@@ -35,7 +35,7 @@ public class AutoServiceController {
 
     @GetMapping(value = "/available_slot")
     public ResponseEntity<?> getAvailableSlot(@RequestParam("year") Integer year, @RequestParam("month") Integer month,
-                                 @RequestParam("day") Integer day) {
+                                              @RequestParam("day") Integer day) {
         return ResponseEntity.status(HttpStatus.OK).body(autoService.getAvailableSlot(year, month, day));
     }
 
@@ -59,5 +59,4 @@ public class AutoServiceController {
     public String handleIllegalArgument(IllegalArgumentException exception) {
         return "Wrong argument: " + exception.getMessage();
     }
-
 }
