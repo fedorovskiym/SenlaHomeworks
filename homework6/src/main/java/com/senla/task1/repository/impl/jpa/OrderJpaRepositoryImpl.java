@@ -5,8 +5,7 @@ import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.repository.OrderRepository;
 import jakarta.persistence.EntityManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -18,17 +17,23 @@ import java.util.Optional;
 @Qualifier("orderJpaDAO")
 public class OrderJpaRepositoryImpl extends AbstractJpaRepository<Order, Integer> implements OrderRepository {
 
-    private static final String HQL_SORT_BY = "SELECT o FROM Order o ORDER BY ";
-    private static final String HQL_FIND_BY_MECHANIC = "SELECT o FROM Order o WHERE o.mechanic.id = :mechanicId";
-    private static final String HQL_FIND_BY_STATUS = "SELECT o FROM Order o WHERE o.status = :status";
-    private static final String HQL_PERIOD_OF_TIME = "SELECT o FROM Order o WHERE submissionDateTime BETWEEN :start" +
-            " AND :end ORDER BY ";
-    private static final String HQL_END_DATE_TIME = "SELECT o FROM Order o " +
-            "INNER JOIN o.status s " +
-            "WHERE s.code = :waiting OR s.code = :accepted " +
-            "ORDER BY o.submissionDateTime DESC";
-
-    private static final Logger logger = LogManager.getLogger(OrderJpaRepositoryImpl.class);
+    private static final String HQL_SORT_BY = """
+            SELECT o FROM Order o ORDER BY
+            """;
+    private static final String HQL_FIND_BY_MECHANIC = """
+            SELECT o FROM Order o WHERE o.mechanic.id = :mechanicId
+            """;
+    private static final String HQL_FIND_BY_STATUS = """
+            SELECT o FROM Order o WHERE o.status = :status
+            """;
+    private static final String HQL_PERIOD_OF_TIME = """
+            SELECT o FROM Order o WHERE submissionDateTime BETWEEN :start
+                        AND :end ORDER BY
+            """;
+    private static final String HQL_END_DATE_TIME = """
+            SELECT o FROM Order o INNER JOIN o.status s WHERE s.code = :waiting OR s.code = :accepted
+            ORDER BY o.submissionDateTime DESC
+            """;
 
     public OrderJpaRepositoryImpl(Class<Order> type) {
         super(type);
@@ -54,7 +59,7 @@ public class OrderJpaRepositoryImpl extends AbstractJpaRepository<Order, Integer
     public List<Order> sortBy(String field, boolean flag) {
         EntityManager em = getEntityManager();
         List<Order> sortedList;
-        String hql = HQL_SORT_BY + field + (flag ? " ASC" : " DESC");
+        String hql = String.format("%s %s %s", HQL_SORT_BY, field, (flag ? "ASC" : "DESC"));
         sortedList = em.createQuery(hql, Order.class).getResultList();
         return sortedList;
     }
@@ -92,7 +97,7 @@ public class OrderJpaRepositoryImpl extends AbstractJpaRepository<Order, Integer
     public List<Order> findOrderOverPeriodOfTime(LocalDateTime start, LocalDateTime end, String field, boolean flag) {
         EntityManager em = getEntityManager();
         List<Order> sortedOrder;
-        String hql = HQL_PERIOD_OF_TIME + field + (flag ? " ASC" : " DESC");
+        String hql = String.format("%s %s %s", HQL_PERIOD_OF_TIME, field, (flag ? "ASC" : "DESC"));
         sortedOrder = em.createQuery(hql, Order.class)
                 .setParameter("start", start)
                 .setParameter("end", end)

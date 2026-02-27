@@ -12,8 +12,10 @@ import com.senla.task1.models.enums.OrderStatusType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,9 +52,8 @@ public class AutoService {
         Mechanic mechanic = mechanicService.findMechanicById(autoServiceRequestDTO.mechanicId());
         GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(autoServiceRequestDTO.placeNumber());
 
-        if (mechanic.isBusy() || !garagePlace.isEmpty()) {
-            System.out.println("Механик или место занято!");
-            return null;
+        if (mechanic.getIsBusy() || !garagePlace.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Mechanic or garage place is busy!");
         }
 
         Duration duration = Duration.ofHours(autoServiceRequestDTO.hours()).plusMinutes(autoServiceRequestDTO.minutes());
@@ -93,7 +94,7 @@ public class AutoService {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Ресурс не найден: " + resourceName);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Resource with name " + resourceName + " not found");
             }
 
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
@@ -113,19 +114,16 @@ public class AutoService {
                         String carName = parts[1].trim();
 
                         if (!mechanicService.isMechanicExists(Integer.parseInt(parts[2].trim()))) {
-                            System.out.println("Механика с id " + parts[2].trim() + " не существует, заказ не может быть добавлен");
                             continue;
                         }
                         Mechanic mechanic = mechanicService.findMechanicById(Integer.parseInt(parts[2].trim()));
 
                         if (!garagePlaceService.isGaragePlaceExists(Integer.parseInt(parts[3].trim()))) {
-                            System.out.println("Места в гараже № " + Integer.parseInt(parts[3]) + " не существует, заказ не может быть добавлен");
                             continue;
                         }
                         GaragePlace garagePlace = garagePlaceService.findPlaceByNumber(Integer.parseInt(parts[3].trim()));
 
                         if (!orderStatusService.checkIsOrderStatusExists(Integer.parseInt(parts[4].trim()))) {
-                            System.out.println("Заказа с id " + parts[4].trim() + " не найдено, заказ не может быть добавлен");
                             continue;
                         }
                         OrderStatus orderStatus = orderStatusService.findById(Integer.parseInt(parts[4].trim()));
@@ -150,8 +148,7 @@ public class AutoService {
                                     submissionDateTime, plannedCompletionDateTime, completionDateTime,
                                     endDateTime, duration, price);
                         } else {
-                            if (mechanic.isBusy() || !garagePlace.isEmpty()) {
-                                System.out.println("Механик или место занято, заказ не может быть добавлен");
+                            if (mechanic.getIsBusy() || !garagePlace.isEmpty()) {
                                 continue;
                             }
                             Order order = new Order(id, carName, mechanic, garagePlace, orderStatus, submissionDateTime,
@@ -176,7 +173,7 @@ public class AutoService {
 
     @Transactional
     public String exportOrdersToCSV() {
-        logger.info("Обработка экспорта данных заказов в файл {}");
+        logger.info("Обработка экспорта данных заказов в файл");
         List<Order> orders = orderService.findAllOrders();
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -230,7 +227,6 @@ public class AutoService {
         order.setDuration(duration);
         order.setPrice(price);
         orderService.update(order);
-        System.out.println("Заказ №" + id + " обновлен");
     }
 
     @Transactional

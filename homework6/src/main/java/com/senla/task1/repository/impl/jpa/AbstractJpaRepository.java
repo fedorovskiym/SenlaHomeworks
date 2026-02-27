@@ -3,8 +3,6 @@ package com.senla.task1.repository.impl.jpa;
 import com.senla.task1.repository.GenericRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,7 +13,6 @@ public abstract class AbstractJpaRepository<T, PK extends Serializable> implemen
     @PersistenceContext
     private EntityManager entityManager;
     protected Class<T> type;
-    private static final Logger logger = LogManager.getLogger(AbstractJpaRepository.class);
 
     public AbstractJpaRepository(Class<T> type) {
         this.type = type;

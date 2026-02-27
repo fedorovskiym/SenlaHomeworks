@@ -10,6 +10,7 @@ public abstract class OrderMapper {
 
     @Mapping(target = "mechanicName", source = "mechanic.name")
     @Mapping(target = "mechanicSurname", source = "mechanic.surname")
+    @Mapping(target = "mechanicId", source = "mechanic.id")
     @Mapping(target = "placeNumber", source = "garagePlace.placeNumber")
     @Mapping(target = "status", source = "status.name")
     public abstract OrderDTO orderToOrderDTO(Order order);

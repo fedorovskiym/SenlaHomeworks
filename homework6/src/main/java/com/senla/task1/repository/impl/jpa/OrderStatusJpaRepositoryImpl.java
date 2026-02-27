@@ -4,8 +4,6 @@ import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.repository.OrderStatusRepository;
 import jakarta.persistence.EntityManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -13,8 +11,9 @@ import java.util.Optional;
 @Repository
 public class OrderStatusJpaRepositoryImpl extends AbstractJpaRepository<OrderStatus, Integer> implements OrderStatusRepository {
 
-    private static final String HQL_FIND_BY_CODE = "SELECT o from OrderStatus o WHERE code = :code";
-    private static final Logger logger = LogManager.getLogger(OrderStatusJpaRepositoryImpl.class);
+    private static final String HQL_FIND_BY_CODE = """
+            SELECT o from OrderStatus o WHERE code = :code
+            """;
 
     public OrderStatusJpaRepositoryImpl(Class<OrderStatus> type) {
         super(type);

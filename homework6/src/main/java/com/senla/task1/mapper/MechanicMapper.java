@@ -7,7 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public abstract class MechanicMapper {
 
-    public abstract Mechanic mechanicDTOToMechanic(MechanicDTO mechanicDTO);
-
     public abstract MechanicDTO mechanicToMechanicDTO(Mechanic mechanic);
 }

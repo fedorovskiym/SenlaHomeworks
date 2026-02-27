@@ -2,6 +2,7 @@ package com.senla.task1.service;
 
 import com.senla.task1.dto.OrderDTO;
 import com.senla.task1.dto.OrderDTORequest;
+import com.senla.task1.dto.OrderSearchDTO;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.mapper.OrderMapper;
 import com.senla.task1.models.Order;
@@ -167,11 +168,12 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderDTO> findOrdersOverPeriodOfTime(OrderDTORequest orderDTORequest) {
+    public List<OrderDTO> findOrdersOverPeriodOfTime(Integer fromYear, Integer fromMonth, Integer fromDay,
+                                                     Integer toYear, Integer toMonth, Integer toDay, String sortType, boolean flag) {
         logger.info("Обработка поиска заказов за период времени");
-        LocalDateTime startTime = LocalDateTime.of(orderDTORequest.fromYear(), orderDTORequest.fromMonth(), orderDTORequest.fromDay(), 0, 0);
-        LocalDateTime endTime = LocalDateTime.of(orderDTORequest.toYear(), orderDTORequest.toMonth(), orderDTORequest.toDay(), 23, 59);
-        List<OrderDTO> sortedOrdersOverPeriod = orderRepository.findOrderOverPeriodOfTime(startTime, endTime, orderDTORequest.sortType().toString(), orderDTORequest.flag())
+        LocalDateTime startTime = LocalDateTime.of(fromYear, fromMonth, fromDay, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
+        List<OrderDTO> sortedOrdersOverPeriod = orderRepository.findOrderOverPeriodOfTime(startTime, endTime, sortType, flag)
                 .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());;
         logger.info("Поиск заказов за период времени завершен");
         return sortedOrdersOverPeriod;
@@ -204,5 +206,22 @@ public class OrderService {
     @Transactional
     public void update(Order order) {
         orderRepository.update(order);
+    }
+
+    @Transactional
+    public List<OrderDTO> searchOrders(OrderSearchDTO orderSearchDTO) {
+        if(orderSearchDTO.mechanicId() != null) {
+            return findOrderByMechanicId(orderSearchDTO.mechanicId());
+        } else if (orderSearchDTO.status() != null) {
+            return findOrderByStatus(orderSearchDTO.status());
+        } else if (orderSearchDTO.submissionDateTime() != null) {
+            return sortOrdersByDateOfSubmission(orderSearchDTO.flag());
+        } else if (orderSearchDTO.completionDateTime() != null) {
+            return sortOrdersByDateOfCompletion(orderSearchDTO.flag());
+        } else if (orderSearchDTO.price() != null) {
+            return sortOrdersByPrice(orderSearchDTO.flag());
+        }
+        return findOrdersOverPeriodOfTime(orderSearchDTO.fromYear(), orderSearchDTO.fromMonth(), orderSearchDTO.fromDay(),
+                orderSearchDTO.toYear(), orderSearchDTO.toMonth(), orderSearchDTO.toDay(), orderSearchDTO.sortType(), orderSearchDTO.flag());
     }
 }

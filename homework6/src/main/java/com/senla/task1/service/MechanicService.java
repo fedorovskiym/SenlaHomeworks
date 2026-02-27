@@ -39,9 +39,10 @@ public class MechanicService {
 
     @Transactional(readOnly = true)
     public List<MechanicDTO> findAllMechanicDTO() {
-        return mechanicRepository.findAll().stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
+        return findAllMechanic().stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Mechanic> findAllMechanic() {
         return mechanicRepository.findAll();
     }
@@ -151,8 +152,8 @@ public class MechanicService {
                         mechanic.getId(),
                         mechanic.getName(),
                         mechanic.getSurname(),
-                        mechanic.getExperience(),
-                        mechanic.isBusy()))
+                        mechanic.getExperienceYears(),
+                        mechanic.getIsBusy()))
                 .append(System.lineSeparator()));
         logger.info("Данные успешно записаны в файл");
         return stringBuilder.toString();

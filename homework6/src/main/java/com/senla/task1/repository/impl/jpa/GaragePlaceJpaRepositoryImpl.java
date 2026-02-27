@@ -3,8 +3,6 @@ package com.senla.task1.repository.impl.jpa;
 import com.senla.task1.models.GaragePlace;
 import com.senla.task1.repository.GaragePlaceRepository;
 import jakarta.persistence.EntityManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -15,9 +13,12 @@ import java.util.Optional;
 @Qualifier("garagePlaceJpaDAO")
 public class GaragePlaceJpaRepositoryImpl extends AbstractJpaRepository<GaragePlace, Integer> implements GaragePlaceRepository {
 
-    private static final String HQL_EXIST_PLACE_NUMBER = "SELECT g FROM GaragePlace g WHERE g.placeNumber = :placeNumber";
-    private static final String HQL_FREE_GARAGE_PLACE = "SELECT g FROM GaragePlace g WHERE g.isEmpty = true";
-    private static final Logger logger = LogManager.getLogger(GaragePlaceJpaRepositoryImpl.class);
+    private static final String HQL_EXIST_PLACE_NUMBER = """
+            SELECT g FROM GaragePlace g WHERE g.placeNumber = :placeNumber
+            """;
+    private static final String HQL_FREE_GARAGE_PLACE = """
+            SELECT g FROM GaragePlace g WHERE g.isEmpty = true
+            """;
 
     public GaragePlaceJpaRepositoryImpl(Class<GaragePlace> type) {
         super(type);
