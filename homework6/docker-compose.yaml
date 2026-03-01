@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: autoservice_db
+      POSTGRES_PASSWORD: 1304
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  app:
+    build: .
+    container_name: autoservice-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      HIBERNATE_DATASOURCE_URL: jdbc:postgresql://postgres:5432/autoservice_db
+      HIBERNATE_DATASOURCE_USERNAME: postgres
+      HIBERNATE_DATASOURCE_PASSWORD: 1304
+volumes:
+  postgres_data:
