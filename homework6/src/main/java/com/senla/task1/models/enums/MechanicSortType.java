@@ -2,7 +2,7 @@ package com.senla.task1.models.enums;
 
 public enum MechanicSortType {
     ALPHABET("surname"),
-    BUSY("is_busy");
+    BUSY("isBusy");
 
     private final String displayName;
 

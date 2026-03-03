@@ -1,8 +1,8 @@
 package com.senla.task1.models.enums;
 
 public enum OrderSortType {
-    DATE_OF_SUBMISSION("submission_date_time"),
-    DATE_OF_COMPLETION("completion_date_time"),
+    DATE_OF_SUBMISSION("submissionDateTime"),
+    DATE_OF_COMPLETION("completionDateTime"),
     PRICE("price");
 
     private final String displayName;

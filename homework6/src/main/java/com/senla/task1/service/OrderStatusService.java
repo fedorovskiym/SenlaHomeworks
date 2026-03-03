@@ -29,6 +29,12 @@ public class OrderStatusService {
         ));
     }
 
+    public OrderStatus findByCodeString(String code) {
+        return orderStatusRepository.findByCodeString(code).orElseThrow(() -> new OrderStatusException(
+                "Статуса заказа с кодом " + code + " нет"
+        ));
+    }
+
     public Boolean checkIsOrderStatusExists(Integer id) {
         return orderStatusRepository.checkIsOrderStatusExists(id);
     }

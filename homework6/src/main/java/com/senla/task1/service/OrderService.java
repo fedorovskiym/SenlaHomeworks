@@ -1,7 +1,12 @@
 package com.senla.task1.service;
 
+import com.senla.task1.dto.OrderDTO;
+import com.senla.task1.dto.OrderDTORequest;
+import com.senla.task1.dto.OrderSearchDTO;
 import com.senla.task1.exceptions.OrderException;
+import com.senla.task1.mapper.OrderMapper;
 import com.senla.task1.models.Order;
+import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.models.enums.OrderSortType;
 import com.senla.task1.repository.OrderRepository;
@@ -10,41 +15,44 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.File;
-import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-    private final String folderPath = "data";
-    private final String fileName = "order.bin";
     private final OrderRepository orderRepository;
     private final OrderStatusService orderStatusService;
+    private final OrderMapper orderMapper;
     private final static Logger logger = LogManager.getLogger(OrderService.class);
 
     @Autowired
-    public OrderService(@Qualifier("orderJpaDAO") OrderRepository orderRepository, OrderStatusService orderStatusService) {
+    public OrderService(@Qualifier("orderJpaDAO") OrderRepository orderRepository, OrderStatusService orderStatusService, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.orderStatusService = orderStatusService;
-        registerShutdown();
+        this.orderMapper = orderMapper;
     }
 
     public OrderRepository getOrderDAO() {
         return orderRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Order> findAllOrders() {
         return orderRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getAllOrders() {
+        return findAllOrders().stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
+    }
+
+    @Transactional
     public void addOrder(Order order) {
         LocalDateTime endTimeLastOrder = getEndDateTimeLastOrder();
         if (endTimeLastOrder != null) {
@@ -55,14 +63,9 @@ public class OrderService {
             acceptOrder(order.getId());
             orderRepository.save(order);
         }
-        System.out.println("Заказ: " + order.getCarName() + " принят в гараж №" + order.getGaragePlace().getPlaceNumber() + ". Назначен механик " + order.getMechanic().getName());
-        System.out.println("Статус заказа: '" + order.getStatus().getName() + "'");
-        if (order.getPlannedCompletionDateTime() != null) {
-            System.out.println("Примерное начало выполнения заказа: " + order.getPlannedCompletionDateTime().format(dateTimeFormatter));
-        }
-        System.out.println();
     }
 
+    @Transactional
     public void acceptOrder(Integer id) {
         logger.info("Обработка принятия заказа № {}", id);
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderException(
@@ -86,6 +89,7 @@ public class OrderService {
         logger.info("Заказ № {} принят", id);
     }
 
+    @Transactional
     public void deleteOrder(Integer id) {
         logger.info("Обработка удаления заказа № {}", id);
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderException(
@@ -95,6 +99,7 @@ public class OrderService {
         logger.info("Заказ № {} удален", id);
     }
 
+    @Transactional
     public void shiftOrdersTime(Integer hours, Integer minutes) {
         logger.info("Обработка сдвига времени выполнения заказов на {} часов, {} минут", hours, minutes);
         Duration time = Duration.ofHours(hours).plusMinutes(minutes);
@@ -104,20 +109,16 @@ public class OrderService {
         logger.info("Изменено время выполнения всех заказов на {} часов, {} минут", hours, minutes);
     }
 
-    // Вывод заказа по айдишнку механика
-    public void findOrderByMechanicId(Integer mechanicId) {
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findOrderByMechanicId(Integer mechanicId) {
         logger.info("Обработка поиска заказов по механику № {}", mechanicId);
-        List<Order> mechanicOrders = orderRepository.findOrderByMechanicId(mechanicId);
-
-        if (!mechanicOrders.isEmpty()) {
-            showOrders(mechanicOrders);
-        } else {
-            System.out.println("У данного мастера в данный момент нет заказов");
-        }
+        List<OrderDTO> mechanicOrders = orderRepository.findOrderByMechanicId(mechanicId)
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
         logger.info("Поиск заказов по механику № {} завершен", mechanicId);
+        return mechanicOrders;
     }
 
-    // Получение времени окончания последнего активного заказа
+    @Transactional(readOnly = true)
     public LocalDateTime getEndDateTimeLastOrder() {
         Order order = orderRepository.getEndDateTimeLastActiveOrder().orElse(null);
 
@@ -129,158 +130,98 @@ public class OrderService {
     }
 
 
-    // Вывод заказов по статусу
-    public void findOrderByStatus(OrderStatusType status) {
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findOrderByStatus(String status) {
         logger.info("Обработка вывода заказов по статусу {}", status);
-        List<Order> ordersByStatus = orderRepository.findOrderByStatus(orderStatusService.findByCode(status));
-
-        if (!ordersByStatus.isEmpty()) {
-            showOrders(ordersByStatus);
-        } else {
-            System.out.println("Заказов с таким статусом нет");
-        }
+        OrderStatus orderStatus = orderStatusService.findByCodeString(status);
+        List<OrderDTO> ordersByStatus = orderRepository.findOrderByStatus(orderStatus)
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
         logger.info("Поиск заказов по статусу {} завершен", status);
+        return ordersByStatus;
     }
 
-    // Вывод всех заказов
-    public void showOrders(List<Order> orderList) {
-        System.out.println("Заказы:");
-        orderList.forEach(order -> System.out.println(formatOrderInfo(order)));
-    }
-
-    // Сортировка по дате подачи заявки (flag - определяет отображение)
-    public void sortOrdersByDateOfSubmission(Boolean flag) {
+    @Transactional(readOnly = true)
+    public List<OrderDTO> sortOrdersByDateOfSubmission(Boolean flag) {
         logger.info("Обработка сортировки заказов по дате подачи");
-        showOrders(orderRepository.sortBy(OrderSortType.DATE_OF_SUBMISSION.getDisplayName(), flag));
+        List<OrderDTO> orderList = orderRepository.sortBy(OrderSortType.DATE_OF_SUBMISSION.getDisplayName(), flag)
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
         logger.info("Сортировка заказов по дате подачи завершена");
+        return orderList;
     }
 
-    // Сортировка по дате выполнения (flag - определяет отображение), если у заказа нет даты выполнения, а только планируемая, то они становятся в конец
-    public void sortOrdersByDateOfCompletion(Boolean flag) {
+    @Transactional(readOnly = true)
+    public List<OrderDTO> sortOrdersByDateOfCompletion(Boolean flag) {
         logger.info("Обработка сортировки заказов по дате выполнения");
-        showOrders(orderRepository.sortBy(OrderSortType.DATE_OF_COMPLETION.getDisplayName(), flag));
+        List<OrderDTO> orderList = orderRepository.sortBy(OrderSortType.DATE_OF_COMPLETION.getDisplayName(), flag)
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());;
         logger.info("Сортировка заказов по дате выполнения завершена");
+        return orderList;
     }
 
-    // Сортировка по цене (flag - определяет отображение)
-    public void sortOrdersByPrice(Boolean flag) {
+    @Transactional(readOnly = true)
+    public List<OrderDTO> sortOrdersByPrice(Boolean flag) {
         logger.info("Обработка сортировки заказов по цене");
-        showOrders(orderRepository.sortBy(OrderSortType.PRICE.getDisplayName(), flag));
+        List<OrderDTO> orderList = orderRepository.sortBy(OrderSortType.PRICE.getDisplayName(), flag)
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());;
         logger.info("Сортировка заказов по цене завершена");
+        return orderList;
     }
 
-    // Метод для определения каким способом сортировать и выводить заявки за период времени
-    public void findOrdersOverPeriodOfTime(Integer fromYear, Integer fromMonth, Integer fromDay, Integer toYear, Integer toMonth, Integer toDay, OrderSortType sortType, Boolean flag) {
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findOrdersOverPeriodOfTime(Integer fromYear, Integer fromMonth, Integer fromDay,
+                                                     Integer toYear, Integer toMonth, Integer toDay, String sortType, boolean flag) {
         logger.info("Обработка поиска заказов за период времени");
         LocalDateTime startTime = LocalDateTime.of(fromYear, fromMonth, fromDay, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
-        System.out.println("Заказы в период с " + startTime.format(dateTimeFormatter) + " по " + endTime.format(dateTimeFormatter));
-        System.out.println();
-        List<Order> sortedOrdersOverPeriod = orderRepository.findOrderOverPeriodOfTime(startTime, endTime, sortType.toString(), flag);
-        showOrders(sortedOrdersOverPeriod);
+        List<OrderDTO> sortedOrdersOverPeriod = orderRepository.findOrderOverPeriodOfTime(startTime, endTime, sortType, flag)
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());;
         logger.info("Поиск заказов за период времени завершен");
+        return sortedOrdersOverPeriod;
     }
 
-    public void showNearestAvailableDate() {
+    public LocalDateTime showNearestAvailableDate() {
         logger.info("Обработка поиска ближайшей свободной даты");
-        System.out.println("Ближайшая свободная дата: " + getEndDateTimeLastOrder().format(dateTimeFormatter));
+        LocalDateTime nearestAvailableSlot = getEndDateTimeLastOrder();
         logger.info("Поиск ближайшей свободной даты завершен");
+        return nearestAvailableSlot;
     }
 
-    private String formatOrderInfo(Order order) {
-        return String.format(
-                """
-                        Заказ №%d:
-                        Статус: %s
-                        Механик: %s %s
-                        Название машины: %s
-                        Место в гараже: %d
-                        Дата подачи заявки: %s
-                        %s\
-                        %s\
-                        %s\
-                        %s\
-                        Цена: %.2f руб. \n
-                        """,
-                order.getId(),
-                order.getStatus().getName(),
-                order.getMechanic().getName(),
-                order.getMechanic().getSurname(),
-                order.getCarName(),
-                order.getGaragePlace().getPlaceNumber(),
-                order.getSubmissionDateTime().format(dateTimeFormatter),
-
-                order.getStatus().equals(OrderStatusType.WAITING)
-                        ? String.format("Планируемая дата выполнения заказа: %s\n",
-                        order.getPlannedCompletionDateTime().format(dateTimeFormatter))
-                        : "",
-
-                order.getDuration() != null
-                        ? String.format("Длительность: %d ч. %d мин.\n",
-                        order.getDuration().toHours(), order.getDuration().toMinutesPart())
-                        : "",
-
-                order.getCompletionDateTime() != null
-                        ? String.format("Начало выполнения заказа: %s\n",
-                        order.getCompletionDateTime().format(dateTimeFormatter))
-                        : "",
-
-                order.getEndDateTime() != null
-                        ? String.format("Конец выполнения: %s\n",
-                        order.getEndDateTime().format(dateTimeFormatter))
-                        : "",
-
-                order.getPrice()
-        );
-    }
-
-    public Order findOrderById(Integer id) {
-        return orderRepository.findById(id).orElseThrow(() -> new OrderException(
+    @Transactional(readOnly = true)
+    public OrderDTO findOrderById(Integer id) {
+        return orderMapper.orderToOrderDTO(findOrderByIdIsExists(id).orElseThrow(() -> new OrderException(
                 "Заказ с id - " + id + " не найден"
-        ));
+        )));
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Order> findOrderByIdIsExists(Integer id) {
+        return orderRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
     public boolean isOrdersExists(Integer id) {
         return orderRepository.checkIsOrderExists(id);
     }
 
+    @Transactional
     public void update(Order order) {
         orderRepository.update(order);
     }
 
-    public void save() {
-        try {
-            File folder = new File(folderPath);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            File file = new File(folder, fileName);
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(findAllOrders());
-                System.out.println("Состояние заказов сохранено");
-            }
-        } catch (IOException e) {
-            System.out.println("Ошибка при сериализации файла");
+    @Transactional
+    public List<OrderDTO> searchOrders(OrderSearchDTO orderSearchDTO) {
+        if(orderSearchDTO.mechanicId() != null) {
+            return findOrderByMechanicId(orderSearchDTO.mechanicId());
+        } else if (orderSearchDTO.status() != null) {
+            return findOrderByStatus(orderSearchDTO.status());
+        } else if (orderSearchDTO.submissionDateTime() != null) {
+            return sortOrdersByDateOfSubmission(orderSearchDTO.flag());
+        } else if (orderSearchDTO.completionDateTime() != null) {
+            return sortOrdersByDateOfCompletion(orderSearchDTO.flag());
+        } else if (orderSearchDTO.price() != null) {
+            return sortOrdersByPrice(orderSearchDTO.flag());
         }
-    }
-
-//    private void load() {
-//        File file = new File(folderPath, fileName);
-//        if (!file.exists()) return;
-//
-//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-//            List<Order> loadedList = (List<Order>) ois.readObject();
-//            orders.clear();
-//            orders.addAll(loadedList);
-//        } catch (IOException | ClassNotFoundException e) {
-//            System.out.println("Ошибка при десериализации файла");
-//        }
-//    }
-
-    private void registerShutdown() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
+        return findOrdersOverPeriodOfTime(orderSearchDTO.fromYear(), orderSearchDTO.fromMonth(), orderSearchDTO.fromDay(),
+                orderSearchDTO.toYear(), orderSearchDTO.toMonth(), orderSearchDTO.toDay(), orderSearchDTO.sortType(), orderSearchDTO.flag());
     }
 }
-
-

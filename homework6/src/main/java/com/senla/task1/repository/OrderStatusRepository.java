@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface OrderStatusRepository extends GenericRepository<OrderStatus, Integer> {
     Optional<OrderStatus> findByCode(OrderStatusType code);
+    Optional<OrderStatus> findByCodeString(String code);
     Boolean checkIsOrderStatusExists(Integer id);
 }

@@ -1,13 +1,26 @@
 package com.senla.task1.controller;
 
-import com.senla.task1.models.enums.OrderSortType;
-import com.senla.task1.models.enums.OrderStatusType;
+import com.senla.task1.dto.OrderDTO;
+import com.senla.task1.dto.OrderSearchDTO;
 import com.senla.task1.service.AutoService;
 import com.senla.task1.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/order")
 public class OrderController {
 
     private final OrderService orderService;
@@ -19,56 +32,41 @@ public class OrderController {
         this.autoService = autoService;
     }
 
-    public void acceptOrder(int id) {
-        orderService.acceptOrder(id);
+    @PatchMapping(value = "/{action}/{id}")
+    public ResponseEntity<OrderDTO> changeOrderStatus(@PathVariable("action") String action, @PathVariable("id") Integer id) {
+        switch (action) {
+            case "accept": orderService.acceptOrder(id);
+            case "cancel": autoService.cancelOrder(id);
+            case "close": autoService.closeOrder(id);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.findOrderById(id));
     }
 
-    public void closeOrder(int id) {
-        autoService.closeOrder(id);
-    }
-
-    public void cancelOrder(int id) {
-        autoService.cancelOrder(id);
-    }
-
-    public void shiftOrdersTime(int hours, int minutes) {
+    @PostMapping(value = "/shift_time")
+    public ResponseEntity<List<OrderDTO>> shiftOrdersTime(@RequestParam("hours") Integer hours, @RequestParam("minutes") Integer minutes) {
         orderService.shiftOrdersTime(hours, minutes);
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.getAllOrders());
     }
 
-    public void deleteOrder(int id) {
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<HttpStatus> deleteOrder(@PathVariable("id") Integer id) {
         autoService.deleteOrder(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    public void findOrderByMechanicId(int mechanicId) {
-        orderService.findOrderByMechanicId(mechanicId);
+    @GetMapping(value = "/")
+    public ResponseEntity<List<OrderDTO>> showAllOrders() {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.getAllOrders());
     }
 
-    public void showOrdersByStatus(OrderStatusType status) {
-        orderService.findOrderByStatus(status);
+    @GetMapping(value = "/nearest_available_slot")
+    public ResponseEntity<?> showNearestAvailableSlot() {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.showNearestAvailableDate());
     }
 
-    public void showAllOrders() {
-        orderService.showOrders(orderService.findAllOrders());
+    @GetMapping(value = "/search")
+    public ResponseEntity<List<OrderDTO>> searchOrders(@RequestBody OrderSearchDTO orderSearchDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.searchOrders(orderSearchDTO));
     }
 
-    public void showSortedOrdersByDateOfSubmission(boolean flag) {
-        orderService.sortOrdersByDateOfSubmission(flag);
-    }
-
-    public void showSortedOrdersByDateOfCompletion(boolean flag) {
-        orderService.sortOrdersByDateOfCompletion(flag);
-    }
-
-    public void showSortedOrdersByPrice(boolean flag) {
-        orderService.sortOrdersByPrice(flag);
-    }
-
-    public void showOrdersOverPeriodOfTime(int fromYear, int fromMonth, int fromDay, int toYear,
-                                           int toMonth, int toDay, OrderSortType sortType, boolean flag) {
-        orderService.findOrdersOverPeriodOfTime(fromYear, fromMonth, fromDay, toYear, toMonth, toDay, sortType, flag);
-    }
-
-    public void showNearestAvailableSlot() {
-        orderService.showNearestAvailableDate();
-    }
 }

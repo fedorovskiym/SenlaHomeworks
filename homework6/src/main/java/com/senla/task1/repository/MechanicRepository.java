@@ -9,6 +9,4 @@ public interface MechanicRepository extends GenericRepository<Mechanic, Integer>
     List<Mechanic> sortBy(String field, boolean flag);
 
     Boolean checkIsMechanicExists(Integer id);
-
-    void importWithTransaction(List<Mechanic> mechanicList);
 }

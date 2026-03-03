@@ -1,6 +1,8 @@
 package com.senla.task1.service;
 
+import com.senla.task1.dto.MechanicDTO;
 import com.senla.task1.exceptions.MechanicException;
+import com.senla.task1.mapper.MechanicMapper;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.enums.MechanicSortType;
@@ -10,41 +12,42 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.File;
-import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class MechanicService {
 
-    private final String folderPath = "data";
-    private final String fileName = "mechanic.bin";
     private final MechanicRepository mechanicRepository;
+    private final MechanicMapper mechanicMapper;
     private static final Logger logger = LogManager.getLogger(MechanicService.class);
 
     @Autowired
-    public MechanicService(@Qualifier("mechanicJpaDAO") MechanicRepository mechanicRepository) {
+    public MechanicService(@Qualifier("mechanicJpaDAO") MechanicRepository mechanicRepository, MechanicMapper mechanicMapper) {
         this.mechanicRepository = mechanicRepository;
-        registerShutdown();
+        this.mechanicMapper = mechanicMapper;
     }
 
+    @Transactional(readOnly = true)
+    public List<MechanicDTO> findAllMechanicDTO() {
+        return findAllMechanic().stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<Mechanic> findAllMechanic() {
         return mechanicRepository.findAll();
     }
 
+    @Transactional
     public void addMechanic(String name, String surname, Double experienceYears) {
         logger.info("Обработка добавления нового механика");
         Mechanic mechanic = new Mechanic(name, surname, experienceYears);
@@ -52,6 +55,7 @@ public class MechanicService {
         logger.info("Добавлен новый механик {}", mechanic);
     }
 
+    @Transactional
     public void removeMechanicById(Integer id) {
         logger.info("Обработка удаления механика № {}", id);
         Mechanic mechanic = mechanicRepository.findById(id).orElse(null);
@@ -59,28 +63,29 @@ public class MechanicService {
         logger.info("Механик № {} удален", id);
     }
 
+    @Transactional(readOnly = true)
     public Mechanic findMechanicById(Integer id) {
         return mechanicRepository.findById(id).orElseThrow(() -> new MechanicException(
                 "Механик с id - " + id + " не существует"
         ));
     }
 
-    public void showAllMechanic(List<Mechanic> mechanicList) {
-        mechanicList.forEach(mechanic -> System.out.println(formatMechanic(mechanic)));
-    }
-
-    public void showSortedMechanicByAlphabet(Boolean flag) {
+    @Transactional(readOnly = true)
+    public List<MechanicDTO> showSortedMechanicByAlphabet(Boolean flag) {
         logger.info("Обработка сортировки механиков по алфавиту");
-        List<Mechanic> sortedList = mechanicRepository.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag);
+        List<MechanicDTO> sortedList = mechanicRepository.sortBy(MechanicSortType.ALPHABET.getDisplayName(), flag)
+                .stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
         logger.info("Механики отсортированы по алфавиту");
-        showAllMechanic(sortedList);
+        return sortedList;
     }
 
-    public void showSortedMechanicByBusy() {
+    @Transactional(readOnly = true)
+    public List<MechanicDTO> showSortedMechanicByBusy() {
         logger.info("Обработка сортировки механиков по занятости");
-        List<Mechanic> sortedList = mechanicRepository.sortBy(MechanicSortType.BUSY.getDisplayName(), true);
+        List<MechanicDTO> sortedList = mechanicRepository.sortBy(MechanicSortType.BUSY.getDisplayName(), true)
+                .stream().map(mechanicMapper::mechanicToMechanicDTO).collect(Collectors.toList());
         logger.info("Механики отсортированы по занятости");
-        showAllMechanic(sortedList);
+        return sortedList;
     }
 
     public boolean isMechanicAvailable(Mechanic mechanic, List<Order> orders, LocalDateTime startDate, LocalDateTime endDate) {
@@ -95,9 +100,9 @@ public class MechanicService {
                 });
     }
 
+    @Transactional
     public void importFromCSV(String resourceName) {
         logger.info("Обработка импорта данных механиков из файла {}", resourceName);
-        List<Mechanic> mechanicsToSaveOrUpdate = new ArrayList<>();
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
             if (inputStream == null) {
                 throw new FileNotFoundException("Ресурс не найден: " + resourceName);
@@ -121,12 +126,13 @@ public class MechanicService {
                     boolean isBusy = Boolean.parseBoolean(parts[4].trim());
 
                     Mechanic mechanic = new Mechanic(id, name, surname, experience, isBusy);
-                    mechanicsToSaveOrUpdate.add(mechanic);
+                    if (!isMechanicExists(id)) {
+                        mechanicRepository.save(mechanic);
+                    } else {
+                        mechanicRepository.update(mechanic);
+                    }
                 }
             }
-
-            // Транзакция
-            mechanicRepository.importWithTransaction(mechanicsToSaveOrUpdate);
 
             logger.info("Данные успешно импортированы из файла {}", resourceName);
         } catch (IOException e) {
@@ -135,85 +141,31 @@ public class MechanicService {
         }
     }
 
-    public void exportToCSV(String filePath) {
-        logger.info("Обработка экспорта данных механиков в файл {}", filePath);
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+    @Transactional
+    public String exportToCSV() {
+        logger.info("Обработка экспорта данных механиков в файл");
+        List<Mechanic> mechanicList = findAllMechanic();
 
-            bufferedWriter.write("id;name;surname;experienceYears;isBusy");
-            bufferedWriter.newLine();
-
-            String lines = findAllMechanic().stream().map(mechanic ->
-                            String.format("%d;%s;%s;%.1f;%b",
-                                    mechanic.getId(),
-                                    mechanic.getName(),
-                                    mechanic.getSurname(),
-                                    mechanic.getExperience(),
-                                    mechanic.isBusy()))
-                    .collect(Collectors.joining(System.lineSeparator()));
-
-            bufferedWriter.write(lines);
-            logger.info("Данные успешно записаны в файл {}", filePath);
-        } catch (IOException e) {
-            logger.error("Ошибка при экспорте данных в файл {}", filePath);
-            throw new RuntimeException(e);
-        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("id;name;surname;experience_years;is_busy").append(System.lineSeparator());
+        mechanicList.forEach(mechanic -> stringBuilder.append(String.format("%d;%s;%s;%.2f;%s",
+                        mechanic.getId(),
+                        mechanic.getName(),
+                        mechanic.getSurname(),
+                        mechanic.getExperienceYears(),
+                        mechanic.getIsBusy()))
+                .append(System.lineSeparator()));
+        logger.info("Данные успешно записаны в файл");
+        return stringBuilder.toString();
     }
 
+    @Transactional
     public void updateMechanic(Mechanic mechanic) {
         mechanicRepository.update(mechanic);
     }
 
+    @Transactional(readOnly = true)
     public boolean isMechanicExists(Integer id) {
         return mechanicRepository.checkIsMechanicExists(id);
-    }
-
-    public void save() {
-        try {
-            File folder = new File(folderPath);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            File file = new File(folder, fileName);
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                oos.writeObject(findAllMechanic());
-                System.out.println("Состояние механиков сохранено");
-            }
-        } catch (IOException e) {
-            System.out.println("Ошибка при сериализации файла");
-        }
-    }
-
-//    private void load() {
-//        File file = new File(folderPath, fileName);
-//        if (!file.exists()) return;
-//
-//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-//            List<Mechanic> loadedList = (List<Mechanic>) ois.readObject();
-//            mechanicList.clear();
-//            mechanicList.addAll(loadedList);
-//        } catch (IOException | ClassNotFoundException e) {
-//            System.out.println("Ошибка при десериализации файла");
-//        }
-//    }
-
-    private void registerShutdown() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
-    }
-
-    public String formatMechanic(Mechanic mechanic) {
-        return String.format(
-                """
-                        Механик №%d: %s %s
-                        Лет опыта: %.2f
-                        Статус: %s
-                        """,
-                mechanic.getId(),
-                mechanic.getName(),
-                mechanic.getSurname(),
-                mechanic.getExperience(),
-                mechanic.isBusy() ? "Механик занят" : "Механик не занят"
-        );
     }
 }

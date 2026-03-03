@@ -1,11 +1,12 @@
 package com.senla.task1.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.io.Serializable;
 
 @Entity
@@ -47,7 +48,7 @@ public class Mechanic implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -67,16 +68,16 @@ public class Mechanic implements Serializable {
         this.surname = surname;
     }
 
-    public Double getExperience() {
+    public Double getExperienceYears() {
         return experienceYears;
     }
 
-    public void setExperience(Double experienceYears) {
-        this.experienceYears = experienceYears;
+    public Boolean getIsBusy() {
+        return isBusy;
     }
 
-    public Boolean isBusy() {
-        return isBusy;
+    public void setExperienceYears(Double experienceYears) {
+        this.experienceYears = experienceYears;
     }
 
     public void setBusy(Boolean busy) {
