@@ -20,13 +20,15 @@ import java.util.Random;
 public class AccountService {
     private final Logger logger = LogManager.getLogger(AccountService.class);
     private final AccountRepository accountRepository;
+    private final TransferKafkaProducerService transferKafkaProducerService;
     private final Map<Long, Account> accountMap = new HashMap<>();
     private final static Integer MIN = 1000;
     private final static Integer MAX = 10000;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, TransferKafkaProducerService transferKafkaProducerService) {
         this.accountRepository = accountRepository;
+        this.transferKafkaProducerService = transferKafkaProducerService;
     }
 
     @Transactional
@@ -56,6 +58,7 @@ public class AccountService {
         Integer amount = (int) (Math.random() * (MAX - MIN)) + MIN;
         TransferMessage transfer = new TransferMessage(fromAccountId, targetAccountId, amount);
         logger.info("Создался перевод {}", transfer);
+        transferKafkaProducerService.sendTransferMessageToKafka(transfer);
     }
 
     private Long randomId() {
