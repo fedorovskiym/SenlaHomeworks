@@ -48,7 +48,7 @@ public class AccountService {
         }
     }
 
-    @Scheduled(fixedDelay = 200)
+    @Scheduled(fixedDelay = 2000)
     public void generateTransfer() {
         if (accountMap.isEmpty()) {
             return;
@@ -57,8 +57,9 @@ public class AccountService {
         Long targetAccountId = randomId();
         Integer amount = (int) (Math.random() * (MAX - MIN)) + MIN;
         TransferMessage transfer = new TransferMessage(fromAccountId, targetAccountId, amount);
-        logger.info("Создался перевод {}", transfer);
-        transferKafkaProducerService.sendTransferMessageToKafka(transfer);
+        String json = transfer.toString();
+        logger.info("Создался перевод {}", json);
+        transferKafkaProducerService.sendTransferMessageToKafka(transfer.getFromAccount(), json);
     }
 
     private Long randomId() {

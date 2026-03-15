@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransferKafkaProducerService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final Logger logger = LogManager.getLogger(TransferKafkaProducerService.class);
 
     @Autowired
-    public TransferKafkaProducerService(KafkaTemplate<String, Object> kafkaTemplate) {
+    public TransferKafkaProducerService(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
 
-    public void sendTransferMessageToKafka(TransferMessage transferMessage) {
-        kafkaTemplate.send("transfer", transferMessage);
-        logger.info("Сообщение отправлено в кафку: {}", transferMessage);
+    public void sendTransferMessageToKafka(Long fromId, String json) {
+        kafkaTemplate.send("transfer", String.valueOf(fromId), json);
+        logger.info("Сообщение отправлено в кафку: {}", json);
     }
 }
