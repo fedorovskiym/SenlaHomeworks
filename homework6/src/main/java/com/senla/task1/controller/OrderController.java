@@ -68,5 +68,4 @@ public class OrderController {
     public ResponseEntity<List<OrderDTO>> searchOrders(@RequestBody OrderSearchDTO orderSearchDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(orderService.searchOrders(orderSearchDTO));
     }
-
 }

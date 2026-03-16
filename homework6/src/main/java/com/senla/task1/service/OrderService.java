@@ -1,7 +1,6 @@
 package com.senla.task1.service;
 
 import com.senla.task1.dto.OrderDTO;
-import com.senla.task1.dto.OrderDTORequest;
 import com.senla.task1.dto.OrderSearchDTO;
 import com.senla.task1.exceptions.OrderException;
 import com.senla.task1.mapper.OrderMapper;
@@ -153,7 +152,8 @@ public class OrderService {
     public List<OrderDTO> sortOrdersByDateOfCompletion(Boolean flag) {
         logger.info("Обработка сортировки заказов по дате выполнения");
         List<OrderDTO> orderList = orderRepository.sortBy(OrderSortType.DATE_OF_COMPLETION.getDisplayName(), flag)
-                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());;
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
+        ;
         logger.info("Сортировка заказов по дате выполнения завершена");
         return orderList;
     }
@@ -162,7 +162,8 @@ public class OrderService {
     public List<OrderDTO> sortOrdersByPrice(Boolean flag) {
         logger.info("Обработка сортировки заказов по цене");
         List<OrderDTO> orderList = orderRepository.sortBy(OrderSortType.PRICE.getDisplayName(), flag)
-                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());;
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
+        ;
         logger.info("Сортировка заказов по цене завершена");
         return orderList;
     }
@@ -174,7 +175,8 @@ public class OrderService {
         LocalDateTime startTime = LocalDateTime.of(fromYear, fromMonth, fromDay, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
         List<OrderDTO> sortedOrdersOverPeriod = orderRepository.findOrderOverPeriodOfTime(startTime, endTime, sortType, flag)
-                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());;
+                .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
+        ;
         logger.info("Поиск заказов за период времени завершен");
         return sortedOrdersOverPeriod;
     }
@@ -188,6 +190,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public OrderDTO findOrderById(Integer id) {
+        logger.info("Поиск заказа по id {}", id);
         return orderMapper.orderToOrderDTO(findOrderByIdIsExists(id).orElseThrow(() -> new OrderException(
                 "Заказ с id - " + id + " не найден"
         )));
@@ -210,7 +213,7 @@ public class OrderService {
 
     @Transactional
     public List<OrderDTO> searchOrders(OrderSearchDTO orderSearchDTO) {
-        if(orderSearchDTO.mechanicId() != null) {
+        if (orderSearchDTO.mechanicId() != null) {
             return findOrderByMechanicId(orderSearchDTO.mechanicId());
         } else if (orderSearchDTO.status() != null) {
             return findOrderByStatus(orderSearchDTO.status());
