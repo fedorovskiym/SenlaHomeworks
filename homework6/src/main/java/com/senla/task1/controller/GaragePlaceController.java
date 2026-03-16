@@ -60,5 +60,4 @@ public class GaragePlaceController {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(csv);
     }
-
 }
