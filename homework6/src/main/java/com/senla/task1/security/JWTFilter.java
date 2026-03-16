@@ -31,12 +31,6 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        String path = request.getServletPath();
-        if (path.startsWith("/auth/login") || path.startsWith("/signUp")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7).trim();
             try {
@@ -50,8 +44,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
         filterChain.doFilter(request, response);
     }
-
 }

@@ -29,8 +29,8 @@ public class UserJpaRepositoryImpl extends AbstractJpaRepository<User, Integer> 
         EntityManager em = getEntityManager();
         Optional<User> user = em.createQuery(HQL_FIND_BY_LOGIN, User.class)
                 .setParameter("username", username)
-                .getResultStream()
-                .findFirst();
+                .getResultList()
+                .stream().findFirst();
         return user;
     }
 }

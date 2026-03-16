@@ -16,6 +16,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getWriter().write("{\"error\": \"You do not have permission to this endpoint.\"}");
+        response.getWriter().write("""
+            {
+                "error": "Access denied",
+                "message": "You do not have permission to this endpoint"
+            }
+            """
+        );
     }
 }

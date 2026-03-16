@@ -6,7 +6,6 @@ import com.senla.task1.service.UserService;
 import com.senla.task1.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,18 +34,16 @@ public class AuthController {
         return Map.of("token", token);
     }
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public Map<String, String> login(@RequestBody AuthenticationDTO authenticationDTO) {
         UsernamePasswordAuthenticationToken authInputToken =
                 new UsernamePasswordAuthenticationToken(authenticationDTO.username(),
                         authenticationDTO.password());
-
         try {
             authenticationManager.authenticate(authInputToken);
-        } catch (BadCredentialsException e) {
+        } catch (Exception e) {
             return Map.of("message", "Incorrect username or password!");
         }
-
         String token = jwtUtil.generateToken(authenticationDTO.username());
         return Map.of("jwt-token", token);
     }
