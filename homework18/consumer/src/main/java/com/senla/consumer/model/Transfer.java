@@ -35,8 +35,7 @@ public class Transfer {
     public Transfer() {
     }
 
-    public Transfer(Long id, Account fromAccount, Account targetAccount, Integer amount) {
-        this.id = id;
+    public Transfer(Account fromAccount, Account targetAccount, Integer amount) {
         this.fromAccount = fromAccount;
         this.targetAccount = targetAccount;
         this.amount = amount;
@@ -74,13 +73,22 @@ public class Transfer {
         this.amount = amount;
     }
 
+    public TransferStatus getTransferStatus() {
+        return transferStatus;
+    }
+
+    public void setTransferStatus(TransferStatus transferStatus) {
+        this.transferStatus = transferStatus;
+    }
+
     @Override
     public String toString() {
         return "Transfer{" +
                 "id=" + id +
-                ", fromId=" + fromAccount +
-                ", targetId=" + targetAccount +
+                ", fromAccount=" + fromAccount +
+                ", targetAccount=" + targetAccount +
                 ", amount=" + amount +
+                ", transferStatus=" + transferStatus +
                 '}';
     }
 }

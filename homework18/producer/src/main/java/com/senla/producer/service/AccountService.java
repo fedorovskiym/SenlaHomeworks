@@ -1,5 +1,7 @@
 package com.senla.producer.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senla.producer.model.Account;
 import com.senla.producer.model.TransferMessage;
 import com.senla.producer.repository.AccountRepository;
@@ -35,8 +37,8 @@ public class AccountService {
     public void initAccount() {
         List<Account> accounts = accountRepository.findAll();
 
-        if(accounts.isEmpty()) {
-            for(int i = 0; i < 1000; i++) {
+        if (accounts.isEmpty()) {
+            for (int i = 0; i < 1000; i++) {
                 Account account = new Account();
                 account.setBalance((int) ((Math.random() * (MAX - MIN)) + MIN));
                 accounts.add(account);
@@ -48,18 +50,21 @@ public class AccountService {
         }
     }
 
-    @Scheduled(fixedDelay = 2000)
-    public void generateTransfer() {
+    @Scheduled(fixedDelay = 5000)
+    public void generateTransfer() throws JsonProcessingException {
         if (accountMap.isEmpty()) {
             return;
         }
-        Long fromAccountId = randomId();
-        Long targetAccountId = randomId();
-        Integer amount = (int) (Math.random() * (MAX - MIN)) + MIN;
-        TransferMessage transfer = new TransferMessage(fromAccountId, targetAccountId, amount);
-        String json = transfer.toString();
-        logger.info("Создался перевод {}", json);
-        transferKafkaProducerService.sendTransferMessageToKafka(transfer.getFromAccount(), json);
+        for (int i = 0; i < 1; i++) {
+            Long fromAccountId = randomId();
+            Long targetAccountId = randomId();
+            Integer amount = (int) (Math.random() * (MAX - MIN)) + MIN;
+            TransferMessage transfer = new TransferMessage(fromAccountId, targetAccountId, amount);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(transfer);
+            logger.info("Создался перевод {}", json);
+            transferKafkaProducerService.sendTransferMessageToKafka(json);
+        }
     }
 
     private Long randomId() {

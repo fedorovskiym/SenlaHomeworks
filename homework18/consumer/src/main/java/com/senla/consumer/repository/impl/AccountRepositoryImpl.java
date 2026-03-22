@@ -6,6 +6,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class AccountRepositoryImpl implements AccountRepository {
 
@@ -17,8 +19,14 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Account getById(Long id) {
+    public Optional<Account> getById(Long id) {
         EntityManager em = getEntityManager();
-        return em.find(Account.class, id);
+        return Optional.ofNullable(em.find(Account.class, id));
+    }
+
+    @Override
+    public void updateAccount(Account account) {
+        EntityManager em = getEntityManager();
+        em.merge(account);
     }
 }

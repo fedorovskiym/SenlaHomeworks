@@ -2,7 +2,10 @@ package com.senla.consumer.repository;
 
 import com.senla.consumer.model.Account;
 
+import java.util.Optional;
+
 public interface AccountRepository {
 
-    Account getById(Long id);
+    Optional<Account> getById(Long id);
+    void updateAccount(Account account);
 }

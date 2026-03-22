@@ -1,6 +1,5 @@
 package com.senla.producer.service;
 
-import com.senla.producer.model.TransferMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,12 @@ public class TransferKafkaProducerService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-
-    public void sendTransferMessageToKafka(Long fromId, String json) {
-        kafkaTemplate.send("transfer", String.valueOf(fromId), json);
-        logger.info("Сообщение отправлено в кафку: {}", json);
+    public void sendTransferMessageToKafka(String json) {
+        kafkaTemplate.executeInTransaction(t -> {
+            t.send("transfer", json);
+            t.flush();
+            logger.info("Сообщение отправлено в кафку: {}", json);
+            return null;
+        });
     }
 }
