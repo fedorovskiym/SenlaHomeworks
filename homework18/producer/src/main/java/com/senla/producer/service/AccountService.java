@@ -50,12 +50,12 @@ public class AccountService {
         }
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 1000)
     public void generateTransfer() throws JsonProcessingException {
         if (accountMap.isEmpty()) {
             return;
         }
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 5; i++) {
             Long fromAccountId = randomId();
             Long targetAccountId = randomId();
             Integer amount = (int) (Math.random() * (MAX - MIN)) + MIN;
@@ -63,7 +63,7 @@ public class AccountService {
             ObjectMapper objectMapper = new ObjectMapper();
             String json = objectMapper.writeValueAsString(transfer);
             logger.info("Создался перевод {}", json);
-            transferKafkaProducerService.sendTransferMessageToKafka(json);
+            transferKafkaProducerService.sendTransferMessageToKafka(transfer.getId(), json);
         }
     }
 

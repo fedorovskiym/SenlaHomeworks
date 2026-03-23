@@ -3,7 +3,6 @@ package com.senla.consumer.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senla.consumer.dto.TransferDTO;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,10 @@ public class TransferKafkaConsumerService {
 
     private final Logger logger = LogManager.getLogger(TransferKafkaConsumerService.class);
     private final TransferService transferService;
-    private final KafkaConsumer<String, String> kafkaConsumer;
 
     @Autowired
-    public TransferKafkaConsumerService(TransferService transferService, KafkaConsumer<String, String> kafkaConsumer) {
+    public TransferKafkaConsumerService(TransferService transferService) {
         this.transferService = transferService;
-        this.kafkaConsumer = kafkaConsumer;
     }
 
     @KafkaListener(topics = "transfer", groupId = "group-test",containerFactory = "kafkaListenerContainerFactory", batch = "true")

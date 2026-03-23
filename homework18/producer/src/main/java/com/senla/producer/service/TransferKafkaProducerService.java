@@ -17,9 +17,9 @@ public class TransferKafkaProducerService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendTransferMessageToKafka(String json) {
+    public void sendTransferMessageToKafka(Long id, String json) {
         kafkaTemplate.executeInTransaction(t -> {
-            t.send("transfer", json);
+            t.send("transfer", String.valueOf(id), json);
             t.flush();
             logger.info("Сообщение отправлено в кафку: {}", json);
             return null;
