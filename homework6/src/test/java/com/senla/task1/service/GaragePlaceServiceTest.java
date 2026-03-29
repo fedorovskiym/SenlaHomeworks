@@ -175,7 +175,7 @@ class GaragePlaceServiceTest {
     }
 
     @Test
-    void exportToCSV() {
+    void exportToCSV_Success() {
         GaragePlace firstGaragePlace = new GaragePlace(1, 1, true);
         GaragePlace secondGaragePlace = new GaragePlace(2, 2, true);
         when(garagePlaceRepository.findAll()).thenReturn(List.of(firstGaragePlace, secondGaragePlace));
