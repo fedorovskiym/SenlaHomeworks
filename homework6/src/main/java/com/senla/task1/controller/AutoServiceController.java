@@ -47,8 +47,8 @@ public class AutoServiceController {
     }
 
     @PostMapping(value = "/import")
-    public ResponseEntity<HttpStatus> importOrdersFromCSV(String filePath) {
-        autoService.importFromCSV(filePath);
+    public ResponseEntity<HttpStatus> importOrdersFromCSV(@RequestParam("fileName") String fileName) {
+        autoService.importFromCSV(fileName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
