@@ -3,26 +3,22 @@ package com.senla.task1.service;
 import com.senla.task1.dto.MechanicDTO;
 import com.senla.task1.exceptions.MechanicException;
 import com.senla.task1.mapper.MechanicMapper;
-import com.senla.task1.models.GaragePlace;
 import com.senla.task1.models.Mechanic;
 import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.MechanicSortType;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.repository.MechanicRepository;
-import jakarta.transaction.TransactionScoped;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -184,8 +180,8 @@ class MechanicServiceTest {
 
         String csv = mechanicService.exportToCSV();
 
-        assertTrue(csv.startsWith("id;name;surname;experienceYears;isBusy"));
-        assertTrue(csv.contains("1;name1;surname1;10.0;false"));
+        assertTrue(csv.startsWith("id;name;surname;experience_years;is_busy"));
+        assertTrue(csv.contains("1;name1;surname1;10,00;true"));
     }
 
     @Test

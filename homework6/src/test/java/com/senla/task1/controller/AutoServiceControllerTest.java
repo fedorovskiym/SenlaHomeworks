@@ -1,11 +1,9 @@
 package com.senla.task1.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senla.task1.dto.AutoServiceRequestDTO;
 import com.senla.task1.dto.OrderDTO;
 import com.senla.task1.service.AutoService;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

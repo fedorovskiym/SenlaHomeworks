@@ -1,7 +1,5 @@
 package com.senla.task1.service;
 
-import com.senla.task1.config.AutoServiceConfig;
-import com.senla.task1.controller.GaragePlaceController;
 import com.senla.task1.dto.GaragePlaceDTO;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.mapper.GaragePlaceMapper;
@@ -10,23 +8,14 @@ import com.senla.task1.models.Order;
 import com.senla.task1.models.OrderStatus;
 import com.senla.task1.models.enums.OrderStatusType;
 import com.senla.task1.repository.GaragePlaceRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.internal.matchers.Or;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
-import org.springframework.cglib.core.Local;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.swing.*;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -93,7 +94,7 @@ public class AutoService {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("csv/".concat(resourceName))) {
 
             if (inputStream == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Resource with name " + resourceName + " not found");
+                throw new FileNotFoundException("Resource with name " + resourceName + " not found");
             }
 
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
@@ -147,9 +148,6 @@ public class AutoService {
                                     submissionDateTime, plannedCompletionDateTime, completionDateTime,
                                     endDateTime, duration, price);
                         } else {
-                            if (mechanic.getIsBusy() || !garagePlace.isEmpty()) {
-                                continue;
-                            }
                             Order order = new Order(id, carName, mechanic, garagePlace, orderStatus, submissionDateTime,
                                     plannedCompletionDateTime, completionDateTime, endDateTime, duration, price);
                             orderService.addOrder(order);
@@ -256,7 +254,7 @@ public class AutoService {
         ));
         order.setStatus(orderStatusService.findByCode(OrderStatusType.CANCEL));
         order.cancelOrder();
-        orderService.getOrderDAO().update(order);
+        orderService.update(order);
         logger.info("Заказ № {} отменен", id);
     }
 }
