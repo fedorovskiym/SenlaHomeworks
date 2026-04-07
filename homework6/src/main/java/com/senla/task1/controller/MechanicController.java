@@ -70,5 +70,4 @@ public class MechanicController {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(csv);
     }
-
 }
