@@ -1,0 +1,2 @@
+id;carName;mechanicId;garagePlaceNumber;statusId;submissionDateTime;plannedCompletionDateTime;completionDateTime;endDateTime;duration;price
+1;BMW M5;1;1;1;2025-11-16T21:48:27;2025-11-16T22:48:27;;;90;10000,00

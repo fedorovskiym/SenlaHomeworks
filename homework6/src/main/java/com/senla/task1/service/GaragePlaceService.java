@@ -1,6 +1,5 @@
 package com.senla.task1.service;
 
-import com.senla.task1.config.AutoServiceConfig;
 import com.senla.task1.dto.GaragePlaceDTO;
 import com.senla.task1.exceptions.GaragePlaceException;
 import com.senla.task1.mapper.GaragePlaceMapper;
@@ -28,13 +27,11 @@ import java.util.stream.Collectors;
 public class GaragePlaceService {
 
     private final GaragePlaceRepository garagePlaceRepository;
-    private final AutoServiceConfig autoServiceConfig;
     private final GaragePlaceMapper garagePlaceMapper;
     private static final Logger logger = LogManager.getLogger(GaragePlaceService.class);
 
     @Autowired
-    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceRepository garagePlaceRepository, AutoServiceConfig autoServiceConfig, GaragePlaceMapper garagePlaceMapper) {
-        this.autoServiceConfig = autoServiceConfig;
+    public GaragePlaceService(@Qualifier("garagePlaceJpaDAO") GaragePlaceRepository garagePlaceRepository, GaragePlaceMapper garagePlaceMapper) {
         this.garagePlaceRepository = garagePlaceRepository;
         this.garagePlaceMapper = garagePlaceMapper;
     }
@@ -62,9 +59,6 @@ public class GaragePlaceService {
 
     @Transactional
     public void addGaragePlace(Integer number) {
-        if (!autoServiceConfig.isAllowAddGaragePlace()) {
-            throw new GaragePlaceException("Добавление новых мест в гараже отключено!");
-        }
         logger.info("Обработка добавления гаражного места № {}", number);
         GaragePlace garagePlace = new GaragePlace(number);
         garagePlaceRepository.save(garagePlace);
@@ -73,9 +67,6 @@ public class GaragePlaceService {
 
     @Transactional
     public void removeGaragePlace(Integer id) {
-        if (!autoServiceConfig.isAllowDeleteGaragePlace()) {
-            throw new GaragePlaceException("Удаление мест в гараже отключено!");
-        }
         logger.info("Обработка удаления гаражного места № {}", id);
         GaragePlace garagePlace = garagePlaceRepository.findById(id).orElseThrow(() -> new GaragePlaceException(
                 "Места в гараже c id " + id + " не найдено"

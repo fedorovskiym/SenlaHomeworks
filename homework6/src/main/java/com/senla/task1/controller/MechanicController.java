@@ -57,7 +57,7 @@ public class MechanicController {
     }
 
     @PostMapping(value = "/import")
-    public ResponseEntity<HttpStatus> importMechanicFromCSV(@RequestParam("path") String filePath) {
+    public ResponseEntity<HttpStatus> importMechanicFromCSV(@RequestParam("fileName") String filePath) {
         mechanicService.importFromCSV(filePath);
         return new ResponseEntity<>(HttpStatus.OK);
     }

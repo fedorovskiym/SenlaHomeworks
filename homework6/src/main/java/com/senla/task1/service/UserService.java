@@ -48,11 +48,4 @@ public class UserService {
         userRepository.save(user);
         logger.info("Пользователь {} зарегистрировался", user);
     }
-
-    @Transactional(readOnly = true)
-    public User getByUsername(String username) {
-        logger.info("Поиск пользователя по логину {}", username);
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + username + " not found"));
-    }
 }

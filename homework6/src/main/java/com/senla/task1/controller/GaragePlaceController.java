@@ -30,8 +30,8 @@ public class GaragePlaceController {
     }
 
     @GetMapping(value = "/free")
-    public List<GaragePlaceDTO> showFreeGaragePlaces() {
-        return garagePlaceService.findFreeGaragePlaces();
+    public ResponseEntity<List<GaragePlaceDTO>> showFreeGaragePlaces() {
+        return ResponseEntity.status(HttpStatus.OK).body(garagePlaceService.findFreeGaragePlaces());
     }
 
     @PostMapping(value = "/")

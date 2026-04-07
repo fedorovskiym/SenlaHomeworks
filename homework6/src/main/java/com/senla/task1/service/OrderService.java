@@ -72,7 +72,6 @@ public class OrderService {
         ));
 
         if (order.getStatus().getCode() == OrderStatusType.ACCEPTED) {
-            System.out.println("Заказ №" + id + " уже принят");
             return;
         }
 
@@ -176,7 +175,6 @@ public class OrderService {
         LocalDateTime endTime = LocalDateTime.of(toYear, toMonth, toDay, 23, 59);
         List<OrderDTO> sortedOrdersOverPeriod = orderRepository.findOrderOverPeriodOfTime(startTime, endTime, sortType, flag)
                 .stream().map(orderMapper::orderToOrderDTO).collect(Collectors.toList());
-        ;
         logger.info("Поиск заказов за период времени завершен");
         return sortedOrdersOverPeriod;
     }
