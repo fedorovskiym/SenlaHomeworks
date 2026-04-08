@@ -17,6 +17,7 @@ public abstract class AbstractGenericRepositoryImpl<T, ID> implements GenericRep
         this.type = type;
     }
 
+
     public EntityManager getEntityManager() {
         return entityManager;
     }
