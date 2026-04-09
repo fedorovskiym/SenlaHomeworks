@@ -24,8 +24,8 @@ public class PriceHistory {
     @JoinColumn(name = "product_id")
     private Product product;
     @ManyToOne
-    @JoinColumn(name = "shop_id")
-    private Shop shop;
+    @JoinColumn(name = "shop_branch_id")
+    private ShopBranch shopBranch;
     @Column(name = "old_price")
     private Double oldPrice;
     @Column(name = "new_price")
@@ -33,10 +33,10 @@ public class PriceHistory {
     @Column(name = "change_date")
     private LocalDate changeDate;
 
-    public PriceHistory(Long id, Product product, Shop shop, Double oldPrice, Double newPrice, LocalDate changeDate) {
+    public PriceHistory(Long id, Product product, ShopBranch shopBranch, Double oldPrice, Double newPrice, LocalDate changeDate) {
         this.id = id;
         this.product = product;
-        this.shop = shop;
+        this.shopBranch = shopBranch;
         this.oldPrice = oldPrice;
         this.newPrice = newPrice;
         this.changeDate = changeDate;
@@ -61,12 +61,12 @@ public class PriceHistory {
         this.product = product;
     }
 
-    public Shop getShop() {
-        return shop;
+    public ShopBranch getShopBranch() {
+        return shopBranch;
     }
 
-    public void setShop(Shop shop) {
-        this.shop = shop;
+    public void setShopBranch(ShopBranch shopBranch) {
+        this.shopBranch = shopBranch;
     }
 
     public Double getOldPrice() {
@@ -110,7 +110,7 @@ public class PriceHistory {
         return "PriceHistory{" +
                 "id=" + id +
                 ", product=" + product +
-                ", shop=" + shop +
+                ", shop=" + shopBranch +
                 ", oldPrice=" + oldPrice +
                 ", newPrice=" + newPrice +
                 ", changeDate=" + changeDate +

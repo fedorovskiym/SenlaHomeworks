@@ -1,6 +1,7 @@
 package com.senla.ProductService.service.impl;
 
 import com.senla.ProductService.dto.BrandDTO;
+import com.senla.ProductService.exception.custom.BrandException;
 import com.senla.ProductService.mapper.BrandMapper;
 import com.senla.ProductService.model.Brand;
 import com.senla.ProductService.repository.BrandRepository;
@@ -32,6 +33,9 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional
     public void save(BrandDTO brandDTO, MultipartFile photo) {
+        if (!brandRepository.findByName(brandDTO.name()).isEmpty()) {
+            throw new BrandException("Brand with name - " + brandDTO.name() + " already exists!");
+        }
         Brand brand = brandMapper.brandDTOToBrand(brandDTO);
         brand.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
         brandRepository.save(brand);
@@ -42,5 +46,21 @@ public class BrandServiceImpl implements BrandService {
     public List<BrandDTO> findWithPagination(Integer page, Integer size) {
         return brandRepository.findWithPagination(page, size)
                 .stream().map(brandMapper::brandToBrandDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        Brand brand = brandRepository.findById(id).orElseThrow(
+                () -> new BrandException("Brand with id - " + id + " not found!"));
+        yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
+        brandRepository.delete(brand);
+    }
+
+    @Override
+    public BrandDTO findById(Long id) {
+        return brandMapper.brandToBrandDTO(brandRepository.findById(id).orElseThrow(
+                () -> new BrandException("Brand with id - " + id + " not found!")
+        ));
     }
 }

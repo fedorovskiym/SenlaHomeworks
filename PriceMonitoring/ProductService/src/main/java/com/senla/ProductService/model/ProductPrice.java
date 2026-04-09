@@ -27,8 +27,8 @@ public class ProductPrice {
     @JoinColumn(name = "product_id")
     private Product product;
     @ManyToOne
-    @JoinColumn(name = "shop_id")
-    private Shop shop;
+    @JoinColumn(name = "shop_branch_id")
+    private ShopBranch shopBranch;
     @Column(name = "price")
     private Double price;
     @Column(name = "start_date")
@@ -40,10 +40,10 @@ public class ProductPrice {
     private PriceStatus status;
 
 
-    public ProductPrice(Long id, Product product, Shop shop, Double price, LocalDate startDate, Integer discountPercent, PriceStatus status) {
+    public ProductPrice(Long id, Product product, ShopBranch shopBranch, Double price, LocalDate startDate, Integer discountPercent, PriceStatus status) {
         this.id = id;
         this.product = product;
-        this.shop = shop;
+        this.shopBranch = shopBranch;
         this.price = price;
         this.startDate = startDate;
         this.discountPercent = discountPercent;
@@ -69,12 +69,12 @@ public class ProductPrice {
         this.product = product;
     }
 
-    public Shop getShop() {
-        return shop;
+    public ShopBranch getShopBranch() {
+        return shopBranch;
     }
 
-    public void setShop(Shop shop) {
-        this.shop = shop;
+    public void setShopBranch(ShopBranch shop) {
+        this.shopBranch = shopBranch;
     }
 
     public Double getPrice() {
@@ -126,7 +126,7 @@ public class ProductPrice {
         return "ProductPrice{" +
                 "id=" + id +
                 ", product=" + product +
-                ", shop=" + shop +
+                ", shop=" + shopBranch +
                 ", price=" + price +
                 ", startDate=" + startDate +
                 ", discountPercent=" + discountPercent +

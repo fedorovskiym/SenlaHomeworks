@@ -21,20 +21,14 @@ public class Shop {
     private Long id;
     @Column(name = "name")
     private String name;
-    @Column(name = "city")
-    private String city;
-    @Column(name = "address")
-    private String address;
     @Column(name = "logo_image_url")
     private String logoImageUrl;
     @OneToMany(mappedBy = "shop")
-    private List<ProductPrice> prices;
+    private List<ShopBranch> branches;
 
-    public Shop(Long id, String name, String city, String address, String logoImageUrl) {
+    public Shop(Long id, String name, String logoImageUrl) {
         this.id = id;
         this.name = name;
-        this.city = city;
-        this.address = address;
         this.logoImageUrl = logoImageUrl;
     }
 
@@ -57,22 +51,6 @@ public class Shop {
         this.name = name;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getLogoImageUrl() {
         return logoImageUrl;
     }
@@ -81,12 +59,12 @@ public class Shop {
         this.logoImageUrl = logoImageUrl;
     }
 
-    public List<ProductPrice> getPrices() {
-        return prices;
+    public List<ShopBranch> getBranches() {
+        return branches;
     }
 
-    public void setPrices(List<ProductPrice> prices) {
-        this.prices = prices;
+    public void setBranches(List<ShopBranch> branches) {
+        this.branches = branches;
     }
 
     @Override
@@ -106,8 +84,6 @@ public class Shop {
         return "Shop{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", city='" + city + '\'' +
-                ", address='" + address + '\'' +
                 ", logoImageUrl='" + logoImageUrl + '\'' +
                 '}';
     }

@@ -2,9 +2,8 @@ package com.senla.ProductService.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record BrandDTO(
+public record ShopDTO(
         Long id,
         @NotBlank(message = "Name must be not null") String name,
-        @NotBlank(message = "Country must be not null") String country,
         String logoImageUrl) {
 }
