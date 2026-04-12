@@ -24,15 +24,15 @@ public class ShopBranch {
     @ManyToOne
     @JoinColumn(name = "shop_id")
     private Shop shop;
-    @Column(name = "city")
-    private String city;
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
     @Column(name = "address")
     private String address;
     @OneToMany(mappedBy = "shopBranch")
     private List<ProductPrice> productPrices;
 
-
-    public ShopBranch(Long id, Shop shop, String city, String address) {
+    public ShopBranch(Long id, Shop shop, City city, String address) {
         this.id = id;
         this.shop = shop;
         this.city = city;
@@ -58,11 +58,11 @@ public class ShopBranch {
         this.shop = shop;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 
@@ -99,7 +99,7 @@ public class ShopBranch {
         return "ShopBranch{" +
                 "id=" + id +
                 ", shop=" + shop +
-                ", city='" + city + '\'' +
+                ", city=" + city +
                 ", address='" + address + '\'' +
                 '}';
     }
