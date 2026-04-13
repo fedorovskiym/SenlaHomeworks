@@ -37,15 +37,20 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CityDTO> findAllWithPagination(Integer page, Integer size) {
-        return cityRepository.findWithPagination(page, size).stream().map(cityMapper::cityToCityDTO).collect(Collectors.toList());
+    public List<CityDTO> findAll() {
+        return cityRepository.findAll().stream().map(cityMapper::cityToCityDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public CityDTO getCityById(Long id) {
-        City city = cityRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("City with id - " + id + " not found!"));
-        return cityMapper.cityToCityDTO(city);
+        return cityMapper.cityToCityDTO(getCityByIdIfExists(id));
     }
+
+    @Override
+    public City getCityByIdIfExists(Long id) {
+        return cityRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("City with id - " + id + " not found!"));
+    }
+
 }

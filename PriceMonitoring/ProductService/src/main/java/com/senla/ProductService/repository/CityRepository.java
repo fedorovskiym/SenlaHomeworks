@@ -7,7 +7,5 @@ import java.util.Optional;
 
 public interface CityRepository extends GenericRepository<City, Long>{
 
-    List<City> findWithPagination(Integer page, Integer size);
-
     Optional<City> findByName(String name);
 }

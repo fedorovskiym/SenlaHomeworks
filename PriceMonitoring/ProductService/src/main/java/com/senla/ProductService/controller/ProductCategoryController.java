@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,10 +31,8 @@ public class ProductCategoryController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ProductCategoryDTO>> findAllWithPagination(
-            @Min(value = 1, message = "Page must be greater than 0 or equal to 0") @RequestParam Integer page,
-            @Min(value = 0, message = "Size must be greater than 0 or equal to 0") @RequestParam Integer size) {
-        return ResponseEntity.status(HttpStatus.OK).body(productCategoryService.findAllWithPagination(page, size));
+    public ResponseEntity<List<ProductCategoryDTO>> findAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(productCategoryService.findAll());
     }
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

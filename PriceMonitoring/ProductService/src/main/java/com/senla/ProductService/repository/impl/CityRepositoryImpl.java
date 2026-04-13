@@ -13,26 +13,12 @@ import java.util.Optional;
 @Repository
 public class CityRepositoryImpl extends AbstractGenericRepositoryImpl<City, Long> implements CityRepository {
 
-    private static final String HQL_FIND_ALL_ORDER_BY_ID = """
-            SELECT c FROM City c ORDER BY c.id
-            """;
-
     private static final String HQL_FIND_BY_NAME = """
             SELECT c FROM City c WHERE c.name = :name
             """;
 
     public CityRepositoryImpl() {
         super(City.class);
-    }
-
-    @Override
-    public List<City> findWithPagination(Integer page, Integer size) {
-        EntityManager entityManager = getEntityManager();
-
-        return entityManager.createQuery(HQL_FIND_ALL_ORDER_BY_ID, City.class)
-                .setFirstResult((page - 1) * size)
-                .setMaxResults(size)
-                .getResultList();
     }
 
     @Override

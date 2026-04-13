@@ -1,6 +1,5 @@
 package com.senla.ProductService.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,10 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -28,14 +25,20 @@ public class ShopBranch {
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;
-    @Column(name = "address")
-    private String address;
+    @Column(name = "street")
+    private String street;
+    @Column(name = "house")
+    private Integer house;
+    @Column(name = "room")
+    private Integer room;
 
-    public ShopBranch(Long id, Shop shop, City city, String address) {
+    public ShopBranch(Long id, Shop shop, City city, String street, Integer house, Integer room) {
         this.id = id;
         this.shop = shop;
         this.city = city;
-        this.address = address;
+        this.street = street;
+        this.house = house;
+        this.room = room;
     }
 
     public ShopBranch() {
@@ -65,12 +68,28 @@ public class ShopBranch {
         this.city = city;
     }
 
-    public String getAddress() {
-        return address;
+    public String getStreet() {
+        return street;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public Integer getHouse() {
+        return house;
+    }
+
+    public void setHouse(Integer house) {
+        this.house = house;
+    }
+
+    public Integer getRoom() {
+        return room;
+    }
+
+    public void setRoom(Integer room) {
+        this.room = room;
     }
 
     @Override
@@ -89,9 +108,11 @@ public class ShopBranch {
     public String toString() {
         return "ShopBranch{" +
                 "id=" + id +
-                ", shop=" + shop +
-                ", city=" + city +
-                ", address='" + address + '\'' +
+                ", shop=" + shop.getName() +
+                ", city=" + city.getName() +
+                ", street='" + street + '\'' +
+                ", house='" + house + '\'' +
+                ", room=" + room +
                 '}';
     }
 }

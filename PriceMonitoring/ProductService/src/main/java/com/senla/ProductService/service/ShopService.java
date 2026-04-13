@@ -1,6 +1,7 @@
 package com.senla.ProductService.service;
 
 import com.senla.ProductService.dto.ShopDTO;
+import com.senla.ProductService.model.Shop;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -9,9 +10,11 @@ public interface ShopService {
 
     void save (ShopDTO shopDTO, MultipartFile photo);
 
-    List<ShopDTO> findAllWithPagination(Integer page, Integer size);
+    List<ShopDTO> findAll();
 
     void delete(Long id);
 
     ShopDTO findById(Long id);
+
+    Shop findByIdIfExists(Long id);
 }

@@ -40,10 +40,8 @@ public class BrandController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<BrandDTO>> findAllWithPagination(
-            @Min(value = 1, message = "Page must be greater than 0 or equal to 0") @RequestParam Integer page,
-            @Min(value = 0, message = "Size must be greater than 0 or equal to 0") @RequestParam Integer size) {
-        return ResponseEntity.status(HttpStatus.OK).body(brandService.findWithPagination(page, size));
+    public ResponseEntity<List<BrandDTO>> findAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(brandService.findAll());
     }
 
     @GetMapping(value = "/{id}")

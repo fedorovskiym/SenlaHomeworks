@@ -10,7 +10,7 @@ public interface BrandService {
 
     void save(BrandDTO brandDTO, MultipartFile photo);
 
-    List<BrandDTO> findWithPagination(Integer page, Integer size);
+    List<BrandDTO> findAll();
 
     void delete(Long id);
 

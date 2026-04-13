@@ -45,8 +45,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductCategoryDTO> findAllWithPagination(Integer page, Integer size) {
-        return productCategoryRepository.findWithPagination(page, size)
+    public List<ProductCategoryDTO> findAll() {
+        return productCategoryRepository.findAll()
                 .stream().map(productCategoryMapper::productCategoryToProductCategoryDTO).collect(Collectors.toList());
     }
 

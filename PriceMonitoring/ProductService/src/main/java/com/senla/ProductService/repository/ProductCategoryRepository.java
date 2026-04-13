@@ -9,6 +9,4 @@ import java.util.Optional;
 public interface ProductCategoryRepository extends GenericRepository<ProductCategory, Long> {
 
     Optional<ProductCategory> findByName(String name);
-
-    List<ProductCategory> findWithPagination(Integer page, Integer size);
 }

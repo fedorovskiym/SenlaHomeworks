@@ -16,10 +16,6 @@ public class ShopRepositoryImpl extends AbstractGenericRepositoryImpl<Shop, Long
             SELECT s FROM Shop s WHERE s.name = :name
             """;
 
-    private static final String HQL_FIND_ALL_ORDER_BY_ID = """
-            SELECT s FROM Shop s ORDER BY s.id
-            """;
-
     public ShopRepositoryImpl() {
         super(Shop.class);
     }
@@ -37,13 +33,4 @@ public class ShopRepositoryImpl extends AbstractGenericRepositoryImpl<Shop, Long
         }
     }
 
-    @Override
-    public List<Shop> findAllWithPagination(Integer page, Integer size) {
-        EntityManager entityManager = getEntityManager();
-
-        return entityManager.createQuery(HQL_FIND_ALL_ORDER_BY_ID, Shop.class)
-                .setFirstResult((page - 1) * size)
-                .setMaxResults(size)
-                .getResultList();
-    }
 }

@@ -44,8 +44,8 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BrandDTO> findWithPagination(Integer page, Integer size) {
-        return brandRepository.findWithPagination(page, size)
+    public List<BrandDTO> findAll() {
+        return brandRepository.findAll()
                 .stream().map(brandMapper::brandToBrandDTO).collect(Collectors.toList());
     }
 

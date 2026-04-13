@@ -44,8 +44,8 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopDTO> findAllWithPagination(Integer page, Integer size) {
-        return shopRepository.findAllWithPagination(page, size).stream().map(shopMapper::shopToShopDTO).collect(Collectors.toList());
+    public List<ShopDTO> findAll() {
+        return shopRepository.findAll().stream().map(shopMapper::shopToShopDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -60,8 +60,13 @@ public class ShopServiceImpl implements ShopService {
     @Override
     @Transactional(readOnly = true)
     public ShopDTO findById(Long id) {
-        return shopRepository.findById(id).map(shopMapper::shopToShopDTO).orElseThrow(
-                () -> new EntityNotFoundException("Shop with id - " + id + " not found!")
-        );
+        return shopMapper.shopToShopDTO(findByIdIfExists(id));
     }
+
+    @Override
+    public Shop findByIdIfExists(Long id) {
+        return shopRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Shop with id - " + id + " not found!"));
+    }
+
 }
