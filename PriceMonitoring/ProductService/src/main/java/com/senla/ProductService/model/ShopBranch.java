@@ -1,5 +1,6 @@
 package com.senla.ProductService.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,8 +30,6 @@ public class ShopBranch {
     private City city;
     @Column(name = "address")
     private String address;
-    @OneToMany(mappedBy = "shopBranch")
-    private List<ProductPrice> productPrices;
 
     public ShopBranch(Long id, Shop shop, City city, String address) {
         this.id = id;
@@ -72,14 +71,6 @@ public class ShopBranch {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public List<ProductPrice> getProductPrices() {
-        return productPrices;
-    }
-
-    public void setProductPrices(List<ProductPrice> productPrices) {
-        this.productPrices = productPrices;
     }
 
     @Override

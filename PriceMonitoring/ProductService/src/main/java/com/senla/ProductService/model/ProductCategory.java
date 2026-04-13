@@ -5,10 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -25,8 +23,6 @@ public class ProductCategory {
     private String description;
     @Column(name = "image_url")
     private String imageUrl;
-    @OneToMany(mappedBy = "productCategory")
-    private List<Product> productList;
 
     public ProductCategory(Long id, String name, String description, String imageUrl) {
         this.id = id;
@@ -68,14 +64,6 @@ public class ProductCategory {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public List<Product> getProductList() {
-        return productList;
-    }
-
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
     }
 
     @Override

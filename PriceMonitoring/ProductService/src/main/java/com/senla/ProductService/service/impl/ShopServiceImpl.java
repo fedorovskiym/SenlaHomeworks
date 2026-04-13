@@ -1,12 +1,13 @@
 package com.senla.ProductService.service.impl;
 
 import com.senla.ProductService.dto.ShopDTO;
-import com.senla.ProductService.exception.custom.ShopException;
 import com.senla.ProductService.mapper.ShopMapper;
 import com.senla.ProductService.model.Shop;
 import com.senla.ProductService.repository.ShopRepository;
 import com.senla.ProductService.service.ShopService;
 import com.senla.ProductService.util.YandexCloudUtil;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     public void save(ShopDTO shopDTO, MultipartFile photo) {
         if(!shopRepository.findByName(shopDTO.name()).isEmpty()) {
-            throw new ShopException("Shop with name - " + shopDTO.name() + " already exists!");
+            throw new EntityExistsException("Shop with name - " + shopDTO.name() + " already exists!");
         }
         Shop shop = shopMapper.shopDTOToShop(shopDTO);
         shop.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
@@ -51,7 +52,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     public void delete(Long id) {
         Shop shop = shopRepository.findById(id).orElseThrow(
-                () -> new ShopException("Shop with id - " + id + " does not exist!"));
+                () -> new EntityNotFoundException("Shop with id - " + id + " not found!"));
         yandexCloudUtil.deleteImage(shop.getLogoImageUrl());
         shopRepository.delete(shop);
     }
@@ -60,7 +61,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(readOnly = true)
     public ShopDTO findById(Long id) {
         return shopRepository.findById(id).map(shopMapper::shopToShopDTO).orElseThrow(
-                () -> new ShopException("Shop with id - " + id + " does not exist!")
+                () -> new EntityNotFoundException("Shop with id - " + id + " not found!")
         );
     }
 }

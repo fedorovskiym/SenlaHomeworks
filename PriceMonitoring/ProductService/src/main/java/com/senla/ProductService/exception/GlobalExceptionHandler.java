@@ -1,6 +1,7 @@
 package com.senla.ProductService.exception;
 
-import com.senla.ProductService.exception.custom.BrandException;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +49,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = BrandException.class)
-    public ResponseEntity<ErrorMessage> handleException(Exception e) {
+    @ExceptionHandler(value = EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleException(EntityNotFoundException e) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        errors.put(e.getClass().getName(), e.getMessage());
+
+        ErrorMessage errorMessage = new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                new Date(),
+                errors
+        );
+        return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = EntityExistsException.class)
+    public ResponseEntity<ErrorMessage> handleException(EntityExistsException e) {
 
         Map<String, String> errors = new HashMap<>();
 

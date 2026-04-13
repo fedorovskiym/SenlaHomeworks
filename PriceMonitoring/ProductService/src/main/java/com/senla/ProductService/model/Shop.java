@@ -1,5 +1,6 @@
 package com.senla.ProductService.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,8 +24,6 @@ public class Shop {
     private String name;
     @Column(name = "logo_image_url")
     private String logoImageUrl;
-    @OneToMany(mappedBy = "shop")
-    private List<ShopBranch> branches;
 
     public Shop(Long id, String name, String logoImageUrl) {
         this.id = id;
@@ -57,14 +56,6 @@ public class Shop {
 
     public void setLogoImageUrl(String logoImageUrl) {
         this.logoImageUrl = logoImageUrl;
-    }
-
-    public List<ShopBranch> getBranches() {
-        return branches;
-    }
-
-    public void setBranches(List<ShopBranch> branches) {
-        this.branches = branches;
     }
 
     @Override

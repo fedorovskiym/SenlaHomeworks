@@ -39,7 +39,7 @@ public class ShopController {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<ShopDTO>> findAllWithPagination(
-            @Min(value = 0, message = "Page must be greater than 0 or equal to 0") @RequestParam Integer page,
+            @Min(value = 1, message = "Page must be greater than 0 or equal to 0") @RequestParam Integer page,
             @Min(value = 0, message = "Size must be greater than 0 or equal to 0") @RequestParam Integer size) {
 
         return ResponseEntity.status(HttpStatus.OK).body(shopService.findAllWithPagination(page, size));
