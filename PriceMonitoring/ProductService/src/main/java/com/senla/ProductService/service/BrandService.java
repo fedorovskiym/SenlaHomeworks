@@ -15,4 +15,6 @@ public interface BrandService {
     void delete(Long id);
 
     BrandDTO findById(Long id);
+
+    Brand findByIdIfExists(Long id);
 }

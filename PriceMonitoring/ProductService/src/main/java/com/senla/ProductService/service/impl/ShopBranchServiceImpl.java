@@ -1,7 +1,7 @@
 package com.senla.ProductService.service.impl;
 
 import com.senla.ProductService.dto.ShopBranchDTO;
-import com.senla.ProductService.mapper.CityMapper;
+import com.senla.ProductService.mapper.ProductPriceMapper;
 import com.senla.ProductService.mapper.ShopBranchMapper;
 import com.senla.ProductService.model.City;
 import com.senla.ProductService.model.Shop;
@@ -10,6 +10,7 @@ import com.senla.ProductService.repository.ShopBranchRepository;
 import com.senla.ProductService.service.CityService;
 import com.senla.ProductService.service.ShopBranchService;
 import com.senla.ProductService.service.ShopService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,8 +49,21 @@ public class ShopBranchServiceImpl implements ShopBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopBranchDTO> findAllWithPagination(Long cityId) {
-        return shopBranchRepository.findAllByCityId(cityId)
+    public List<ShopBranchDTO> findAllByCityId(Long cityId) {
+        return shopBranchRepository.findAllByCityIdFetch(cityId)
                 .stream().map(shopBranchMapper::shopBranchToShopBranchDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ShopBranchDTO findById(Long id) {
+        return shopBranchMapper.shopBranchToShopBranchDTO(findByIdIfExists(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ShopBranch findByIdIfExists(Long id) {
+        return shopBranchRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Shop branch with id - " + id + " not found!"));
     }
 }

@@ -39,6 +39,6 @@ public class ShopBranchController {
     @GetMapping(value = "/")
     public ResponseEntity<List<ShopBranchDTO>> getShopBranch(
             @Min(value = 0, message = "City id must be greater or equal to 0") @RequestParam Long cityId) {
-        return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllWithPagination(cityId));
+        return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByCityId(cityId));
     }
 }

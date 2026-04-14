@@ -12,6 +12,8 @@ public class ShopBranchRepositoryImpl extends AbstractGenericRepositoryImpl<Shop
 
     private static final String HQL_FIND_ALL_BY_CITY_ORDER_BY_ID = """
             SELECT sb FROM ShopBranch sb
+            JOIN FETCH sb.city
+            JOIN FETCH sb.shop
             WHERE sb.city.id = :cityId
             ORDER BY sb.id
             """;
@@ -21,7 +23,7 @@ public class ShopBranchRepositoryImpl extends AbstractGenericRepositoryImpl<Shop
     }
 
     @Override
-    public List<ShopBranch> findAllByCityId(Long cityId) {
+    public List<ShopBranch> findAllByCityIdFetch(Long cityId) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_ALL_BY_CITY_ORDER_BY_ID, ShopBranch.class)

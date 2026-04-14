@@ -61,8 +61,12 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional(readOnly = true)
     public BrandDTO findById(Long id) {
-        return brandMapper.brandToBrandDTO(brandRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Brand with id - " + id + " not found!")
-        ));
+        return brandMapper.brandToBrandDTO(findByIdIfExists(id));
+    }
+
+    @Override
+    public Brand findByIdIfExists(Long id) {
+        return brandRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Brand with id - " + id + " not found!"));
     }
 }

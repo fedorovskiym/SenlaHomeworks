@@ -53,18 +53,19 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Override
     @Transactional(readOnly = true)
     public ProductCategoryDTO findById(Long id) {
-        ProductCategory productCategory = productCategoryRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Product category with id - " + id + " not found!")
-        );
-        return productCategoryMapper.productCategoryToProductCategoryDTO(productCategory);
+        return productCategoryMapper.productCategoryToProductCategoryDTO(findByIdIfExists(id));
+    }
+
+    @Override
+    public ProductCategory findByIdIfExists(Long id) {
+        return productCategoryRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Product category with id - " + id + " not found!"));
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
-        ProductCategory productCategory = productCategoryRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Product category with id - " + id + " not found!")
-        );
+        ProductCategory productCategory = findByIdIfExists(id);
         productCategoryRepository.delete(productCategory);
     }
 }
