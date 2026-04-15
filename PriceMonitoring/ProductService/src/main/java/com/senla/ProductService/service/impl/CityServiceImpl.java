@@ -19,6 +19,7 @@ public class CityServiceImpl implements CityService {
 
     private final CityRepository cityRepository;
     private final CityMapper cityMapper;
+
     @Autowired
     public CityServiceImpl(CityRepository cityRepository, CityMapper cityMapper) {
         this.cityRepository = cityRepository;
@@ -28,8 +29,8 @@ public class CityServiceImpl implements CityService {
     @Override
     @Transactional
     public void saveCity(CityDTO cityDTO) {
-        if(cityRepository.findByName(cityDTO.name()).isPresent()) {
-            throw new EntityExistsException("City with name - " + cityDTO.name() + " already exists!");
+        if (getCityByNameIfExists(cityDTO.name()) != null) {
+            throw new EntityExistsException("City with name " + cityDTO.name() + " already exists");
         }
         City city = cityMapper.cityDTOToCity(cityDTO);
         cityRepository.save(city);
@@ -48,9 +49,30 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public City getCityByNameIfExists(String name) {
+        return cityRepository.findByName(name).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public City getCityByIdIfExists(Long id) {
         return cityRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("City with id - " + id + " not found!"));
+                () -> new EntityNotFoundException("City with id - " + id + " not found!")
+        );
+    }
+
+    @Override
+    @Transactional
+    public void update(Long id, CityDTO cityDTO) {
+        City city = getCityByIdIfExists(id);
+
+        if (city.getName().equals(cityDTO.name()) || getCityByNameIfExists(cityDTO.name()) != null) {
+            throw new EntityExistsException("City with name - " + cityDTO.name() + " already exists!");
+        }
+
+        city.setName(cityDTO.name());
+        cityRepository.update(city);
     }
 
 }

@@ -1,16 +1,13 @@
 package com.senla.ProductService.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -24,8 +21,6 @@ public class City {
     @Column(name = "name")
     @NotBlank
     private String name;
-    @OneToMany(mappedBy = "city", cascade = CascadeType.REMOVE)
-    private List<ShopBranch> shopBranches;
 
     public City(Long id, String name) {
         this.id = id;
@@ -33,7 +28,6 @@ public class City {
     }
 
     public City() {
-
     }
 
     public Long getId() {
@@ -50,14 +44,6 @@ public class City {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<ShopBranch> getShopBranches() {
-        return shopBranches;
-    }
-
-    public void setShopBranches(List<ShopBranch> shopBranches) {
-        this.shopBranches = shopBranches;
     }
 
     @Override

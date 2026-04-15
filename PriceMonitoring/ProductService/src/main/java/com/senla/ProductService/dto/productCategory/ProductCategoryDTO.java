@@ -1,4 +1,4 @@
-package com.senla.ProductService.dto;
+package com.senla.ProductService.dto.productCategory;
 
 import jakarta.validation.constraints.NotBlank;
 

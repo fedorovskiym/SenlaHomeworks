@@ -73,7 +73,7 @@ public class ProductPrice {
         return shopBranch;
     }
 
-    public void setShopBranch(ShopBranch shop) {
+    public void setShopBranch(ShopBranch shopBranch) {
         this.shopBranch = shopBranch;
     }
 

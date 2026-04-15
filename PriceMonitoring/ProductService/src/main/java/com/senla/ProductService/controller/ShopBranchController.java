@@ -1,5 +1,6 @@
 package com.senla.ProductService.controller;
 
+import com.senla.ProductService.annotation.CheckId;
 import com.senla.ProductService.dto.ShopBranchDTO;
 import com.senla.ProductService.service.ShopBranchService;
 import jakarta.validation.Valid;
@@ -37,8 +38,7 @@ public class ShopBranchController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopBranchDTO>> getShopBranch(
-            @Min(value = 0, message = "City id must be greater or equal to 0") @RequestParam Long cityId) {
+    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@CheckId @RequestParam Long cityId) {
         return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByCityId(cityId));
     }
 }

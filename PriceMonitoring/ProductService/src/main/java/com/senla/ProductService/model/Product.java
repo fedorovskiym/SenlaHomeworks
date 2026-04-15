@@ -1,6 +1,5 @@
 package com.senla.ProductService.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,7 +37,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private ProductCategory productCategory;
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "product")
     private List<ProductPrice> priceList;
 
     public Product(Long id, String name, String description, Double amount, String unit, Brand brand, String imageUrl) {
@@ -146,8 +145,8 @@ public class Product {
                 ", description='" + description + '\'' +
                 ", amount=" + amount +
                 ", unit='" + unit + '\'' +
-                ", brand=" + brand +
-                ", imageUrl='" + imageUrl + '\'' +
-                '}';
+                ", brand=" + brand.getName() +
+                ", productCategory=" + productCategory.getName() + '\'' +
+                ", imageUrl='" + imageUrl;
     }
 }

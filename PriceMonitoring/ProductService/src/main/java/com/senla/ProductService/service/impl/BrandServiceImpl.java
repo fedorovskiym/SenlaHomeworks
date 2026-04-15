@@ -1,6 +1,7 @@
 package com.senla.ProductService.service.impl;
 
-import com.senla.ProductService.dto.BrandDTO;
+import com.senla.ProductService.dto.brand.BrandDTO;
+import com.senla.ProductService.dto.brand.BrandUpdateDTO;
 import com.senla.ProductService.mapper.BrandMapper;
 import com.senla.ProductService.model.Brand;
 import com.senla.ProductService.repository.BrandRepository;
@@ -34,11 +35,13 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional
     public void save(BrandDTO brandDTO, MultipartFile photo) {
-        if (!brandRepository.findByName(brandDTO.name()).isEmpty()) {
+        if (findByNameIfExists(brandDTO.name()) != null) {
             throw new EntityExistsException("Brand with name - " + brandDTO.name() + " already exists!");
         }
         Brand brand = brandMapper.brandDTOToBrand(brandDTO);
-        brand.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        if (!photo.isEmpty()) {
+            brand.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        }
         brandRepository.save(brand);
     }
 
@@ -52,9 +55,10 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional
     public void delete(Long id) {
-        Brand brand = brandRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Brand with id - " + id + " not found!"));
-        yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
+        Brand brand = findByIdIfExists(id);
+        if(brand.getLogoImageUrl() != null) {
+            yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
+        }
         brandRepository.delete(brand);
     }
 
@@ -65,8 +69,38 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Brand findByIdIfExists(Long id) {
         return brandRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Brand with id - " + id + " not found!"));
+    }
+
+    @Override
+    public Brand findByNameIfExists(String name) {
+        return brandRepository.findByName(name).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void update(Long id, BrandUpdateDTO brandDTO) {
+        Brand brand = findByIdIfExists(id);
+        if(brand.getName().equals(brandDTO.name()) || findByNameIfExists(brandDTO.name()) != null) {
+            throw new EntityExistsException("Brand with name - " + brandDTO.name() + " already exists!");
+        }
+        brand = brandMapper.updateBrandFromBrandUpdateDTO(brandDTO, brand);
+        brandRepository.update(brand);
+    }
+
+    @Override
+    @Transactional
+    public void updateLogo(Long id, MultipartFile photo) {
+        Brand brand = findByIdIfExists(id);
+
+        if(brand.getLogoImageUrl() != null) {
+            yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
+        }
+
+        brand.setLogoImageUrl(photo.getOriginalFilename());
+        brandRepository.update(brand);
     }
 }

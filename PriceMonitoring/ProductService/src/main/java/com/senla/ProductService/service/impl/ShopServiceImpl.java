@@ -34,11 +34,13 @@ public class ShopServiceImpl implements ShopService {
     @Override
     @Transactional
     public void save(ShopDTO shopDTO, MultipartFile photo) {
-        if(!shopRepository.findByName(shopDTO.name()).isEmpty()) {
+        if (!shopRepository.findByName(shopDTO.name()).isEmpty()) {
             throw new EntityExistsException("Shop with name - " + shopDTO.name() + " already exists!");
         }
         Shop shop = shopMapper.shopDTOToShop(shopDTO);
-        shop.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        if (!photo.isEmpty()) {
+            shop.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        }
         shopRepository.save(shop);
     }
 

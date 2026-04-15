@@ -7,8 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -31,6 +33,8 @@ public class ShopBranch {
     private Integer house;
     @Column(name = "room")
     private Integer room;
+    @OneToMany(mappedBy = "shopBranch")
+    private List<ProductPrice> productPrices;
 
     public ShopBranch(Long id, Shop shop, City city, String street, Integer house, Integer room) {
         this.id = id;
@@ -90,6 +94,14 @@ public class ShopBranch {
 
     public void setRoom(Integer room) {
         this.room = room;
+    }
+
+    public List<ProductPrice> getProductPrices() {
+        return productPrices;
+    }
+
+    public void setProductPrices(List<ProductPrice> productPrices) {
+        this.productPrices = productPrices;
     }
 
     @Override

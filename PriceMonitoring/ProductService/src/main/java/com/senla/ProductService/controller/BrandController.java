@@ -1,6 +1,8 @@
 package com.senla.ProductService.controller;
 
-import com.senla.ProductService.dto.BrandDTO;
+import com.senla.ProductService.annotation.CheckId;
+import com.senla.ProductService.dto.brand.BrandDTO;
+import com.senla.ProductService.dto.brand.BrandUpdateDTO;
 import com.senla.ProductService.service.BrandService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -11,10 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,15 +48,25 @@ public class BrandController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<BrandDTO> findById(
-            @Min(value = 0, message = "Brand id must be greater than 0 or equal to 0") @PathVariable Long id) {
+    public ResponseEntity<BrandDTO> findById(@CheckId @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(brandService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteBrandById(
-            @Min(value = 0, message = "Brand id must be greater than 0 or equal to 0") @PathVariable Long id) {
+    public ResponseEntity<?> deleteBrandById(@CheckId @PathVariable Long id) {
         brandService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<?> updateBrand(@CheckId @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
+        brandService.update(id, brandDTO);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateBrandLogo(@CheckId @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+        brandService.updateLogo(id, photo);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

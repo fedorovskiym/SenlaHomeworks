@@ -109,8 +109,8 @@ public class PriceHistory {
     public String toString() {
         return "PriceHistory{" +
                 "id=" + id +
-                ", product=" + product +
-                ", shop=" + shopBranch +
+                ", product=" + product.getName() +
+                ", shop=" + shopBranch.getShop().getName() +
                 ", oldPrice=" + oldPrice +
                 ", newPrice=" + newPrice +
                 ", changeDate=" + changeDate +

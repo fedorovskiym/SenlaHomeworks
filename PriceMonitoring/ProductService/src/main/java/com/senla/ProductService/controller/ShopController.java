@@ -1,5 +1,6 @@
 package com.senla.ProductService.controller;
 
+import com.senla.ProductService.annotation.CheckId;
 import com.senla.ProductService.dto.ShopDTO;
 import com.senla.ProductService.service.ShopService;
 import jakarta.validation.Valid;
@@ -43,14 +44,12 @@ public class ShopController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ShopDTO> findShopById(
-            @Min(value = 0, message = "Brand id must be greater than 0 or equal to 0") @PathVariable Long id) {
+    public ResponseEntity<ShopDTO> findShopById(@CheckId @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(shopService.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteShop(
-            @Min(value = 0, message = "Brand id must be greater than 0 or equal to 0") @PathVariable Long id) {
+    public ResponseEntity<?> deleteShop(@CheckId @PathVariable Long id) {
         shopService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
