@@ -2,16 +2,19 @@ package com.senla.ProductService.service.impl;
 
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
+import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.mapper.ProductPriceMapper;
 import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.model.ShopBranch;
 import com.senla.ProductService.model.enums.PriceStatus;
+import com.senla.ProductService.model.enums.ProductPriceSortType;
 import com.senla.ProductService.repository.ProductPriceRepository;
 import com.senla.ProductService.service.ProductPriceService;
 import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.service.ShopBranchService;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,8 +64,23 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductPriceDTO> findAllWithPagination(Integer page, Integer size) {
-        return productPriceRepository.findAllWithPagination(page, size)
+    public List<ProductPriceDTO> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO) {
+
+        if (!productPriceSearchDTO.sortBy().equals(ProductPriceSortType.PRICE.getDisplayName()) &&
+                !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.DISCOUNT_PERCENT.getDisplayName())) {
+            throw new InvalidParameterException("Sort only by price or discountPercent");
+        }
+
+        return productPriceRepository.findAllWithPagination(productPriceSearchDTO.page(), productPriceSearchDTO.size(),
+                        productPriceSearchDTO.shopBranchId(), productPriceSearchDTO.sortBy(), productPriceSearchDTO.asc(),
+                        productPriceSearchDTO.brandId(), productPriceSearchDTO.categoryId())
+                .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductPriceDTO> comparePricesInShops(Long productId, Long cityId) {
+        return productPriceRepository.findProductInShops(productId, cityId)
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
     }
 }

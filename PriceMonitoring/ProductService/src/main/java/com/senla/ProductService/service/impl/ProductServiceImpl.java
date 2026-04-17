@@ -124,5 +124,11 @@ public class ProductServiceImpl implements ProductService {
         productRepository.update(product);
     }
 
-
+    @Override
+    @Transactional(readOnly = true)
+    public Product findWithPrices(Long id) {
+        return productRepository.findByIdWithPrices(id).orElseThrow(
+                () -> new EntityNotFoundException("Product with id - " + id + " not found!")
+        );
+    }
 }

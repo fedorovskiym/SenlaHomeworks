@@ -2,9 +2,11 @@ package com.senla.ProductService.controller;
 
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
+import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.service.ProductPriceService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -36,15 +38,19 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductPriceDTO> findById(
-            @Min(value = 1, message = "Id must be greater than 0") @PathVariable Long id) {
+    public ResponseEntity<ProductPriceDTO> findById(@Min(1) @NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findById(id));
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ProductPriceDTO>> findAllWithPagination(
-            @Min(value = 1, message = "Page number must be greater than 0") @RequestParam Integer page,
-            @Min(value = 1, message = "Size number must be greater than 0") @RequestParam Integer size) {
-        return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findAllWithPagination(page, size));
+    public ResponseEntity<List<ProductPriceDTO>> findAllWithPagination(@Valid @RequestBody ProductPriceSearchDTO productPriceSearchDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findAllWithPagination(productPriceSearchDTO));
+    }
+
+    @GetMapping(value = "/compare")
+    public ResponseEntity<List<ProductPriceDTO>> comparePricesInShop(
+            @Min(1) @NotNull @RequestParam("productId`") Long productId,
+            @Min(1) @NotNull @RequestParam("cityId") Long cityId) {
+        return ResponseEntity.status(HttpStatus.OK).body(productPriceService.comparePricesInShops(productId, cityId));
     }
 }

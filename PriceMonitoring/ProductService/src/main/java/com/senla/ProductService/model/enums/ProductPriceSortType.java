@@ -1,12 +1,12 @@
 package com.senla.ProductService.model.enums;
 
-public enum PriceStatus {
-    ON_REVIEW("На рассмотрении"),
-    ACTUAL("актуальная");
+public enum ProductPriceSortType {
+    PRICE("price"),
+    DISCOUNT_PERCENT("discountPercent");
 
     private String displayName;
 
-    PriceStatus(String displayName) {
+    ProductPriceSortType(String displayName) {
         this.displayName = displayName;
     }
 

@@ -1,10 +1,10 @@
 package com.senla.ProductService.controller;
 
-import com.senla.ProductService.annotation.CheckId;
 import com.senla.ProductService.dto.ShopDTO;
 import com.senla.ProductService.service.ShopService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,12 +44,12 @@ public class ShopController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ShopDTO> findShopById(@CheckId @PathVariable Long id) {
+    public ResponseEntity<ShopDTO> findShopById(@Min(1) @NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(shopService.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteShop(@CheckId @PathVariable Long id) {
+    public ResponseEntity<?> deleteShop(@Min(1) @NotNull @PathVariable Long id) {
         shopService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

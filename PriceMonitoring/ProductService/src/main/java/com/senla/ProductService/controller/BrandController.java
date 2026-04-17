@@ -1,11 +1,11 @@
 package com.senla.ProductService.controller;
 
-import com.senla.ProductService.annotation.CheckId;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.brand.BrandUpdateDTO;
 import com.senla.ProductService.service.BrandService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,24 +48,24 @@ public class BrandController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<BrandDTO> findById(@CheckId @PathVariable Long id) {
+    public ResponseEntity<BrandDTO> findById(@Min(1) @NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(brandService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteBrandById(@CheckId @PathVariable Long id) {
+    public ResponseEntity<?> deleteBrandById(@Min(1) @NotNull @PathVariable Long id) {
         brandService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> updateBrand(@CheckId @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
+    public ResponseEntity<?> updateBrand(@Min(1) @NotNull @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
         brandService.update(id, brandDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> updateBrandLogo(@CheckId @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<?> updateBrandLogo(@Min(1) @NotNull @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
         brandService.updateLogo(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

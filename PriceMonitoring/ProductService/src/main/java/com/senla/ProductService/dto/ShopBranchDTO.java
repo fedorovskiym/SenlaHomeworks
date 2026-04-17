@@ -1,12 +1,13 @@
 package com.senla.ProductService.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ShopBranchDTO(
         Long id,
-        @NotNull(message = "Shop id must be not null") Long shopId,
-        @NotNull(message = "City id must be not null") Long cityId,
+        @Min(1) @NotNull(message = "Shop id must be not null") Long shopId,
+        @Min(1) @NotNull(message = "City id must be not null") Long cityId,
         String shopName,
         String cityName,
         @NotBlank(message = "Street must be not null") String street,

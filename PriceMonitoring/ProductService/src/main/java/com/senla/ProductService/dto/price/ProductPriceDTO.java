@@ -8,8 +8,13 @@ public record ProductPriceDTO(
         String productName,
         Double productAmount,
         String productUnit,
+        Long productCategoryId,
+        String productCategoryName,
         Long shopBranchId,
+        String shopAddress,
         String shopName,
+        Long cityId,
+        String cityName,
         Double price,
         LocalDate startDate,
         Integer discountPercent

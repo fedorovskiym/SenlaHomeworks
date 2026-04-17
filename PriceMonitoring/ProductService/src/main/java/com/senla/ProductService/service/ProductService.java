@@ -26,4 +26,6 @@ public interface ProductService {
     void update(Long id, ProductUpdateDTO productUpdateDTO);
 
     void updateImage(Long id, MultipartFile photo);
+
+    Product findWithPrices(Long id);
 }

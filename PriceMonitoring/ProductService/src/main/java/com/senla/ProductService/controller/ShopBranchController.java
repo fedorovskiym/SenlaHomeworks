@@ -1,10 +1,10 @@
 package com.senla.ProductService.controller;
 
-import com.senla.ProductService.annotation.CheckId;
 import com.senla.ProductService.dto.ShopBranchDTO;
 import com.senla.ProductService.service.ShopBranchService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class ShopBranchController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@CheckId @RequestParam Long cityId) {
+    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@Min(1) @NotNull @RequestParam Long cityId) {
         return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByCityId(cityId));
     }
 }
