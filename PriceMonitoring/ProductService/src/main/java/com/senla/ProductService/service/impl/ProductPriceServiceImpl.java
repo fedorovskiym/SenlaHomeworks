@@ -8,7 +8,9 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
+import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
+import com.senla.ProductService.dto.price.PriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.dto.product.CreateProductDTO;
@@ -98,9 +100,39 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductPriceDTO> comparePricesInShops(Long productId, Long cityId) {
-        return productPriceRepository.findProductInShops(productId, cityId)
-                .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
+    public ComparePrice comparePricesInShops(Long productId, Long cityId) {
+        List<ProductPrice> productPrices = productPriceRepository.findProductInShops(productId, cityId);
+
+        if(productPrices.isEmpty()) {
+            throw new EntityNotFoundException("No prices found in shops with id - " + productId);
+        }
+
+        ComparePrice comparePrice = new ComparePrice();
+        String address = String.format("%s %s %s %s", productPrices.get(0).getShopBranch().getCity().getName(),
+                productPrices.get(0).getShopBranch().getStreet(), productPrices.get(0).getShopBranch().getHouse(),
+                productPrices.get(0).getShopBranch().getRoom());
+
+        List<PriceDTO> otherPrices = productPrices.stream()
+                .skip(1)
+                .map(productPrice -> new PriceDTO(
+                        productPrice.getPrice(),
+                        productPrice.getShopBranch().getShop().getName(),
+                        String.format("%s %s %s", productPrice.getShopBranch().getStreet(), productPrice.getShopBranch().getHouse(),
+                                productPrice.getShopBranch().getRoom()),
+                        productPrice.getShopBranch().getShop().getLogoImageUrl()
+                ))
+                .toList();
+
+        comparePrice.setProductId(productId);
+        comparePrice.setProductName(productPrices.get(0).getProduct().getName());
+        comparePrice.setProductImageUrl(productPrices.get(0).getProduct().getImageUrl());
+        comparePrice.setMinPrice(productPrices.get(0).getPrice());
+        comparePrice.setShopNameMin(productPrices.get(0).getShopBranch().getShop().getName());
+        comparePrice.setShopLogoImageUrl(productPrices.get(0).getShopBranch().getShop().getLogoImageUrl());
+        comparePrice.setShopAddressMin(address);
+        comparePrice.setOtherPrices(otherPrices);
+
+        return comparePrice;
     }
 
     @Override

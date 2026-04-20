@@ -1,5 +1,6 @@
 package com.senla.ProductService.controller;
 
+import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
@@ -50,7 +51,7 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/compare")
-    public ResponseEntity<List<ProductPriceDTO>> comparePricesInShop(
+    public ResponseEntity<ComparePrice> comparePricesInShop(
             @Min(1) @NotNull @RequestParam("productId") Long productId,
             @Min(1) @NotNull @RequestParam("cityId") Long cityId) {
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.comparePricesInShops(productId, cityId));
