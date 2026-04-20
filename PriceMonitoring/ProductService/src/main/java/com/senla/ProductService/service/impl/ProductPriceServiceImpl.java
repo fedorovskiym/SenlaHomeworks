@@ -1,8 +1,18 @@
 package com.senla.ProductService.service.impl;
 
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvException;
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
+import com.senla.ProductService.dto.product.CreateProductDTO;
+import com.senla.ProductService.exception.CsvImportException;
 import com.senla.ProductService.mapper.ProductPriceMapper;
 import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductPrice;
@@ -14,13 +24,21 @@ import com.senla.ProductService.service.ProductPriceService;
 import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.service.ShopBranchService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,8 +60,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Override
     @Transactional
     public void save(CreateProductPriceDTO createProductPriceDTO) {
-        Product product = productService.findByIdIfExists(createProductPriceDTO.productId());
-        ShopBranch shopBranch = shopBranchService.findByIdIfExists(createProductPriceDTO.shopBranchId());
+        Product product = productService.findByIdIfExists(createProductPriceDTO.getProductId());
+        ShopBranch shopBranch = shopBranchService.findByIdIfExists(createProductPriceDTO.getShopBranchId());
 
         ProductPrice productPrice = productPriceMapper.createProductPriceDTOToProductPrice(createProductPriceDTO);
 
@@ -83,5 +101,97 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     public List<ProductPriceDTO> comparePricesInShops(Long productId, Long cityId) {
         return productPriceRepository.findProductInShops(productId, cityId)
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void importFromCsv(MultipartFile file) {
+        if (!file.getOriginalFilename().endsWith("csv")) {
+            throw new InvalidParameterException("Only .csv files supported!");
+        }
+        if (file.isEmpty()) {
+            throw new InvalidParameterException("Empty file!");
+        }
+
+        try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
+            List<CreateProductPriceDTO> rows = parseCsv(reader);
+            List<ProductPrice> updateList = new ArrayList<>();
+            List<ProductPrice> saveList = new ArrayList<>();
+
+            rows.stream()
+                    .map(row -> {
+                        if (row.getProductId() == null || row.getShopBranchId() == null) {
+                            return null;
+                        }
+
+                        Product product = productService.findByIdIfExists(row.getProductId());
+                        if (product == null) {
+                            return null;
+                        }
+
+                        ShopBranch shopBranch = shopBranchService.findByIdIfExists(row.getShopBranchId());
+                        if (shopBranch == null) {
+                            return null;
+                        }
+
+                        ProductPrice productPrice = productPriceMapper.createProductPriceDTOToProductPrice(row);
+                        productPrice.setProduct(product);
+                        productPrice.setShopBranch(shopBranch);
+                        productPrice.setStartDate(LocalDate.now());
+                        productPrice.setStatus(PriceStatus.ACTUAL);
+                        return productPrice;
+                    })
+                    .filter(Objects::nonNull)
+                    .forEach(productPrice -> {
+                        ProductPrice presentProductPrice = findByProductIdAndShopBranchId(productPrice.getProduct().getId(),
+                                productPrice.getShopBranch().getId());
+                        if (presentProductPrice != null) {
+                            productPrice.setId(presentProductPrice.getId());
+                            updateList.add(productPrice);
+                        } else {
+                            saveList.add(productPrice);
+                        }
+                    });
+
+            productPriceRepository.saveList(saveList);
+            productPriceRepository.updateList(updateList);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductPrice findByProductIdAndShopBranchId(Long productId, Long shopBranchId) {
+        return productPriceRepository.findByProductIdAndShopBranchId(productId, shopBranchId).orElse(null);
+    }
+
+    private List<CreateProductPriceDTO> parseCsv(Reader reader) {
+            CSVParser csvParser = new CSVParserBuilder()
+                    .withSeparator(';')
+                    .withIgnoreQuotations(true)
+                    .build();
+
+            CSVReader csvReader = new CSVReaderBuilder(reader)
+                    .withCSVParser(csvParser)
+                    .build();
+
+            CsvToBean<CreateProductPriceDTO> csvToBean =
+                    new CsvToBeanBuilder<CreateProductPriceDTO>(csvReader)
+                            .withType(CreateProductPriceDTO.class)
+                            .withIgnoreEmptyLine(true)
+                            .withIgnoreLeadingWhiteSpace(true)
+                            .withOrderedResults(true)
+                            .withThrowExceptions(false)
+                            .build();
+
+            List<CreateProductPriceDTO> rows = csvToBean.parse();
+
+            List<CsvException> errors = csvToBean.getCapturedExceptions();
+
+            if (!errors.isEmpty()) {
+                throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
+            }
+            return rows;
     }
 }

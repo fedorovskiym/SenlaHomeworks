@@ -6,10 +6,13 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
+import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.product.CreateProductDTO;
 import com.senla.ProductService.dto.product.ProductDTO;
 import com.senla.ProductService.dto.product.ProductUpdateDTO;
+import com.senla.ProductService.exception.CsvImportException;
 import com.senla.ProductService.mapper.ProductMapper;
 import com.senla.ProductService.model.Brand;
 import com.senla.ProductService.model.Product;
@@ -169,10 +172,14 @@ public class ProductServiceImpl implements ProductService {
                         if (row.getBrandId() == null || row.getCategoryId() == null) {
                             return null;
                         }
-                        Brand brand = brandService.findByIdOptional(row.getBrandId()).orElse(null);
-                        ProductCategory category = productCategoryService.findByIdOptional(row.getCategoryId()).orElse(null);
 
-                        if (brand == null || category == null) {
+                        Brand brand = brandService.findByIdOptional(row.getBrandId()).orElse(null);
+                        if(brand == null) {
+                            return null;
+                        }
+
+                        ProductCategory category = productCategoryService.findByIdOptional(row.getCategoryId()).orElse(null);
+                        if (category == null) {
                             return null;
                         }
 
@@ -219,8 +226,17 @@ public class ProductServiceImpl implements ProductService {
                 .withType(CreateProductDTO.class)
                 .withIgnoreEmptyLine(true)
                 .withIgnoreLeadingWhiteSpace(true)
+                .withOrderedResults(true)
+                .withThrowExceptions(false)
                 .build();
 
-        return csvToBean.parse();
+        List<CreateProductDTO> rows = csvToBean.parse();
+
+        List<CsvException> errors = csvToBean.getCapturedExceptions();
+
+        if (!errors.isEmpty()) {
+            throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
+        }
+        return rows;
     }
 }

@@ -22,69 +22,83 @@ public class GlobalExceptionHandler {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> handleException(MethodArgumentNotValidException e) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorMessage> handleValidation(MethodArgumentNotValidException e) {
 
         Map<String, String> errors = new HashMap<>();
 
-        e.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
-        });
+        e.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
-        ErrorMessage errorMessage = new ErrorMessage(
-                HttpStatus.BAD_REQUEST.value(),
-                LocalDateTime.now().format(formatter),
-                errors);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+                new ErrorMessage(
+                        HttpStatus.BAD_REQUEST.value(),
+                        LocalDateTime.now().format(formatter),
+                        errors
+                ),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
-    @ExceptionHandler(value = ConstraintViolationException.class)
-    public ResponseEntity<ErrorMessage> handleException(ConstraintViolationException e) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorMessage> handleConstraint(ConstraintViolationException e) {
 
         Map<String, String> errors = new HashMap<>();
 
-        e.getConstraintViolations().forEach((error) -> {
-            String field = error.getPropertyPath().toString();
-            errors.put(field, error.getMessage());
-        });
+        e.getConstraintViolations().forEach(
+                v -> errors.put(v.getPropertyPath().toString(), v.getMessage()));
 
-        ErrorMessage errorMessage = new ErrorMessage(
-                HttpStatus.BAD_REQUEST.value(),
-                LocalDateTime.now().format(formatter),
-                errors);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+                new ErrorMessage(
+                        HttpStatus.BAD_REQUEST.value(),
+                        LocalDateTime.now().format(formatter),
+                        errors
+                ),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleException(EntityNotFoundException e) {
-        ErrorMessage errorMessage = getErrors(e);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleNotFound(EntityNotFoundException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.NOT_FOUND, e),
+                HttpStatus.NOT_FOUND
+        );
     }
 
-    @ExceptionHandler(value = EntityExistsException.class)
-    public ResponseEntity<ErrorMessage> handleException(EntityExistsException e) {
-
-        ErrorMessage errorMessage = getErrors(e);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(EntityExistsException.class)
+    public ResponseEntity<ErrorMessage> handleExists(EntityExistsException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.CONFLICT, e),
+                HttpStatus.CONFLICT
+        );
     }
 
-    @ExceptionHandler(value = InvalidParameterException.class)
-    public ResponseEntity<ErrorMessage> handleException(InvalidParameterException e) {
-        ErrorMessage errorMessage = getErrors(e);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> handleIllegalArgument(IllegalArgumentException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.BAD_REQUEST, e),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
-    private ErrorMessage getErrors(Exception e) {
+    @ExceptionHandler(CsvImportException.class)
+    public ResponseEntity<ErrorMessage> handleNumber(CsvImportException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.BAD_REQUEST, e),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    private ErrorMessage buildError(HttpStatus status, Exception e) {
         Map<String, String> errors = new HashMap<>();
+        errors.put("message", e.getMessage());
+        errors.put("type", e.getClass().getSimpleName());
 
-        errors.put(e.getClass().getName(), e.getMessage());
-
-        ErrorMessage errorMessage = new ErrorMessage(
-                HttpStatus.BAD_REQUEST.value(),
+        return new ErrorMessage(
+                status.value(),
                 LocalDateTime.now().format(formatter),
                 errors
         );
-
-        return errorMessage;
     }
 }
