@@ -1,5 +1,6 @@
 package com.senla.ProductService.mapper;
 
+import com.senla.ProductService.dto.product.CreateProductDTO;
 import com.senla.ProductService.dto.product.ProductDTO;
 import com.senla.ProductService.dto.product.ProductUpdateDTO;
 import com.senla.ProductService.model.Product;
@@ -19,6 +20,8 @@ public abstract class ProductMapper {
     @Mapping(target = "categoryId", source = "productCategory.id")
     @Mapping(target = "categoryName", source = "productCategory.name")
     public abstract ProductDTO productToProductDTO(Product product);
+
+    public abstract Product createProductDTOToProduct(CreateProductDTO createProductDTO);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract Product updateProductFromDTO(ProductUpdateDTO productUpdateDTO, @MappingTarget Product product);

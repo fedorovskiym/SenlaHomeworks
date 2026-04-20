@@ -4,6 +4,7 @@ import com.senla.ProductService.model.Product;
 import com.senla.ProductService.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,11 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
             WHERE sb.id = :id
             """;
 
+    private static final String HQL_FIND_BY_NAME = """
+            SELECT p FROM Product p
+            WHERE p.name = :name
+            """;
+
     public ProductRepositoryImpl() {
         super(Product.class);
     }
@@ -45,5 +51,30 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
         return Optional.ofNullable(entityManager.createQuery(HQL_FIND_PRODUCT_PRICES_WITH_FETCH, Product.class)
                 .setParameter("id", id)
                 .getSingleResult());
+    }
+
+    @Override
+    @Transactional
+    public void saveList(List<Product> saveList) {
+        EntityManager entityManager = getEntityManager();
+        saveList.forEach(entityManager::persist);
+        entityManager.flush();
+    }
+
+    @Override
+    public Optional<Product> findByName(String name) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_NAME, Product.class)
+                .setParameter("name", name)
+                .getResultStream()
+                .findFirst();
+    }
+
+    @Override
+    @Transactional
+    public void updateList(List<Product> updateList) {
+        EntityManager entityManager = getEntityManager();
+        updateList.forEach(entityManager::merge);
     }
 }

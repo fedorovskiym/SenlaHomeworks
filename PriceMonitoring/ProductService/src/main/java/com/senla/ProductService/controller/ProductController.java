@@ -69,4 +69,10 @@ public class ProductController {
         productService.updateImage(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PostMapping(value = "/import")
+    public ResponseEntity<?> importProduct(@RequestPart("file") MultipartFile file) {
+        productService.importFromCsv(file);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductCategoryService {
 
@@ -25,4 +26,6 @@ public interface ProductCategoryService {
     void update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO);
 
     void updateImage(Long id, MultipartFile photo);
+
+    Optional<ProductCategory> findByIdOptional(Long id);
 }

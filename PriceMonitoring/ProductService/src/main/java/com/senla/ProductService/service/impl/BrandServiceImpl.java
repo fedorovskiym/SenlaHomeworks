@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,5 +103,11 @@ public class BrandServiceImpl implements BrandService {
 
         brand.setLogoImageUrl(photo.getOriginalFilename());
         brandRepository.update(brand);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Brand> findByIdOptional(Long id) {
+        return brandRepository.findById(id);
     }
 }

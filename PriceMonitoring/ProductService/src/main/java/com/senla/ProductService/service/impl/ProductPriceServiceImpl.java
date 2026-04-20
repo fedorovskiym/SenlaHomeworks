@@ -67,8 +67,9 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     public List<ProductPriceDTO> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO) {
 
         if (!productPriceSearchDTO.sortBy().equals(ProductPriceSortType.PRICE.getDisplayName()) &&
-                !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.DISCOUNT_PERCENT.getDisplayName())) {
-            throw new InvalidParameterException("Sort only by price or discountPercent");
+                !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.DISCOUNT_PERCENT.getDisplayName()) &&
+                !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.ID.getDisplayName())) {
+            throw new InvalidParameterException("Sort only by price or discountPercent or id");
         }
 
         return productPriceRepository.findAllWithPagination(productPriceSearchDTO.page(), productPriceSearchDTO.size(),

@@ -2,9 +2,10 @@ package com.senla.ProductService.model.enums;
 
 public enum ProductPriceSortType {
     PRICE("price"),
-    DISCOUNT_PERCENT("discountPercent");
+    DISCOUNT_PERCENT("discountPercent"),
+    ID("id");
 
-    private String displayName;
+    private final String displayName;
 
     ProductPriceSortType(String displayName) {
         this.displayName = displayName;

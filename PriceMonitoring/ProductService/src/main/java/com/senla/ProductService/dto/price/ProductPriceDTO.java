@@ -17,6 +17,7 @@ public record ProductPriceDTO(
         String cityName,
         Double price,
         LocalDate startDate,
-        Integer discountPercent
+        Integer discountPercent,
+        String status
 ) {
 }

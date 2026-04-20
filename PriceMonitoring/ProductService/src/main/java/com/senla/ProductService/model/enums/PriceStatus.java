@@ -2,9 +2,9 @@ package com.senla.ProductService.model.enums;
 
 public enum PriceStatus {
     ON_REVIEW("На рассмотрении"),
-    ACTUAL("актуальная");
+    ACTUAL("Aктуальная");
 
-    private String displayName;
+    private final String displayName;
 
     PriceStatus(String displayName) {
         this.displayName = displayName;

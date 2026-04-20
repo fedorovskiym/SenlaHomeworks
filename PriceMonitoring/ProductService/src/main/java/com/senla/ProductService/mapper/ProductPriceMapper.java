@@ -25,6 +25,7 @@ public abstract class ProductPriceMapper {
     @Mapping(target = "cityId", source = "shopBranch.city.id")
     @Mapping(target = "cityName", source = "shopBranch.city.name")
     @Mapping(target = "startDate", source = "startDate", dateFormat = "dd-MM-yyyy")
+    @Mapping(target = "status", source = "status.displayName")
     public abstract ProductPriceDTO productPriceToProductPriceDTO(ProductPrice productPrice);
 
     @Named("getShopAddress")

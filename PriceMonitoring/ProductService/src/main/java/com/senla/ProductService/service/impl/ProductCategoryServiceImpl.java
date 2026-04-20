@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,14 +27,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private final ProductCategoryMapper productCategoryMapper;
     private final YandexCloudUtil yandexCloudUtil;
     private static final String FOLDER = "category_logo/";
-    private final ResourcePatternResolver resourcePatternResolver;
 
     @Autowired
-    public ProductCategoryServiceImpl(ProductCategoryRepository productCategoryRepository, ProductCategoryMapper productCategoryMapper, YandexCloudUtil yandexCloudUtil, ResourcePatternResolver resourcePatternResolver) {
+    public ProductCategoryServiceImpl(ProductCategoryRepository productCategoryRepository, ProductCategoryMapper productCategoryMapper, YandexCloudUtil yandexCloudUtil) {
         this.productCategoryRepository = productCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
         this.yandexCloudUtil = yandexCloudUtil;
-        this.resourcePatternResolver = resourcePatternResolver;
     }
 
     @Override
@@ -79,7 +78,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Transactional
     public void deleteById(Long id) {
         ProductCategory productCategory = findByIdIfExists(id);
-        if(productCategory.getImageUrl() != null) {
+        if (productCategory.getImageUrl() != null) {
             yandexCloudUtil.deleteImage(productCategory.getImageUrl());
         }
         productCategoryRepository.delete(productCategory);
@@ -90,7 +89,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     public void update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO) {
         ProductCategory productCategory = findByIdIfExists(id);
 
-        if(productCategory.getName().equals(productCategoryUpdateDTO.name()) || findByNameIfExists(productCategoryUpdateDTO.name()) != null) {
+        if (productCategory.getName().equals(productCategoryUpdateDTO.name()) || findByNameIfExists(productCategoryUpdateDTO.name()) != null) {
             throw new EntityExistsException("Product category with name - " + productCategory.getName() + " already exists!");
         }
 
@@ -103,11 +102,16 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     public void updateImage(Long id, MultipartFile photo) {
         ProductCategory productCategory = findByIdIfExists(id);
 
-        if(productCategory.getImageUrl() != null) {
+        if (productCategory.getImageUrl() != null) {
             yandexCloudUtil.deleteImage(productCategory.getImageUrl());
         }
 
         productCategory.setImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
         productCategoryRepository.update(productCategory);
+    }
+
+    @Override
+    public Optional<ProductCategory> findByIdOptional(Long id) {
+        return productCategoryRepository.findById(id);
     }
 }

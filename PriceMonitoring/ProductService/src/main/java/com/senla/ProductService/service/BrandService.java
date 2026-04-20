@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BrandService {
 
@@ -25,4 +26,6 @@ public interface BrandService {
     void update(Long id, BrandUpdateDTO brandDTO);
 
     void updateLogo(Long id, MultipartFile photo);
+
+    Optional<Brand> findByIdOptional(Long id);
 }

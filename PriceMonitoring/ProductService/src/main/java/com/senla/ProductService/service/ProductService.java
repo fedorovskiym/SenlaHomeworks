@@ -28,4 +28,8 @@ public interface ProductService {
     void updateImage(Long id, MultipartFile photo);
 
     Product findWithPrices(Long id);
+
+    void importFromCsv(MultipartFile file);
+
+    Product findByName(String name);
 }

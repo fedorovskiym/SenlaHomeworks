@@ -18,7 +18,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             JOIN FETCH pp.shopBranch pb
             JOIN FETCH pb.shop s
             JOIN FETCH pb.city c
-            WHERE pp.shopBranch.id = :shopBranchId
+            WHERE pp.shopBranch.id = :shopBranchId AND pp.status = 'ACTUAL'
             """;
 
     private static final String HQL_FIND_PRODUCT_IN_SHOPS = """
@@ -29,7 +29,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             JOIN FETCH pp.shopBranch pb
             JOIN FETCH pb.shop s
             JOIN FETCH pb.city c
-            WHERE p.id = :productId AND c.id = :cityId
+            WHERE p.id = :productId AND c.id = :cityId AND pp.status = 'ACTUAL'
             ORDER BY pp.price ASC
             """;
 
