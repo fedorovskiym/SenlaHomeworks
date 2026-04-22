@@ -15,6 +15,7 @@ public abstract class ProductPriceMapper {
 
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")
+    @Mapping(target = "productDescription", source = "product.description")
     @Mapping(target = "productAmount", source = "product.amount")
     @Mapping(target = "productUnit", source = "product.unit")
     @Mapping(target = "productCategoryId", source = "product.productCategory.id")

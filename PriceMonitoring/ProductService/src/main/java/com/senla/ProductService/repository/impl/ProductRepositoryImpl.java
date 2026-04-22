@@ -4,7 +4,6 @@ import com.senla.ProductService.model.Product;
 import com.senla.ProductService.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +53,6 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
     }
 
     @Override
-    @Transactional
     public void saveList(List<Product> saveList) {
         EntityManager entityManager = getEntityManager();
         saveList.forEach(entityManager::persist);
@@ -72,9 +70,9 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
     }
 
     @Override
-    @Transactional
     public void updateList(List<Product> updateList) {
         EntityManager entityManager = getEntityManager();
         updateList.forEach(entityManager::merge);
     }
+
 }

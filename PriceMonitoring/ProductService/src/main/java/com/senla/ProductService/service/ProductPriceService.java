@@ -4,6 +4,7 @@ import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
+import com.senla.ProductService.dto.product.ProductDTO;
 import com.senla.ProductService.model.ProductPrice;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -25,4 +26,6 @@ public interface ProductPriceService {
     void importFromCsv(MultipartFile file);
 
     ProductPrice findByProductIdAndShopBranchId(Long productId, Long shopBranchId);
+
+    List<ProductPriceDTO> search(Long cityId, String searchQuery);
 }

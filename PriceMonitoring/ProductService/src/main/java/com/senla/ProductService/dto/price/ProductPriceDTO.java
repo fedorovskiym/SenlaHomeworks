@@ -6,6 +6,7 @@ public record ProductPriceDTO(
         Long id,
         Long productId,
         String productName,
+        String productDescription,
         Double productAmount,
         String productUnit,
         Long productCategoryId,

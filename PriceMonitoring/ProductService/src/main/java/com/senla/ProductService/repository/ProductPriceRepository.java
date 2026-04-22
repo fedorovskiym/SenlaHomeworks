@@ -1,5 +1,6 @@
 package com.senla.ProductService.repository;
 
+import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductPrice;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface ProductPriceRepository extends GenericRepository<ProductPrice, 
     void saveList(List<ProductPrice> saveList);
 
     void updateList(List<ProductPrice> updateList);
+
+    List<ProductPrice> findByUserQuery(Long cityId, String productName, String categoryName, String brandName, String description);
 }

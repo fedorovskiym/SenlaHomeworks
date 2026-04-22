@@ -1,5 +1,6 @@
 package com.senla.ProductService.repository.impl;
 
+import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.repository.ProductPriceRepository;
 import jakarta.persistence.EntityManager;
@@ -41,6 +42,17 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             JOIN FETCH pp.product p
             JOIN FETCH pp.shopBranch sb
             WHERE p.id = :productId AND sb.id = :shopBranchId AND pp.status = 'ACTUAL'
+            """;
+
+    private static final String HQL_FIND_PRODUCT_PRICES_WITH_FETCH = """
+            SELECT pp FROM ProductPrice pp
+            JOIN FETCH pp.product p
+            JOIN FETCH p.brand b
+            JOIN FETCH p.productCategory pc
+            JOIN FETCH pp.shopBranch pb
+            JOIN FETCH pb.shop s
+            JOIN FETCH pb.city c
+            WHERE c.id = :cityId AND pp.status = 'ACTUAL'
             """;
 
     public ProductPriceRepositoryImpl() {
@@ -89,7 +101,6 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    @Transactional
     public void saveList(List<ProductPrice> saveList) {
         EntityManager entityManager = getEntityManager();
 
@@ -99,12 +110,34 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    @Transactional
     public void updateList(List<ProductPrice> updateList) {
         EntityManager entityManager = getEntityManager();
 
         updateList.forEach(entityManager::merge);
 
         entityManager.flush();
+    }
+
+
+    @Override
+    public List<ProductPrice> findByUserQuery(Long cityId, String productName, String categoryName, String brandName, String description) {
+        EntityManager entityManager = getEntityManager();
+        String hql = HQL_FIND_PRODUCT_PRICES_WITH_FETCH;
+        if (productName != null) {
+            hql = hql.concat("AND LOWER(p.name) LIKE ".concat("'%" + productName.toLowerCase() + "%'"));
+        }
+        if (categoryName != null) {
+            hql = hql.concat("AND LOWER(pc.name) LIKE ".concat("'%" + categoryName.toLowerCase() + "%'"));
+        }
+        if (brandName != null) {
+            hql = hql.concat("AND LOWER(b.name) LIKE ".concat("'%" + brandName.toLowerCase() + "%'"));
+        }
+        if (description != null) {
+            hql = hql.concat("AND LOWER(p.description) LIKE ".concat("'%" + description.toLowerCase() + "%'"));
+        }
+        System.out.println(hql);
+        return entityManager.createQuery(hql, ProductPrice.class)
+                .setParameter("cityId", cityId)
+                .getResultList();
     }
 }

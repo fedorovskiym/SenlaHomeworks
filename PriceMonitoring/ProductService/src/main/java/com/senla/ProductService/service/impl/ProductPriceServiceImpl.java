@@ -6,14 +6,15 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
+import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.price.PriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
-import com.senla.ProductService.dto.product.CreateProductDTO;
+import com.senla.ProductService.dto.product.ProductSearchRequest;
+import com.senla.ProductService.dto.productCategory.ProductCategoryDTO;
 import com.senla.ProductService.exception.CsvImportException;
 import com.senla.ProductService.mapper.ProductPriceMapper;
 import com.senla.ProductService.model.Product;
@@ -22,11 +23,13 @@ import com.senla.ProductService.model.ShopBranch;
 import com.senla.ProductService.model.enums.PriceStatus;
 import com.senla.ProductService.model.enums.ProductPriceSortType;
 import com.senla.ProductService.repository.ProductPriceRepository;
+import com.senla.ProductService.service.AIService;
+import com.senla.ProductService.service.BrandService;
+import com.senla.ProductService.service.ProductCategoryService;
 import com.senla.ProductService.service.ProductPriceService;
 import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.service.ShopBranchService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,13 +53,19 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     private final ProductPriceMapper productPriceMapper;
     private final ProductService productService;
     private final ShopBranchService shopBranchService;
+    private final AIService aiService;
+    private final BrandService brandService;
+    private final ProductCategoryService productCategoryService;
 
     @Autowired
-    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService) {
+    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService, AIService aiService, BrandService brandService, ProductCategoryService productCategoryService) {
         this.productPriceRepository = productPriceRepository;
         this.productPriceMapper = productPriceMapper;
         this.productService = productService;
         this.shopBranchService = shopBranchService;
+        this.aiService = aiService;
+        this.brandService = brandService;
+        this.productCategoryService = productCategoryService;
     }
 
     @Override
@@ -225,5 +234,24 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
             }
             return rows;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductPriceDTO> search(Long cityId, String searchQuery) {
+        List<String> brandsNames = brandService.findAll().stream().map(BrandDTO::name).toList();
+        List<String> categoryNames = productCategoryService.findAll().stream().map(ProductCategoryDTO::name).toList();
+
+        ProductSearchRequest productSearchRequest = aiService.getProductSearchRequest(searchQuery, brandsNames, categoryNames);
+
+        System.out.println(productSearchRequest.toString());
+        if(productSearchRequest.productName() == null && productSearchRequest.brandName() == null && productSearchRequest.categoryName() == null) {
+            return List.of();
+        }
+
+        List<ProductPriceDTO> productPrices = productPriceRepository.findByUserQuery(cityId, productSearchRequest.productName(),
+                productSearchRequest.categoryName(), productSearchRequest.brandName(), productSearchRequest.description())
+                .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
+        return productPrices;
     }
 }

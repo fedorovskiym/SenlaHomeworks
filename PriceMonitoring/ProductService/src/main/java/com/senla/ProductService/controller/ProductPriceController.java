@@ -4,6 +4,7 @@ import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
+import com.senla.ProductService.dto.product.ProductDTO;
 import com.senla.ProductService.service.ProductPriceService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -61,5 +62,12 @@ public class ProductPriceController {
     public ResponseEntity<?> importPrices(@RequestPart MultipartFile file) {
         productPriceService.importFromCsv(file);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<List<ProductPriceDTO>> searchProducts(
+            @Min(1) @NotNull @RequestParam("cityId") Long cityId,
+            @RequestParam("searchQuery") String searchQuery) {
+        return ResponseEntity.status(HttpStatus.OK).body(productPriceService.search(cityId, searchQuery));
     }
 }
