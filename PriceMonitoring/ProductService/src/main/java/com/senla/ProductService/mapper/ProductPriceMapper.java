@@ -1,6 +1,6 @@
 package com.senla.ProductService.mapper;
 
-import com.senla.ProductService.dto.price.CreateProductPriceDTO;
+import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.model.ShopBranch;
@@ -11,7 +11,7 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public abstract class ProductPriceMapper {
 
-    public abstract ProductPrice createProductPriceDTOToProductPrice(CreateProductPriceDTO  createProductPriceDTO);
+    public abstract ProductPrice createProductPriceDTOToProductPrice(CreateUpdateProductPriceDTO  createProductPriceDTO);
 
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")

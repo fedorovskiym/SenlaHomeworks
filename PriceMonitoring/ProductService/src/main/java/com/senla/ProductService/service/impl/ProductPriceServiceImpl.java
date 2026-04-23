@@ -9,7 +9,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.price.ComparePrice;
-import com.senla.ProductService.dto.price.CreateProductPriceDTO;
+import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.price.PriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
@@ -17,6 +17,7 @@ import com.senla.ProductService.dto.product.ProductSearchRequest;
 import com.senla.ProductService.dto.productCategory.ProductCategoryDTO;
 import com.senla.ProductService.exception.CsvImportException;
 import com.senla.ProductService.mapper.ProductPriceMapper;
+import com.senla.ProductService.model.PriceHistory;
 import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.model.ShopBranch;
@@ -25,10 +26,12 @@ import com.senla.ProductService.model.enums.ProductPriceSortType;
 import com.senla.ProductService.repository.ProductPriceRepository;
 import com.senla.ProductService.service.AIService;
 import com.senla.ProductService.service.BrandService;
+import com.senla.ProductService.service.PriceHistoryService;
 import com.senla.ProductService.service.ProductCategoryService;
 import com.senla.ProductService.service.ProductPriceService;
 import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.service.ShopBranchService;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +59,10 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     private final AIService aiService;
     private final BrandService brandService;
     private final ProductCategoryService productCategoryService;
+    private final PriceHistoryService priceHistoryService;
 
     @Autowired
-    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService, AIService aiService, BrandService brandService, ProductCategoryService productCategoryService) {
+    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService, AIService aiService, BrandService brandService, ProductCategoryService productCategoryService, PriceHistoryService priceHistoryService) {
         this.productPriceRepository = productPriceRepository;
         this.productPriceMapper = productPriceMapper;
         this.productService = productService;
@@ -66,11 +70,16 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         this.aiService = aiService;
         this.brandService = brandService;
         this.productCategoryService = productCategoryService;
+        this.priceHistoryService = priceHistoryService;
     }
 
     @Override
     @Transactional
-    public void save(CreateProductPriceDTO createProductPriceDTO) {
+    public void save(CreateUpdateProductPriceDTO createProductPriceDTO) {
+        if (findByProductIdAndShopBranchId(createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId()) != null) {
+            throw new EntityExistsException("Price with product id " + createProductPriceDTO.getProductId() +
+                    " in shop branch id " + createProductPriceDTO.getShopBranchId() + " already exists");
+        }
         Product product = productService.findByIdIfExists(createProductPriceDTO.getProductId());
         ShopBranch shopBranch = shopBranchService.findByIdIfExists(createProductPriceDTO.getShopBranchId());
 
@@ -87,8 +96,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Override
     @Transactional(readOnly = true)
     public ProductPriceDTO findById(Long id) {
-        return productPriceMapper.productPriceToProductPriceDTO(productPriceRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Product's price with id - " + id + " not found!")));
+        return productPriceMapper.productPriceToProductPriceDTO(findByIdIfExists(id));
     }
 
     @Override
@@ -98,7 +106,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         if (!productPriceSearchDTO.sortBy().equals(ProductPriceSortType.PRICE.getDisplayName()) &&
                 !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.DISCOUNT_PERCENT.getDisplayName()) &&
                 !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.ID.getDisplayName())) {
-            throw new InvalidParameterException("Sort only by price or discountPercent or id");
+            throw new InvalidParameterException("Sort only by price, discountPercent or id");
         }
 
         return productPriceRepository.findAllWithPagination(productPriceSearchDTO.page(), productPriceSearchDTO.size(),
@@ -112,7 +120,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     public ComparePrice comparePricesInShops(Long productId, Long cityId) {
         List<ProductPrice> productPrices = productPriceRepository.findProductInShops(productId, cityId);
 
-        if(productPrices.isEmpty()) {
+        if (productPrices.isEmpty()) {
             throw new EntityNotFoundException("No prices found in shops with id - " + productId);
         }
 
@@ -155,7 +163,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         }
 
         try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
-            List<CreateProductPriceDTO> rows = parseCsv(reader);
+            List<CreateUpdateProductPriceDTO> rows = parseCsv(reader);
+            List<PriceHistory> priceHistoryList = new ArrayList<>();
             List<ProductPrice> updateList = new ArrayList<>();
             List<ProductPrice> saveList = new ArrayList<>();
 
@@ -188,7 +197,11 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                                 productPrice.getShopBranch().getId());
                         if (presentProductPrice != null) {
                             productPrice.setId(presentProductPrice.getId());
-                            updateList.add(productPrice);
+                            if (!productPrice.getPrice().equals(presentProductPrice.getPrice())) {
+                                PriceHistory priceHistory = buildPriceHistory(productPrice, presentProductPrice.getPrice());
+                                priceHistoryList.add(priceHistory);
+                                updateList.add(productPrice);
+                            }
                         } else {
                             saveList.add(productPrice);
                         }
@@ -196,6 +209,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
             productPriceRepository.saveList(saveList);
             productPriceRepository.updateList(updateList);
+            priceHistoryService.saveList(priceHistoryList);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -207,33 +221,33 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return productPriceRepository.findByProductIdAndShopBranchId(productId, shopBranchId).orElse(null);
     }
 
-    private List<CreateProductPriceDTO> parseCsv(Reader reader) {
-            CSVParser csvParser = new CSVParserBuilder()
-                    .withSeparator(';')
-                    .withIgnoreQuotations(true)
-                    .build();
+    private List<CreateUpdateProductPriceDTO> parseCsv(Reader reader) {
+        CSVParser csvParser = new CSVParserBuilder()
+                .withSeparator(';')
+                .withIgnoreQuotations(true)
+                .build();
 
-            CSVReader csvReader = new CSVReaderBuilder(reader)
-                    .withCSVParser(csvParser)
-                    .build();
+        CSVReader csvReader = new CSVReaderBuilder(reader)
+                .withCSVParser(csvParser)
+                .build();
 
-            CsvToBean<CreateProductPriceDTO> csvToBean =
-                    new CsvToBeanBuilder<CreateProductPriceDTO>(csvReader)
-                            .withType(CreateProductPriceDTO.class)
-                            .withIgnoreEmptyLine(true)
-                            .withIgnoreLeadingWhiteSpace(true)
-                            .withOrderedResults(true)
-                            .withThrowExceptions(false)
-                            .build();
+        CsvToBean<CreateUpdateProductPriceDTO> csvToBean =
+                new CsvToBeanBuilder<CreateUpdateProductPriceDTO>(csvReader)
+                        .withType(CreateUpdateProductPriceDTO.class)
+                        .withIgnoreEmptyLine(true)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .withOrderedResults(true)
+                        .withThrowExceptions(false)
+                        .build();
 
-            List<CreateProductPriceDTO> rows = csvToBean.parse();
+        List<CreateUpdateProductPriceDTO> rows = csvToBean.parse();
 
-            List<CsvException> errors = csvToBean.getCapturedExceptions();
+        List<CsvException> errors = csvToBean.getCapturedExceptions();
 
-            if (!errors.isEmpty()) {
-                throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
-            }
-            return rows;
+        if (!errors.isEmpty()) {
+            throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
+        }
+        return rows;
     }
 
     @Override
@@ -245,13 +259,44 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         ProductSearchRequest productSearchRequest = aiService.getProductSearchRequest(searchQuery, brandsNames, categoryNames);
 
         System.out.println(productSearchRequest.toString());
-        if(productSearchRequest.productName() == null && productSearchRequest.brandName() == null && productSearchRequest.categoryName() == null) {
+        if (productSearchRequest.productName() == null && productSearchRequest.brandName() == null && productSearchRequest.categoryName() == null) {
             return List.of();
         }
 
         List<ProductPriceDTO> productPrices = productPriceRepository.findByUserQuery(cityId, productSearchRequest.productName(),
-                productSearchRequest.categoryName(), productSearchRequest.brandName(), productSearchRequest.description())
+                        productSearchRequest.categoryName(), productSearchRequest.brandName(), productSearchRequest.description())
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
         return productPrices;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductPrice findByIdIfExists(Long id) {
+        return productPriceRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Product's price with id - " + id + " not found!"));
+    }
+
+    @Override
+    @Transactional
+    public void update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO) {
+        ProductPrice productPrice = findByIdIfExists(id);
+
+        PriceHistory priceHistory = buildPriceHistory(productPrice, createProductPriceDTO.getPrice());
+        productPrice.setDiscountPercent(createProductPriceDTO.getDiscountPercent());
+        productPrice.setPrice(createProductPriceDTO.getPrice());
+
+        priceHistoryService.save(priceHistory);
+        productPriceRepository.update(productPrice);
+    }
+
+    private PriceHistory buildPriceHistory(ProductPrice productPrice, Double price) {
+        PriceHistory priceHistory = new PriceHistory();
+        priceHistory.setProduct(productPrice.getProduct());
+        priceHistory.setShopBranch(productPrice.getShopBranch());
+        priceHistory.setOldPrice(productPrice.getPrice());
+        priceHistory.setNewPrice(price);
+        priceHistory.setChangeDate(LocalDate.now());
+        return priceHistory;
+    }
+
 }

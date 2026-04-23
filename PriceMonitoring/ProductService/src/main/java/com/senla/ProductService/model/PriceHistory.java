@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "price_history")
-public class PriceHistory {
+public class  PriceHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

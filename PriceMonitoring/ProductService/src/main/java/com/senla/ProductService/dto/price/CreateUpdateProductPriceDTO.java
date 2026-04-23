@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
-public class CreateProductPriceDTO {
+public class CreateUpdateProductPriceDTO {
 
     @NotNull(message = "Product's id must be not null")
     @CsvBindByName(column = "productId")
@@ -21,10 +21,10 @@ public class CreateProductPriceDTO {
     private Integer discountPercent;
 
 
-    public CreateProductPriceDTO() {
+    public CreateUpdateProductPriceDTO() {
     }
 
-    public CreateProductPriceDTO(Long productId, Long shopBranchId, Double price, Integer discountPercent) {
+    public CreateUpdateProductPriceDTO(Long productId, Long shopBranchId, Double price, Integer discountPercent) {
         this.productId = productId;
         this.shopBranchId = shopBranchId;
         this.price = price;
