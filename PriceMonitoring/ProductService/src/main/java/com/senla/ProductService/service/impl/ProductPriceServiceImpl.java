@@ -198,7 +198,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                         if (presentProductPrice != null) {
                             productPrice.setId(presentProductPrice.getId());
                             if (!productPrice.getPrice().equals(presentProductPrice.getPrice())) {
-                                PriceHistory priceHistory = buildPriceHistory(productPrice, presentProductPrice.getPrice());
+                                PriceHistory priceHistory = buildPriceHistory(presentProductPrice, productPrice.getPrice());
                                 priceHistoryList.add(priceHistory);
                                 updateList.add(productPrice);
                             }
@@ -289,12 +289,12 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         productPriceRepository.update(productPrice);
     }
 
-    private PriceHistory buildPriceHistory(ProductPrice productPrice, Double price) {
+    private PriceHistory buildPriceHistory(ProductPrice productPrice, Double newPrice) {
         PriceHistory priceHistory = new PriceHistory();
         priceHistory.setProduct(productPrice.getProduct());
         priceHistory.setShopBranch(productPrice.getShopBranch());
         priceHistory.setOldPrice(productPrice.getPrice());
-        priceHistory.setNewPrice(price);
+        priceHistory.setNewPrice(newPrice);
         priceHistory.setChangeDate(LocalDate.now());
         return priceHistory;
     }
