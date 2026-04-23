@@ -44,7 +44,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             WHERE p.id = :productId AND sb.id = :shopBranchId AND pp.status = 'ACTUAL'
             """;
 
-    private static final String HQL_FIND_PRODUCT_PRICES_WITH_FETCH = """
+    private static final String HQL_FIND_PRODUCT_PRICES_BY_USER_REQUEST = """
             SELECT pp FROM ProductPrice pp
             JOIN FETCH pp.product p
             JOIN FETCH p.brand b
@@ -62,17 +62,18 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     @Override
     public List<ProductPrice> findAllWithPagination(Integer page, Integer size, Long shopBranchId, String sortBy, Boolean asc, Long brandId, Long categoryId) {
         EntityManager entityManager = getEntityManager();
-        String hql = HQL_FIND_ALL;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(HQL_FIND_ALL);
 
         if (brandId != null) {
-            hql = hql.concat("AND p.brand.id = ".concat(String.valueOf(brandId)).concat(" "));
+            stringBuilder.append("AND pp.brand.id = ").append(brandId);
         }
         if (categoryId != null) {
-            hql = hql.concat("AND p.productCategory.id = ".concat(String.valueOf(categoryId)).concat(" "));
+            stringBuilder.append("AND pp.category.id = ").append(categoryId);
         }
-        hql = hql.concat("ORDER BY pp.".concat(sortBy).concat(" ").concat(asc ? "ASC" : "DESC"));
+        stringBuilder.append("ORDER BY pp.price ").append((asc ? "ASC" : "DESC"));;
 
-        return entityManager.createQuery(hql, ProductPrice.class)
+        return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setFirstResult((page - 1) * size)
                 .setMaxResults(size)
                 .setParameter("shopBranchId", shopBranchId)
@@ -122,21 +123,23 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     @Override
     public List<ProductPrice> findByUserQuery(Long cityId, String productName, String categoryName, String brandName, String description) {
         EntityManager entityManager = getEntityManager();
-        String hql = HQL_FIND_PRODUCT_PRICES_WITH_FETCH;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(HQL_FIND_PRODUCT_PRICES_BY_USER_REQUEST);
+
         if (productName != null) {
-            hql = hql.concat("AND LOWER(p.name) LIKE ".concat("'%" + productName.toLowerCase() + "%'"));
+            stringBuilder.append("AND LOWER(p.name) LIKE '%").append(productName.toLowerCase()).append("%'");
         }
         if (categoryName != null) {
-            hql = hql.concat("AND LOWER(pc.name) LIKE ".concat("'%" + categoryName.toLowerCase() + "%'"));
+            stringBuilder.append("AND LOWER(pc.name) LIKE '%").append(categoryName.toLowerCase()).append("%'");
         }
         if (brandName != null) {
-            hql = hql.concat("AND LOWER(b.name) LIKE ".concat("'%" + brandName.toLowerCase() + "%'"));
+            stringBuilder.append("AND LOWER(b.name) LIKE '%").append(brandName.toLowerCase()).append("%'");
         }
         if (description != null) {
-            hql = hql.concat("AND LOWER(p.description) LIKE ".concat("'%" + description.toLowerCase() + "%'"));
+            stringBuilder.append("AND LOWER(p.description) LIKE '%").append(description.toLowerCase()).append("%'");
         }
-        System.out.println(hql);
-        return entityManager.createQuery(hql, ProductPrice.class)
+
+        return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setParameter("cityId", cityId)
                 .getResultList();
     }
