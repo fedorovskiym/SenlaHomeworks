@@ -39,17 +39,17 @@ public class ShopController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopDTO>> findAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(shopService.findAll());
+    public ResponseEntity<List<ShopDTO>> findAllByCityId(@Min(1) @RequestParam Long cityId) {
+        return ResponseEntity.status(HttpStatus.OK).body(shopService.findAllByCityId(cityId));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ShopDTO> findShopById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<ShopDTO> findShopById(@Min(1) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(shopService.findById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteShop(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<?> deleteShop(@Min(1) @PathVariable Long id) {
         shopService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

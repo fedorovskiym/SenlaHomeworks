@@ -38,7 +38,7 @@ public class ShopBranchController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@Min(1) @NotNull @RequestParam Long cityId) {
-        return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByCityId(cityId));
+    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@Min(1) @RequestParam Long shopId) {
+        return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByShopId(shopId));
     }
 }

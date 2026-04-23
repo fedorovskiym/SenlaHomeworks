@@ -16,6 +16,10 @@ public class ShopRepositoryImpl extends AbstractGenericRepositoryImpl<Shop, Long
             SELECT s FROM Shop s WHERE s.name = :name
             """;
 
+    private static final String HQL_FIND_BY_CITY_ID = """
+            SELECT s FROM Shop s WHERE s.cityId = :cityId
+            """;
+
     public ShopRepositoryImpl() {
         super(Shop.class);
     }
@@ -31,6 +35,15 @@ public class ShopRepositoryImpl extends AbstractGenericRepositoryImpl<Shop, Long
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Shop> findAllByCityId(Long cityId) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_CITY_ID, Shop.class)
+                .setParameter("cityId", cityId)
+                .getResultList();
     }
 
 }

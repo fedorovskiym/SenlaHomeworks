@@ -43,12 +43,12 @@ public class CityController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CityDTO> getCityById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<CityDTO> getCityById(@Min(1) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(cityService.getCityById(id));
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> updateCity(@Min(1) @NotNull @PathVariable Long id, @Valid @RequestBody CityDTO cityDTO) {
+    public ResponseEntity<?> updateCity(@Min(1) @PathVariable Long id, @Valid @RequestBody CityDTO cityDTO) {
         cityService.update(id, cityDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

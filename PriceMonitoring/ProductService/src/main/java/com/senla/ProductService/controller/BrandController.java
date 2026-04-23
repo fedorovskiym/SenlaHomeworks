@@ -48,24 +48,24 @@ public class BrandController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<BrandDTO> findById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<BrandDTO> findById(@Min(1) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(brandService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteBrandById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<?> deleteBrandById(@Min(1) @PathVariable Long id) {
         brandService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> updateBrand(@Min(1) @NotNull @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
+    public ResponseEntity<?> updateBrand(@Min(1) @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
         brandService.update(id, brandDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> updateBrandLogo(@Min(1) @NotNull @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<?> updateBrandLogo(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
         brandService.updateLogo(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

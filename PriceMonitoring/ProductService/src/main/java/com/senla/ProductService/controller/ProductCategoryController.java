@@ -48,24 +48,24 @@ public class ProductCategoryController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductCategoryDTO> findById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<ProductCategoryDTO> findById(@Min(1) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(productCategoryService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteCategoryById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<?> deleteCategoryById(@Min(1) @PathVariable Long id) {
         productCategoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> updateCategory(@Min(1) @NotNull @PathVariable Long id, @RequestBody ProductCategoryUpdateDTO productCategoryUpdateDTO) {
+    public ResponseEntity<?> updateCategory(@Min(1) @PathVariable Long id, @RequestBody ProductCategoryUpdateDTO productCategoryUpdateDTO) {
         productCategoryService.update(id, productCategoryUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> updateCategoryImage(@Min(1) @NotNull @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<?> updateCategoryImage(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
         productCategoryService.updateImage(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

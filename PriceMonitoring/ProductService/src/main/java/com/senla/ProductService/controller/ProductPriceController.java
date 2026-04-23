@@ -42,7 +42,7 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductPriceDTO> findById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<ProductPriceDTO> findById(@Min(1) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findById(id));
     }
 
@@ -52,15 +52,13 @@ public class ProductPriceController {
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> updateProductPrice(@Min(1) @NotNull @PathVariable Long id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
+    public ResponseEntity<?> updateProductPrice(@Min(1) @PathVariable Long id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
         productPriceService.update(id, createUpdateProductPriceDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping(value = "/compare")
-    public ResponseEntity<ComparePrice> comparePricesInShop(
-            @Min(1) @NotNull @RequestParam("productId") Long productId,
-            @Min(1) @NotNull @RequestParam("cityId") Long cityId) {
+    public ResponseEntity<ComparePrice> comparePricesInShop(@Min(1) @RequestParam("productId") Long productId, @Min(1) @RequestParam("cityId") Long cityId) {
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.comparePricesInShops(productId, cityId));
     }
 
@@ -71,9 +69,7 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<List<ProductPriceDTO>> searchProducts(
-            @Min(1) @NotNull @RequestParam("cityId") Long cityId,
-            @RequestParam("searchQuery") String searchQuery) {
+    public ResponseEntity<List<ProductPriceDTO>> searchProducts(@Min(1) @RequestParam("cityId") Long cityId, @RequestParam("searchQuery") String searchQuery) {
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.search(cityId, searchQuery));
     }
 }

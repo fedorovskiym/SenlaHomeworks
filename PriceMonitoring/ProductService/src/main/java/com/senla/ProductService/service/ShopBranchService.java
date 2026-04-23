@@ -9,7 +9,7 @@ public interface ShopBranchService {
 
     void save(ShopBranchDTO shopBranchDTO);
 
-    List<ShopBranchDTO> findAllByCityId(Long cityId);
+    List<ShopBranchDTO> findAllByShopId(Long shopId);
 
     ShopBranchDTO findById(Long id);
 

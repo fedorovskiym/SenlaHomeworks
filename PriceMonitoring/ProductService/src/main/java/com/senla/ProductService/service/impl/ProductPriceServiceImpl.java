@@ -196,8 +196,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                         ProductPrice presentProductPrice = findByProductIdAndShopBranchId(productPrice.getProduct().getId(),
                                 productPrice.getShopBranch().getId());
                         if (presentProductPrice != null) {
-                            productPrice.setId(presentProductPrice.getId());
                             if (!productPrice.getPrice().equals(presentProductPrice.getPrice())) {
+                                productPrice.setId(presentProductPrice.getId());
                                 PriceHistory priceHistory = buildPriceHistory(presentProductPrice, productPrice.getPrice());
                                 priceHistoryList.add(priceHistory);
                                 updateList.add(productPrice);

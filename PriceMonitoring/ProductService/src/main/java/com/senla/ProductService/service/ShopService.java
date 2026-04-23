@@ -10,7 +10,7 @@ public interface ShopService {
 
     void save (ShopDTO shopDTO, MultipartFile photo);
 
-    List<ShopDTO> findAll();
+    List<ShopDTO> findAllByCityId(Long cityId);
 
     void delete(Long id);
 

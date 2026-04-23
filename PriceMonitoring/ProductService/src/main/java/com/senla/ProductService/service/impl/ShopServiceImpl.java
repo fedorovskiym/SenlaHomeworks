@@ -46,8 +46,8 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopDTO> findAll() {
-        return shopRepository.findAll().stream().map(shopMapper::shopToShopDTO).collect(Collectors.toList());
+    public List<ShopDTO> findAllByCityId(Long cityId) {
+        return shopRepository.findAllByCityId(cityId).stream().map(shopMapper::shopToShopDTO).collect(Collectors.toList());
     }
 
     @Override

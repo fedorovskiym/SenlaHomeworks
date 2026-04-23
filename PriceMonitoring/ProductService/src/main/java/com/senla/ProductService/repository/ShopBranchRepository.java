@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ShopBranchRepository extends GenericRepository<ShopBranch, Long> {
 
-    List<ShopBranch> findAllByCityIdFetch(Long cityId);
+    List<ShopBranch> findAllByShopIdFetch(Long shopId);
 }

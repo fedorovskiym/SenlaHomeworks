@@ -49,24 +49,24 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductDTO> findById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<ProductDTO> findById(@Min(1) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteById(@Min(1) @NotNull @PathVariable Long id) {
+    public ResponseEntity<?> deleteById(@Min(1) @PathVariable Long id) {
         productService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<?> updateProduct(@Min(1) @NotNull @PathVariable Long id, @RequestBody ProductUpdateDTO productUpdateDTO) {
+    public ResponseEntity<?> updateProduct(@Min(1) @PathVariable Long id, @RequestBody ProductUpdateDTO productUpdateDTO) {
         productService.update(id, productUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo")
-    public ResponseEntity<?> updateProductImage(@Min(1) @NotNull @PathVariable Long id, @RequestPart MultipartFile photo) {
+    public ResponseEntity<?> updateProductImage(@Min(1) @PathVariable Long id, @RequestPart MultipartFile photo) {
         productService.updateImage(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
