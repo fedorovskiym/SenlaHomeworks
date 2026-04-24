@@ -2,14 +2,16 @@ package com.senla.ProductService.service.impl;
 
 import com.senla.ProductService.dto.history.PriceHistoryDTO;
 import com.senla.ProductService.dto.history.PriceHistoryDataDTO;
+import com.senla.ProductService.dto.history.PriceHistoryOverPeriodOfTimeDTO;
 import com.senla.ProductService.model.PriceHistory;
 import com.senla.ProductService.repository.PriceHistoryRepository;
 import com.senla.ProductService.service.PriceHistoryService;
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -56,4 +58,33 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
 
         return priceHistoryDTO;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String generateCsv(PriceHistoryOverPeriodOfTimeDTO periodOfTimeDTO) {
+        if(periodOfTimeDTO.endDate().isBefore(periodOfTimeDTO.startDate())) {
+            throw new InvalidParameterException("End date should be before start date!");
+        }
+
+        List<PriceHistory> priceHistoryList = priceHistoryRepository.findOverPeriodOfTime(periodOfTimeDTO.productId(),
+                periodOfTimeDTO.shopBranchId(), periodOfTimeDTO.startDate(), periodOfTimeDTO.endDate());
+
+        if (priceHistoryList.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("id;oldPrice;newPrice;changeDate;").append(System.lineSeparator());
+        priceHistoryList.forEach(priceHistory ->
+                stringBuilder.append(String.format("%d;%.2f;%.2f;%s",
+                                priceHistory.getId(),
+                                priceHistory.getOldPrice(),
+                                priceHistory.getNewPrice(),
+                                priceHistory.getChangeDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
+                        .append(System.lineSeparator()));
+
+        return stringBuilder.toString();
+    }
+
 }

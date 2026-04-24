@@ -130,15 +130,15 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             stringBuilder.append("AND LOWER(p.name) LIKE '%").append(productName.toLowerCase()).append("%'");
         }
         if (categoryName != null) {
-            stringBuilder.append("AND LOWER(pc.name) LIKE '%").append(categoryName.toLowerCase()).append("%'");
+            stringBuilder.append(" AND LOWER(pc.name) LIKE '%").append(categoryName.toLowerCase()).append("%'");
         }
         if (brandName != null) {
-            stringBuilder.append("AND LOWER(b.name) LIKE '%").append(brandName.toLowerCase()).append("%'");
+            stringBuilder.append(" AND LOWER(b.name) LIKE '%").append(brandName.toLowerCase()).append("%'");
         }
         if (description != null) {
-            stringBuilder.append("AND LOWER(p.description) LIKE '%").append(description.toLowerCase()).append("%'");
+            stringBuilder.append(" AND LOWER(p.description) LIKE '%").append(description.toLowerCase()).append("%'");
         }
-
+        System.out.println(stringBuilder.toString());
         return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setParameter("cityId", cityId)
                 .getResultList();

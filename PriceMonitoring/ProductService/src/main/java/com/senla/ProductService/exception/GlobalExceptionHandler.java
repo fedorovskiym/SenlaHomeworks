@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -84,7 +85,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CsvImportException.class)
-    public ResponseEntity<ErrorMessage> handleNumber(CsvImportException e) {
+    public ResponseEntity<ErrorMessage> handleCsvImport(CsvImportException e) {
         return new ResponseEntity<>(
                 buildError(HttpStatus.BAD_REQUEST, e),
                 HttpStatus.BAD_REQUEST
@@ -105,6 +106,23 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorMessage> handleMessageNotReadable(HttpMessageNotReadableException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.BAD_REQUEST, e),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(InvalidParameterException.class)
+    public ResponseEntity<ErrorMessage> handleMessageNotReadable(InvalidParameterException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.BAD_REQUEST, e),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
 
     private ErrorMessage buildError(HttpStatus status, Exception e) {
         Map<String, String> errors = new HashMap<>();
