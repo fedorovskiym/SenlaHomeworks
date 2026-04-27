@@ -11,7 +11,9 @@ import java.util.Optional;
 public class UserRepositoryImpl extends AbstractGenericRepositoryImpl<User, Long> implements UserRepository {
 
     private static final String HQL_FIND_BY_USERNAME = """
-            SElECT u FROM User u WHERE u.username = :username
+            SElECT u FROM User u
+            JOIN FETCH u.role
+            WHERE u.username = :username
             """;
 
     public UserRepositoryImpl() {

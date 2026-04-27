@@ -1,11 +1,15 @@
 package com.senla.UserService.service.impl;
 
+import com.senla.UserService.dto.UserDTO;
+import com.senla.UserService.mapper.UserMapper;
 import com.senla.UserService.model.User;
 import com.senla.UserService.repository.UserRepository;
 import com.senla.UserService.service.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
+    private final UserMapper userMapper;
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -42,12 +47,36 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void save(User user) {
-        if(userRepository.findByUsername(user.getUsername()).isPresent()) {
+        if (findByUsernameIfExists(user.getUsername()) != null) {
             throw new EntityExistsException("User with username " + user.getUsername() + " already exists");
         }
-        if(userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+        if (findByPhoneNumberIfExists(user.getPhoneNumber()) != null) {
             throw new EntityExistsException("Phone number " + user.getPhoneNumber() + " already exists");
         }
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public Long getPrincipalId() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return findByUsername(principal.getUsername()).getId();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDTO getUserById(Long id) {
+        return userMapper.userToUserDTO(userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("User with id - " + id + " not found!")));
+    }
+
+    @Override
+    @Transactional
+    public void update(Long userId, UserDTO userDTO) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User with id - " + userId + " not found!"));
+
+        user = userMapper.updateUserFromUserDTO(userDTO, user);
+        userRepository.update(user);
     }
 }

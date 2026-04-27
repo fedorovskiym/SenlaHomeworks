@@ -30,7 +30,7 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(User user) {
-        Instant expirationInstant = LocalDateTime.now().plusMinutes(1).atZone(ZoneId.systemDefault()).toInstant();
+        Instant expirationInstant = LocalDateTime.now().plusMinutes(10).atZone(ZoneId.systemDefault()).toInstant();
         Date accessExpiration = Date.from(expirationInstant);
 
         return Jwts.builder()
