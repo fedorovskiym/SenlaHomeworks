@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,6 +38,7 @@ public class CityController {
     }
 
     @PostMapping(value = "/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createCity(@Valid @RequestBody CityDTO cityDTO) {
         cityService.saveCity(cityDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -48,6 +50,7 @@ public class CityController {
     }
 
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateCity(@Min(1) @PathVariable Long id, @Valid @RequestBody CityDTO cityDTO) {
         cityService.update(id, cityDTO);
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class ShopController {
     }
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createShop(@Valid @RequestPart("shopDTO") ShopDTO shopDTO, @RequestPart("photo") MultipartFile photo) {
         shopService.save(shopDTO, photo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -49,6 +51,7 @@ public class ShopController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteShop(@Min(1) @PathVariable Long id) {
         shopService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

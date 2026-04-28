@@ -37,6 +37,7 @@ public class JwtUtil {
                 .subject(user.getUsername())
                 .expiration(accessExpiration)
                 .signWith(jwtAccessSecret)
+                .claim("userId", user.getId())
                 .claim("role", user.getRole().getName())
                 .claim("username", user.getUsername())
                 .compact();

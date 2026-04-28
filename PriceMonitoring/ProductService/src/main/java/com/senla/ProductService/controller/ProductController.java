@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createProduct(@Valid @RequestPart ProductDTO productDTO, @RequestPart MultipartFile photo) {
         productService.save(productDTO, photo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -54,24 +56,28 @@ public class ProductController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteById(@Min(1) @PathVariable Long id) {
         productService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProduct(@Min(1) @PathVariable Long id, @RequestBody ProductUpdateDTO productUpdateDTO) {
         productService.update(id, productUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProductImage(@Min(1) @PathVariable Long id, @RequestPart MultipartFile photo) {
         productService.updateImage(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping(value = "/import")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> importProduct(@RequestPart("file") MultipartFile file) {
         productService.importFromCsv(file);
         return ResponseEntity.status(HttpStatus.OK).build();

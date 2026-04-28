@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public class ProductCategoryController {
     }
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createCategory(
             @Valid @RequestPart("productCategoryDTO") ProductCategoryDTO productCategoryDTO,
             @RequestPart("photo") MultipartFile photo) {
@@ -53,18 +55,21 @@ public class ProductCategoryController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteCategoryById(@Min(1) @PathVariable Long id) {
         productCategoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateCategory(@Min(1) @PathVariable Long id, @RequestBody ProductCategoryUpdateDTO productCategoryUpdateDTO) {
         productCategoryService.update(id, productCategoryUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateCategoryImage(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
         productCategoryService.updateImage(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();

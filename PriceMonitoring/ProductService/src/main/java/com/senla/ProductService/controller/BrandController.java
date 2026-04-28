@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class BrandController {
     }
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> save(@Valid @RequestPart("brandDTO") BrandDTO brandDTO, @RequestPart("photo") MultipartFile photo) {
         brandService.save(brandDTO, photo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -53,18 +55,21 @@ public class BrandController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteBrandById(@Min(1) @PathVariable Long id) {
         brandService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateBrand(@Min(1) @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
         brandService.update(id, brandDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateBrandLogo(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
         brandService.updateLogo(id, photo);
         return ResponseEntity.status(HttpStatus.OK).build();

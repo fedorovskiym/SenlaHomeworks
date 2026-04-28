@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,6 +37,7 @@ public class ProductPriceController {
     }
 
     @PostMapping(value = "/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createProductPrice(@Valid @RequestBody CreateUpdateProductPriceDTO createProductPriceDTO) {
         productPriceService.save(createProductPriceDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -52,6 +54,7 @@ public class ProductPriceController {
     }
 
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProductPrice(@Min(1) @PathVariable Long id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
         productPriceService.update(id, createUpdateProductPriceDTO);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -63,6 +66,7 @@ public class ProductPriceController {
     }
 
     @PostMapping(value = "/import")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> importPrices(@RequestPart MultipartFile file) {
         productPriceService.importFromCsv(file);
         return ResponseEntity.status(HttpStatus.OK).build();
