@@ -1,5 +1,7 @@
 package com.senla.UserService.config;
 
+import com.senla.UserService.exception.handler.CustomAccessDeniedHandler;
+import com.senla.UserService.exception.handler.CustomAuthenticationEntryPoint;
 import com.senla.UserService.security.JwtFilter;
 import com.senla.UserService.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +26,15 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.jwtFilter = jwtFilter;
         this.customUserDetailsService = customUserDetailsService;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
@@ -41,6 +47,9 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").authenticated()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
