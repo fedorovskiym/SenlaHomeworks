@@ -14,6 +14,8 @@ import com.senla.UserService.service.UserService;
 import com.senla.UserService.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.persistence.EntityExistsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -36,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Autowired
     public AuthServiceImpl(UserService userService, JwtUtil jwtUtil, UserMapper userMapper, RoleService roleService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
@@ -51,17 +54,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public JwtResponse login(AuthRequest authRequest) throws AuthException {
+        logger.info("Login request {}", authRequest);
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password());
 
         try {
+            logger.info("Attempting to authenticate user {}", authRequest.username());
             authenticationManager.authenticate(authenticationToken);
         } catch (BadCredentialsException e) {
+            logger.warn("Bad credentials, invalid username or password {}", authRequest);
             throw new BadCredentialsException("Invalid username or password!");
         }
-
+        logger.info("Authenticated user {}", authRequest.username());
         User user = userService.findByUsername(authRequest.username());
-
+        logger.info("Found user {}", user);
         return new JwtResponse(
                 jwtUtil.generateAccessToken(user),
                 jwtUtil.generateRefreshToken(user)
@@ -71,44 +77,57 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public JwtResponse getAccessToken(String refreshToken) {
+        logger.info("Refresh access token with refresh token {}", refreshToken);
         if (jwtUtil.validateRefreshToken(refreshToken)) {
+            logger.info("Valid refresh token {}", refreshToken);
             Claims claims = jwtUtil.getRefreshClaims(refreshToken);
             String username = claims.getSubject();
             String saveRefreshToken = refreshStorage.get(username);
+            logger.info("Saved refresh token {}", saveRefreshToken);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 User user = userService.findByUsername(username);
                 String accessToken = jwtUtil.generateAccessToken(user);
+                logger.info("Saved and return access token for user {}", username);
                 return new JwtResponse(accessToken, null);
             }
         }
+        logger.info("Invalid refresh token {}", refreshToken);
         return new JwtResponse(null, null);
     }
 
     @Override
     @Transactional
     public JwtResponse refresh(String refreshToken) {
+        logger.info("Get new refresh token {}", refreshToken);
         if (jwtUtil.validateRefreshToken(refreshToken)) {
+            logger.info("Valid refresh token {}", refreshToken);
             Claims claims = jwtUtil.getRefreshClaims(refreshToken);
             String username = claims.getSubject();
             String saveRefreshToken = refreshStorage.get(username);
+            logger.info("Saved refresh token {}", saveRefreshToken);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 User user = userService.findByUsername(username);
                 String accessToken = jwtUtil.generateAccessToken(user);
                 String newRefreshToken = jwtUtil.generateRefreshToken(user);
                 refreshStorage.put(user.getUsername(), newRefreshToken);
+                logger.info("Saved refresh and access token for user {} ", username);
                 return new JwtResponse(accessToken, newRefreshToken);
             }
         }
+        logger.warn("Invalid refresh token {}", refreshToken);
         throw new AuthException("Invalid refresh token");
     }
 
     @Override
     @Transactional
     public JwtResponse register(RegisterRequest registerRequest) {
+        logger.info("Register request {}", registerRequest);
         if (userService.findByUsernameIfExists(registerRequest.username()) != null) {
+            logger.warn("Username {} already exists", registerRequest.username());
             throw new EntityExistsException("User with username " + registerRequest.username() + " already exists");
         }
         if (userService.findByPhoneNumberIfExists(registerRequest.phoneNumber()) != null) {
+            logger.warn("Phone number {} already exists", registerRequest.phoneNumber());
             throw new EntityExistsException("Phone number " + registerRequest.phoneNumber() + " already exists");
         }
 
@@ -118,10 +137,12 @@ public class AuthServiceImpl implements AuthService {
         Role role = roleService.findByName(RoleEnum.ROLE_USER.getDisplayName());
         user.setRole(role);
         userService.save(user);
+        logger.info("Saved user {}", user);
 
         String accessToken = jwtUtil.generateAccessToken(user);
         String refreshToken = jwtUtil.generateRefreshToken(user);
         refreshStorage.put(user.getUsername(), refreshToken);
+        logger.info("Return refresh and access token for user {}", user.getUsername());
         return new JwtResponse(accessToken, refreshToken);
     }
 }
