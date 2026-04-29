@@ -16,6 +16,11 @@ public class UserRepositoryImpl extends AbstractGenericRepositoryImpl<User, Long
             WHERE u.username = :username
             """;
 
+    private static final String HQL_FIND_BY_PHONE_NUMBER = """
+            SElECT u FROM User u
+            WHERE u.phoneNumber = :phoneNumber
+            """;
+
     public UserRepositoryImpl() {
         super(User.class);
     }
@@ -24,16 +29,19 @@ public class UserRepositoryImpl extends AbstractGenericRepositoryImpl<User, Long
     public Optional<User> findByUsername(String username) {
         EntityManager entityManager = getEntityManager();
 
-        Optional<User> user =  entityManager.createQuery(HQL_FIND_BY_USERNAME, User.class)
+        return entityManager.createQuery(HQL_FIND_BY_USERNAME, User.class)
                 .setParameter("username", username)
                 .getResultStream()
                 .findFirst();
-
-        return user;
     }
 
     @Override
     public Optional<User> findByPhoneNumber(String phoneNumber) {
-        return Optional.empty();
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_PHONE_NUMBER, User.class)
+                .setParameter("phoneNumber", phoneNumber)
+                .getResultStream()
+                .findFirst();
     }
 }

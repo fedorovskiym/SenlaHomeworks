@@ -47,12 +47,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void save(User user) {
-        if (findByUsernameIfExists(user.getUsername()) != null) {
-            throw new EntityExistsException("User with username " + user.getUsername() + " already exists");
-        }
-        if (findByPhoneNumberIfExists(user.getPhoneNumber()) != null) {
-            throw new EntityExistsException("Phone number " + user.getPhoneNumber() + " already exists");
-        }
         userRepository.save(user);
     }
 

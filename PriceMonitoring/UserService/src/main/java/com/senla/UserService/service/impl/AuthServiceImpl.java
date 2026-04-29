@@ -13,6 +13,7 @@ import com.senla.UserService.service.RoleService;
 import com.senla.UserService.service.UserService;
 import com.senla.UserService.util.JwtUtil;
 import io.jsonwebtoken.Claims;
+import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -56,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             authenticationManager.authenticate(authenticationToken);
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid credentials");
+            throw new BadCredentialsException("Invalid username or password!");
         }
 
         User user = userService.findByUsername(authRequest.username());
@@ -104,6 +105,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public JwtResponse register(RegisterRequest registerRequest) {
+        if (userService.findByUsernameIfExists(registerRequest.username()) != null) {
+            throw new EntityExistsException("User with username " + registerRequest.username() + " already exists");
+        }
+        if (userService.findByPhoneNumberIfExists(registerRequest.phoneNumber()) != null) {
+            throw new EntityExistsException("Phone number " + registerRequest.phoneNumber() + " already exists");
+        }
+
         User user = userMapper.registerRequestToUser(registerRequest);
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
         user.setRegistrationDate(LocalDate.now());
