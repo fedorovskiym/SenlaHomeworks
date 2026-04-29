@@ -123,11 +123,11 @@ public class AuthServiceImpl implements AuthService {
     public JwtResponse register(RegisterRequest registerRequest) {
         logger.info("Register request {}", registerRequest);
         if (userService.findByUsernameIfExists(registerRequest.username()) != null) {
-            logger.warn("Username {} already exists", registerRequest.username());
+            logger.warn("Trying to register with username {} that already exists",  registerRequest.username());
             throw new EntityExistsException("User with username " + registerRequest.username() + " already exists");
         }
         if (userService.findByPhoneNumberIfExists(registerRequest.phoneNumber()) != null) {
-            logger.warn("Phone number {} already exists", registerRequest.phoneNumber());
+            logger.warn("Trying to register with phone number {} that already exists",  registerRequest.phoneNumber());
             throw new EntityExistsException("Phone number " + registerRequest.phoneNumber() + " already exists");
         }
 
