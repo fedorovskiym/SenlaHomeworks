@@ -1,6 +1,8 @@
 package com.senla.ProductService.util;
 
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +35,8 @@ public class YandexCloudUtil {
     private String bucket;
     @Value("${s3.endpoint}")
     private String endpoint;
-
     private S3Client s3Client;
+    private static final Logger logger = LoggerFactory.getLogger(YandexCloudUtil.class);
 
     public YandexCloudUtil() {
     }
@@ -53,6 +55,7 @@ public class YandexCloudUtil {
 
     public String saveImageToStorage(MultipartFile photo, String folderName) {
         try {
+            logger.info("Upload image to folder {}", folderName);
             String key = folderName + UUID.randomUUID() + "_" + photo.getOriginalFilename();
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
@@ -61,7 +64,6 @@ public class YandexCloudUtil {
                     .build();
 
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(photo.getBytes()));
-
             return s3Client.utilities()
                     .getUrl(GetUrlRequest.builder()
                             .bucket(bucket)
@@ -70,18 +72,18 @@ public class YandexCloudUtil {
                     .toExternalForm();
 
         } catch (IOException e) {
+            logger.error("Error while uploading image to folder {}", folderName, e);
             throw new RuntimeException(e);
         }
     }
 
     public void deleteImage(String logoImageUrl) {
-
         String key = logoImageUrl.substring(logoImageUrl.indexOf(".net/") + 5);
 
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucket)
                 .key(key).build();
-
+        logger.info("Delete image with url {}", logoImageUrl);
         s3Client.deleteObject(deleteObjectRequest);
     }
 }

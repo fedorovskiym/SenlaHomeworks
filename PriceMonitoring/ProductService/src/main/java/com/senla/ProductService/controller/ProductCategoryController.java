@@ -6,6 +6,8 @@ import com.senla.ProductService.service.ProductCategoryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ import java.util.List;
 public class ProductCategoryController {
 
     private final ProductCategoryService productCategoryService;
+    private static final Logger logger = LoggerFactory.getLogger(ProductCategoryController.class);
 
     public ProductCategoryController(ProductCategoryService productCategoryService) {
         this.productCategoryService = productCategoryService;
@@ -37,6 +40,7 @@ public class ProductCategoryController {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<ProductCategoryDTO>> findAll() {
+        logger.info("Recieved request to find all categories /api/product-service/category/");
         return ResponseEntity.status(HttpStatus.OK).body(productCategoryService.findAll());
     }
 
@@ -45,33 +49,42 @@ public class ProductCategoryController {
     public ResponseEntity<?> createCategory(
             @Valid @RequestPart("productCategoryDTO") ProductCategoryDTO productCategoryDTO,
             @RequestPart("photo") MultipartFile photo) {
+        logger.info("Recieved request to create a new category /api/product-service/category/");
         productCategoryService.save(productCategoryDTO, photo);
+        logger.info("Succesfull create a new category /api/product-service/category/");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProductCategoryDTO> findById(@Min(1) @PathVariable Long id) {
+        logger.info("Recieved request to find product category by id /api/product-service/category/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(productCategoryService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteCategoryById(@Min(1) @PathVariable Long id) {
+        logger.info("Recieved request to delete category by id /api/product-service/category/{}", id);
         productCategoryService.deleteById(id);
+        logger.info("Succesfull delete category by id /api/product-service/category/{}", id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateCategory(@Min(1) @PathVariable Long id, @RequestBody ProductCategoryUpdateDTO productCategoryUpdateDTO) {
+        logger.info("Recieved request to update category by id /api/product-service/category/{}", id);
         productCategoryService.update(id, productCategoryUpdateDTO);
+        logger.info("Succesfull update category by id /api/product-service/category/{}", id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateCategoryImage(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+        logger.info("Recieved request to update category image by id /api/product-service/category/{}", id);
         productCategoryService.updateImage(id, photo);
+        logger.info("Succesfull update category image by id /api/product-service/category/{}", id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

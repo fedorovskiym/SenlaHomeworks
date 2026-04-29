@@ -11,6 +11,8 @@ import com.senla.ProductService.service.CityService;
 import com.senla.ProductService.service.ShopBranchService;
 import com.senla.ProductService.service.ShopService;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class ShopBranchServiceImpl implements ShopBranchService {
     private final ShopBranchMapper shopBranchMapper;
     private final CityService cityService;
     private final ShopService shopService;
+    private static final Logger logger = LoggerFactory.getLogger(ShopBranchServiceImpl.class);
 
     @Autowired
     public ShopBranchServiceImpl(ShopBranchRepository shopBranchRepository, ShopBranchMapper shopBranchMapper, CityService cityService, ShopService shopService) {
@@ -38,6 +41,7 @@ public class ShopBranchServiceImpl implements ShopBranchService {
     @Override
     @Transactional
     public void save(ShopBranchDTO shopBranchDTO) {
+        logger.info("Save shop branch from dto {}", shopBranchDTO);
         City city = cityService.getCityByIdIfExists(shopBranchDTO.cityId());
         Shop shop = shopService.findByIdIfExists(shopBranchDTO.shopId());
 
@@ -45,11 +49,13 @@ public class ShopBranchServiceImpl implements ShopBranchService {
         shopBranch.setCity(city);
         shopBranch.setShop(shop);
         shopBranchRepository.save(shopBranch);
+        logger.info("Successfull save shop branch {}", shopBranch);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ShopBranchDTO> findAllByShopId(Long shopId) {
+        logger.info("Find all shop branches dto by city id {}", shopId);
         return shopBranchRepository.findAllByShopIdFetch(shopId)
                 .stream().map(shopBranchMapper::shopBranchToShopBranchDTO).collect(Collectors.toList());
     }
@@ -57,13 +63,17 @@ public class ShopBranchServiceImpl implements ShopBranchService {
     @Override
     @Transactional(readOnly = true)
     public ShopBranchDTO findById(Long id) {
+        logger.info("Find shop branch dto by id {}", id);
         return shopBranchMapper.shopBranchToShopBranchDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public ShopBranch findByIdIfExists(Long id) {
-        return shopBranchRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Shop branch with id - " + id + " not found!"));
+        logger.info("Find shop branch by id {}", id);
+        return shopBranchRepository.findById(id).orElseThrow(() -> {
+            logger.warn("Shop branch not found with id {}", id);
+            return new EntityNotFoundException("Shop branch with id - " + id + " not found!");
+        });
     }
 }

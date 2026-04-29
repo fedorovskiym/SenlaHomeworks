@@ -5,6 +5,8 @@ import com.senla.ProductService.service.CityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import java.util.List;
 public class CityController {
 
     private final CityService cityService;
+    private static final Logger logger = LoggerFactory.getLogger(CityController.class);
 
     @Autowired
     public CityController(CityService cityService) {
@@ -34,25 +37,31 @@ public class CityController {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<CityDTO>> findAll() {
+        logger.info("Recieved request to get all cities /api/product-service/city/");
         return ResponseEntity.status(HttpStatus.OK).body(cityService.findAll());
     }
 
     @PostMapping(value = "/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createCity(@Valid @RequestBody CityDTO cityDTO) {
+        logger.info("Recieved request to save a city /api/product-service/city/");
         cityService.saveCity(cityDTO);
+        logger.info("Succesfull save a city /api/product-service/city/");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<CityDTO> getCityById(@Min(1) @PathVariable Long id) {
+        logger.info("Recieved request to get city by id /api/product-service/city/id/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(cityService.getCityById(id));
     }
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateCity(@Min(1) @PathVariable Long id, @Valid @RequestBody CityDTO cityDTO) {
+        logger.info("Recieved request to update city by id /api/product-service/city/id/{}", id);
         cityService.update(id, cityDTO);
+        logger.info("Succesfull update city by id /api/product-service/city/id/{}", id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

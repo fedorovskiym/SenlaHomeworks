@@ -6,6 +6,8 @@ import com.senla.ProductService.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +34,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     public ProductController(ProductService productService) {
@@ -41,45 +44,57 @@ public class ProductController {
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createProduct(@Valid @RequestPart ProductDTO productDTO, @RequestPart MultipartFile photo) {
+        logger.info("Recieved request to create product /api/product-service/product/");
         productService.save(productDTO, photo);
+        logger.info("Succesfull create product /api/product-service/product/");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping(value = "/")
     public ResponseEntity<List<ProductDTO>> findAll() {
+        logger.info("Recieved request to find all /api/product-service/product/");
         return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProductDTO> findById(@Min(1) @PathVariable Long id) {
+        logger.info("Recieved request to find product /api/product-service/product/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(productService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteById(@Min(1) @PathVariable Long id) {
+        logger.info("Recieved request to delete product /api/product-service/product/{}", id);
         productService.delete(id);
+        logger.info("Succesfull delete product /api/product-service/product/{}", id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProduct(@Min(1) @PathVariable Long id, @RequestBody ProductUpdateDTO productUpdateDTO) {
+        logger.info("Recieved request to update product /api/product-service/product/{}", id);
         productService.update(id, productUpdateDTO);
+        logger.info("Succesfull update product /api/product-service/product/{}", id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping(value = "/{id}/logo")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProductImage(@Min(1) @PathVariable Long id, @RequestPart MultipartFile photo) {
+        logger.info("Recieved request to update product image by id /api/product-service/product/{}", id);
         productService.updateImage(id, photo);
+        logger.info("Succesfull update product image by id /api/product-service/product/{}", id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping(value = "/import")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> importProduct(@RequestPart("file") MultipartFile file) {
+        logger.info("Recieved request to import products from file /api/product-service/product/import");
         productService.importFromCsv(file);
+        logger.info("Succesfull import products from file /api/product-service/product/import");
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -34,6 +34,8 @@ import com.senla.ProductService.service.ShopBranchService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.http.InvalidParameterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +62,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     private final BrandService brandService;
     private final ProductCategoryService productCategoryService;
     private final PriceHistoryService priceHistoryService;
+    private static final Logger logger = LoggerFactory.getLogger(ProductPriceServiceImpl.class);
 
     @Autowired
     public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService, AIService aiService, BrandService brandService, ProductCategoryService productCategoryService, PriceHistoryService priceHistoryService) {
@@ -76,7 +79,9 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Override
     @Transactional
     public void save(CreateUpdateProductPriceDTO createProductPriceDTO) {
+        logger.info("Saving product price {}", createProductPriceDTO);
         if (findByProductIdAndShopBranchId(createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId()) != null) {
+            logger.warn("Product price with product id {} and shop branch id {} already exists", createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId());
             throw new EntityExistsException("Price with product id " + createProductPriceDTO.getProductId() +
                     " in shop branch id " + createProductPriceDTO.getShopBranchId() + " already exists");
         }
@@ -91,24 +96,28 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         productPrice.setStatus(PriceStatus.ACTUAL);
 
         productPriceRepository.save(productPrice);
+        logger.info("Saved product price {}", productPrice);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ProductPriceDTO findById(Long id) {
+        logger.info("Finding product price dto by id {}", id);
         return productPriceMapper.productPriceToProductPriceDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductPriceDTO> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO) {
-
+        logger.info("Finding product price with pagination and filters {}", productPriceSearchDTO);
         if (!productPriceSearchDTO.sortBy().equals(ProductPriceSortType.PRICE.getDisplayName()) &&
                 !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.DISCOUNT_PERCENT.getDisplayName()) &&
                 !productPriceSearchDTO.sortBy().equals(ProductPriceSortType.ID.getDisplayName())) {
+            logger.warn("Wrong sort parameters for filters {}", productPriceSearchDTO);
             throw new InvalidParameterException("Sort only by price, discountPercent or id");
         }
 
+        logger.info("Find product price with pagination and filters {}", productPriceSearchDTO);
         return productPriceRepository.findAllWithPagination(productPriceSearchDTO.page(), productPriceSearchDTO.size(),
                         productPriceSearchDTO.shopBranchId(), productPriceSearchDTO.sortBy(), productPriceSearchDTO.asc(),
                         productPriceSearchDTO.brandId(), productPriceSearchDTO.categoryId())
@@ -118,9 +127,11 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Override
     @Transactional(readOnly = true)
     public ComparePrice comparePricesInShops(Long productId, Long cityId) {
+        logger.info("Compare price on product with id {} in city with id {}", productId, cityId);
         List<ProductPrice> productPrices = productPriceRepository.findProductInShops(productId, cityId);
 
         if (productPrices.isEmpty()) {
+            logger.warn("Product with id {} has no products in shops", productId);
             throw new EntityNotFoundException("No prices found in shops with id - " + productId);
         }
 
@@ -148,17 +159,20 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         comparePrice.setShopLogoImageUrl(productPrices.get(0).getShopBranch().getShop().getLogoImageUrl());
         comparePrice.setShopAddressMin(address);
         comparePrice.setOtherPrices(otherPrices);
-
+        logger.info("Compare price {}", comparePrice);
         return comparePrice;
     }
 
     @Override
     @Transactional
     public void importFromCsv(MultipartFile file) {
+        logger.info("Importing product price from csv file {}", file.getOriginalFilename());
         if (!file.getOriginalFilename().endsWith("csv")) {
+            logger.warn("Invalid file extension {}", file.getOriginalFilename());
             throw new InvalidParameterException("Only .csv files supported!");
         }
         if (file.isEmpty()) {
+            logger.warn("Empty product price file");
             throw new InvalidParameterException("Empty file!");
         }
 
@@ -206,11 +220,12 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                             saveList.add(productPrice);
                         }
                     });
-
+            logger.info("Import from file end");
             productPriceRepository.saveList(saveList);
             productPriceRepository.updateList(updateList);
             priceHistoryService.saveList(priceHistoryList);
         } catch (IOException e) {
+            logger.error("Error while reading file {}", file.getOriginalFilename(), e);
             throw new RuntimeException(e);
         }
     }
@@ -218,10 +233,12 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Override
     @Transactional(readOnly = true)
     public ProductPrice findByProductIdAndShopBranchId(Long productId, Long shopBranchId) {
+        logger.info("Find price by product id {} and shop branch id {} or null", productId, shopBranchId);
         return productPriceRepository.findByProductIdAndShopBranchId(productId, shopBranchId).orElse(null);
     }
 
     private List<CreateUpdateProductPriceDTO> parseCsv(Reader reader) {
+        logger.info("Parse csv file");
         CSVParser csvParser = new CSVParserBuilder()
                 .withSeparator(';')
                 .withIgnoreQuotations(true)
@@ -243,8 +260,9 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         List<CreateUpdateProductPriceDTO> rows = csvToBean.parse();
 
         List<CsvException> errors = csvToBean.getCapturedExceptions();
-
+        logger.info("Parse csv file end");
         if (!errors.isEmpty()) {
+            logger.error("{} errors while parsing csv file", errors.size());
             throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
         }
         return rows;
@@ -253,6 +271,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Override
     @Transactional(readOnly = true)
     public List<ProductPriceDTO> search(Long cityId, String searchQuery) {
+        logger.info("Searching price by city id {} with query {}", cityId, searchQuery);
         List<String> brandsNames = brandService.findAll().stream().map(BrandDTO::name).toList();
         List<String> categoryNames = productCategoryService.findAll().stream().map(ProductCategoryDTO::name).toList();
 
@@ -260,25 +279,31 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
         System.out.println(productSearchRequest.toString());
         if (productSearchRequest.productName() == null && productSearchRequest.brandName() == null && productSearchRequest.categoryName() == null) {
+            logger.info("Search types are null");
             return List.of();
         }
 
         List<ProductPriceDTO> productPrices = productPriceRepository.findByUserQuery(cityId, productSearchRequest.productName(),
                         productSearchRequest.categoryName(), productSearchRequest.brandName(), productSearchRequest.description())
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
+        logger.info("Succesfull search price by city id {} with query {}", cityId, searchQuery);
         return productPrices;
     }
 
     @Override
     @Transactional(readOnly = true)
     public ProductPrice findByIdIfExists(Long id) {
-        return productPriceRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Product's price with id - " + id + " not found!"));
+        logger.info("Find price by id {}", id);
+        return productPriceRepository.findById(id).orElseThrow(() -> {
+            logger.warn("Product price with id {} not found", id);
+            return new EntityNotFoundException("Product's price with id - " + id + " not found!");
+        });
     }
 
     @Override
     @Transactional
     public void update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO) {
+        logger.info("Update price by id {}", id);
         ProductPrice productPrice = findByIdIfExists(id);
 
         PriceHistory priceHistory = buildPriceHistory(productPrice, createProductPriceDTO.getPrice());
@@ -287,6 +312,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
         priceHistoryService.save(priceHistory);
         productPriceRepository.update(productPrice);
+        logger.info("Successfull updated price {}", productPrice);
     }
 
     private PriceHistory buildPriceHistory(ProductPrice productPrice, Double newPrice) {

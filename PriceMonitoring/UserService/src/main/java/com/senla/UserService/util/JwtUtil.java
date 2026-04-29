@@ -7,6 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,7 @@ public class JwtUtil {
 
     private final SecretKey jwtAccessSecret;
     private final SecretKey jwtRefrechSecret;
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
     public JwtUtil(
             @Value("${jwt.secret.access}") String jwtAccessSecret,
@@ -70,13 +73,13 @@ public class JwtUtil {
                     .parseSignedClaims(token);
             return true;
         } catch (ExpiredJwtException expEx) {
-            // Логи
+            logger.error("Token expired: {}", expEx.getMessage());
         } catch (UnsupportedJwtException unsEx) {
-            // Логи
+            logger.error("Token unsupported: {}", unsEx.getMessage());
         } catch (MalformedJwtException mjEx) {
-            // Логи
+            logger.error("Token malformed: {}", mjEx.getMessage());
         } catch (Exception e) {
-            // Логи
+            logger.error("Token invalid: {}", e.getMessage());
         }
         return false;
     }

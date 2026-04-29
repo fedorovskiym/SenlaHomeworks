@@ -13,10 +13,6 @@ public interface ProductService {
 
     List<ProductDTO> findAll();
 
-    List<ProductDTO> findByCategoryId(Long categoryId);
-
-    List<ProductDTO> findByBrandId(Long brandId);
-
     ProductDTO findById(Long id);
 
     Product findByIdIfExists(Long id);
@@ -26,8 +22,6 @@ public interface ProductService {
     void update(Long id, ProductUpdateDTO productUpdateDTO);
 
     void updateImage(Long id, MultipartFile photo);
-
-    Product findWithPrices(Long id);
 
     void importFromCsv(MultipartFile file);
 

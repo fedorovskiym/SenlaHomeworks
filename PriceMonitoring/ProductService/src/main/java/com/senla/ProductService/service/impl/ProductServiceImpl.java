@@ -22,6 +22,8 @@ import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.util.YandexCloudUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.http.InvalidParameterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductCategoryService productCategoryService;
     private final YandexCloudUtil yandexCloudUtil;
     private static final String FOLDER = "product_images/";
+    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, BrandService brandService, ProductCategoryService productCategoryService, YandexCloudUtil yandexCloudUtil) {
@@ -58,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void save(ProductDTO productDTO, MultipartFile photo) {
+        logger.info("Saving product from dto {}", productDTO);
         Brand brand = brandService.findByIdIfExists(productDTO.brandId());
         ProductCategory productCategory = productCategoryService.findByIdIfExists(productDTO.categoryId());
 
@@ -65,55 +69,57 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setProductCategory(productCategory);
         if (!photo.isEmpty()) {
+            logger.info("Saving product image to Yandex Cloud Storage");
             product.setImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+            logger.info("Successfull saved product image to Yandex Cloud Storage");
         }
+
         productRepository.save(product);
+        logger.info("Succesfull save product {}", product);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductDTO> findAll() {
+        logger.info("Finding all products");
         return productRepository.findAll().stream().map(productMapper::productToProductDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductDTO> findByCategoryId(Long categoryId) {
-        return List.of();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductDTO> findByBrandId(Long brandId) {
-        return List.of();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
+        logger.info("Finding product dto by id {}", id);
         return productMapper.productToProductDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Product findByIdIfExists(Long id) {
-        return productRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Product with id - " + id + " not found!"));
+        logger.info("Finding product by id is exists {}", id);
+        return productRepository.findById(id).orElseThrow(() -> {
+            logger.warn("Product with id {} not found", id);
+            return new EntityNotFoundException("Product with id - " + id + " not found!");
+        });
     }
 
     @Override
     @Transactional(readOnly = true)
     public void delete(Long id) {
+        logger.info("Deleting product by id {}", id);
         Product product = findByIdIfExists(id);
         if (product.getImageUrl() != null) {
+            logger.info("Deleting product image from Yandex Cloud Storage");
             yandexCloudUtil.deleteImage(product.getImageUrl());
+            logger.info("Successfull deleted product image from Yandex Cloud Storage");
         }
         productRepository.delete(product);
+        logger.info("Successfully deleted product {}", product);
     }
 
     @Override
     @Transactional
     public void update(Long id, ProductUpdateDTO productUpdateDTO) {
+        logger.info("Updating product by id {} from dto {}", id, productUpdateDTO);
         Product product = findByIdIfExists(id);
 
         if (productUpdateDTO.brandId() != null) {
@@ -125,36 +131,38 @@ public class ProductServiceImpl implements ProductService {
 
         product = productMapper.updateProductFromDTO(productUpdateDTO, product);
         productRepository.update(product);
+        logger.info("Successfull updated product {}", product);
     }
 
     @Override
     @Transactional
     public void updateImage(Long id, MultipartFile photo) {
+        logger.info("Updating product image with id {}", id);
         Product product = findByIdIfExists(id);
 
         if (product.getImageUrl() != null) {
+            logger.info("Deleting old product image from Yandex Cloud Storage");
             yandexCloudUtil.deleteImage(product.getImageUrl());
+            logger.warn("Successfull deleted old product image from Yandex Cloud Storage");
         }
 
+        logger.info("Saving product image to Yandex Cloud Storage");
         product.setImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        logger.info("Successfull saved product image to Yandex Cloud Storage");
         productRepository.update(product);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Product findWithPrices(Long id) {
-        return productRepository.findByIdWithPrices(id).orElseThrow(
-                () -> new EntityNotFoundException("Product with id - " + id + " not found!")
-        );
+        logger.info("Successfull updated product {} ", product);
     }
 
     @Override
     @Transactional
     public void importFromCsv(MultipartFile file) {
+        logger.info("Import product from csv file");
         if (!file.getOriginalFilename().endsWith("csv")) {
+            logger.warn("Invalid file extension {}", file.getOriginalFilename());
             throw new InvalidParameterException("Only .csv files supported!");
         }
         if (file.isEmpty()) {
+            logger.warn("Empty file");
             throw new InvalidParameterException("Empty file!");
         }
 
@@ -169,7 +177,7 @@ public class ProductServiceImpl implements ProductService {
                         }
 
                         Brand brand = brandService.findByIdOptional(row.getBrandId()).orElse(null);
-                        if(brand == null) {
+                        if (brand == null) {
                             return null;
                         }
 
@@ -193,10 +201,11 @@ public class ProductServiceImpl implements ProductService {
                             saveList.add(product);
                         }
                     });
-
+            logger.info("Import from file end");
             productRepository.updateList(updateList);
             productRepository.saveList(saveList);
         } catch (IOException e) {
+            logger.error("Error while reading file {}", file.getOriginalFilename(), e);
             throw new RuntimeException(e);
         }
     }
@@ -204,10 +213,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Product findByName(String name) {
+        logger.info("Finding product by name {} or null", name);
         return productRepository.findByName(name).orElse(null);
     }
 
     private List<CreateProductDTO> parseCsv(Reader reader) throws IOException {
+        logger.info("Parsing CSV file");
         CSVParser csvParser = new CSVParserBuilder()
                 .withSeparator(';')
                 .withIgnoreQuotations(true)
@@ -228,8 +239,9 @@ public class ProductServiceImpl implements ProductService {
         List<CreateProductDTO> rows = csvToBean.parse();
 
         List<CsvException> errors = csvToBean.getCapturedExceptions();
-
+        logger.info("Parsing CSV file end");
         if (!errors.isEmpty()) {
+            logger.warn("{} errors while reading CSV file", errors.size());
             throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
         }
         return rows;
