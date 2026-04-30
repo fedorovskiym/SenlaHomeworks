@@ -1,5 +1,6 @@
 package com.senla.UserService.mapper;
 
+import com.senla.UserService.dto.KafkaMessageWithUser;
 import com.senla.UserService.dto.RegisterRequest;
 import com.senla.UserService.dto.UserDTO;
 import com.senla.UserService.model.User;
@@ -17,4 +18,6 @@ public abstract class UserMapper {
     public abstract User updateUserFromUserDTO(UserDTO userDTO, @MappingTarget User user);
 
     public abstract UserDTO userToUserDTO(User user);
+
+    public abstract KafkaMessageWithUser userToKafkaMessage(User user);
 }
