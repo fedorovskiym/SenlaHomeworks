@@ -28,7 +28,7 @@ public class KafkaBroker {
 
     public void sendUpdateProductPriceMessage(Long id, String json) {
         kafkaTemplate.executeInTransaction(t -> {
-            t.send("update_product_price", String.valueOf(id), json);
+            t.send("update-product-price", String.valueOf(id), json);
             t.flush();
             logger.info("Update product price message sent to kafka {} to topic {}", json, "update_product_price");
             return null;

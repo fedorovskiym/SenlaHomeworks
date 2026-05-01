@@ -61,7 +61,7 @@ public class ProductPriceController {
     }
 
     @PatchMapping(value = "/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateProductPrice(@Min(1) @PathVariable Long id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
         logger.info("Received request to update product price by id /api/product-service/price/{}", id);
         productPriceService.update(id, createUpdateProductPriceDTO);

@@ -31,7 +31,6 @@ public class CreateUpdateProductPriceDTO {
         this.discountPercent = discountPercent;
     }
 
-
     public Long getProductId() {
         return productId;
     }

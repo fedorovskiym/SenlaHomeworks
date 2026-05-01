@@ -1,5 +1,6 @@
 package com.senla.NotificationService.broker;
 
+import com.senla.NotificationService.dto.PriceDTO;
 import com.senla.NotificationService.dto.SubscriptionDTO;
 import com.senla.NotificationService.model.LocalUser;
 import com.senla.NotificationService.service.LocalUserService;
@@ -56,6 +57,17 @@ public class KafkaBroker {
             SubscriptionDTO subscriptionDTO = objectMapper.readValue(json, SubscriptionDTO.class);
             logger.info("Recieved message from kafka with subscription {}", subscriptionDTO);
             subscriptionService.saveSubscription(subscriptionDTO);
+        } catch (JsonParseException e) {
+            logger.error("Error while parsing message {} from kafka", json, e);
+        }
+    }
+
+    @KafkaListener(topics = "update-product-price", groupId = "group", containerFactory = "kafkaListenerContainerFactory")
+    public void consumeUpdatePrice(String json) {
+        try {
+            PriceDTO priceDTO = objectMapper.readValue(json, PriceDTO.class);
+            logger.info("Recieved message from kafka with price {}", priceDTO);
+            subscriptionService.sendMessages(priceDTO);
         } catch (JsonParseException e) {
             logger.error("Error while parsing message {} from kafka", json, e);
         }

@@ -9,6 +9,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.senla.ProductService.broker.KafkaBroker;
 import com.senla.ProductService.dto.SubscriptionMessage;
+import com.senla.ProductService.dto.UpdateProductPriceMessage;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
@@ -220,6 +221,15 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                         if (presentProductPrice != null) {
                             if (!productPrice.getPrice().equals(presentProductPrice.getPrice())) {
                                 productPrice.setId(presentProductPrice.getId());
+
+                                if (productPrice.getDiscountPercent() > presentProductPrice.getDiscountPercent()) {
+                                    UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(productPrice.getId(),
+                                            productPrice.getPrice(),productPrice.getDiscountPercent());
+                                    String json = objectMapper.writeValueAsString(updateProductPriceMessage);
+                                    logger.info("Build message for notification service {}", updateProductPriceMessage);
+                                    kafkaBroker.sendUpdateProductPriceMessage(productPrice.getId(), json);
+                                }
+
                                 PriceHistory priceHistory = buildPriceHistory(presentProductPrice, productPrice.getPrice());
                                 priceHistoryList.add(priceHistory);
                                 updateList.add(productPrice);
@@ -228,6 +238,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                             saveList.add(productPrice);
                         }
                     });
+
             logger.info("Import from file end");
             productPriceRepository.saveList(saveList);
             productPriceRepository.updateList(updateList);
@@ -314,8 +325,11 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         logger.info("Update price by id {}", id);
         ProductPrice productPrice = findByIdIfExists(id);
 
-        if(!productPrice.getDiscountPercent().equals(createProductPriceDTO.getDiscountPercent())) {
-
+        if (productPrice.getDiscountPercent() < createProductPriceDTO.getDiscountPercent()) {
+            UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(id, createProductPriceDTO.getPrice(), createProductPriceDTO.getDiscountPercent());
+            String json = objectMapper.writeValueAsString(updateProductPriceMessage);
+            logger.info("Build message for notification service {}", updateProductPriceMessage);
+            kafkaBroker.sendUpdateProductPriceMessage(id, json);
         }
 
         PriceHistory priceHistory = buildPriceHistory(productPrice, createProductPriceDTO.getPrice());
