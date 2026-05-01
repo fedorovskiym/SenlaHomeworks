@@ -55,6 +55,14 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             WHERE c.id = :cityId AND pp.status = 'ACTUAL'
             """;
 
+    private static final String HQL_FIND_BY_ID_WITH_FETCH = """
+            SELECT pp FROM ProductPrice pp
+            JOIN FETCH pp.product p
+            JOIN FETCH pp.shopBranch pb
+            JOIN FETCH pb.shop
+            WHERE pp.id = :productPriceId
+            """;
+
     public ProductPriceRepositoryImpl() {
         super(ProductPrice.class);
     }
@@ -142,5 +150,15 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
         return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setParameter("cityId", cityId)
                 .getResultList();
+    }
+
+    @Override
+    public Optional<ProductPrice> findByIdWithFetch(Long id) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_ID_WITH_FETCH, ProductPrice.class)
+                .setParameter("productPriceId", id)
+                .getResultStream()
+                .findFirst();
     }
 }

@@ -89,4 +89,11 @@ public class ProductPriceController {
         logger.info("Received request to search prices /api/product-service/price/search");
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.search(cityId, searchQuery));
     }
+
+    @PostMapping(value = "/{id}")
+    public ResponseEntity<?> subscribe(@PathVariable Long id) {
+        logger.info("Received request to subscribe /product-service/price/{}", id);
+        productPriceService.sendSubscribeMessage(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

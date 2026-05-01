@@ -28,4 +28,6 @@ public interface ProductPriceService {
     ProductPrice findByIdIfExists(Long id);
 
     void update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO);
+
+    void sendSubscribeMessage(Long id);
 }

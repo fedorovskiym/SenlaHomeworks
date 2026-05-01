@@ -2,6 +2,8 @@ package com.senla.NotificationService.service;
 
 import com.senla.NotificationService.model.LocalUser;
 
+import java.util.Optional;
+
 public interface LocalUserService {
 
     void save(LocalUser localUser);
@@ -9,4 +11,6 @@ public interface LocalUserService {
     void update(LocalUser localUser);
 
     LocalUser findByIdIfExists(Long id);
+
+    LocalUser findByIdOptional(Long id);
 }

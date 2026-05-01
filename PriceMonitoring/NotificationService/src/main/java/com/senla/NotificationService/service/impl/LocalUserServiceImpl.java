@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class LocalUserServiceImpl implements LocalUserService {
 
@@ -46,5 +48,11 @@ public class LocalUserServiceImpl implements LocalUserService {
             logger.info("Local user with id {} not found", id);
             return new EntityNotFoundException("Local user with id " + id + " not found!");
         });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalUser findByIdOptional(Long id) {
+        return localUserRepository.findById(id).orElse(null);
     }
 }

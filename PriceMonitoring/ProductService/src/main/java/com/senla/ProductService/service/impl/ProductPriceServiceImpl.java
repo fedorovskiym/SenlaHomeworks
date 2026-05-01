@@ -7,6 +7,8 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
+import com.senla.ProductService.broker.KafkaBroker;
+import com.senla.ProductService.dto.SubscriptionMessage;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
@@ -37,9 +39,12 @@ import org.apache.tomcat.util.http.InvalidParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -62,10 +67,12 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     private final BrandService brandService;
     private final ProductCategoryService productCategoryService;
     private final PriceHistoryService priceHistoryService;
+    private final KafkaBroker kafkaBroker;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger logger = LoggerFactory.getLogger(ProductPriceServiceImpl.class);
 
     @Autowired
-    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService, AIService aiService, BrandService brandService, ProductCategoryService productCategoryService, PriceHistoryService priceHistoryService) {
+    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService, AIService aiService, BrandService brandService, ProductCategoryService productCategoryService, PriceHistoryService priceHistoryService, KafkaBroker kafkaBroker) {
         this.productPriceRepository = productPriceRepository;
         this.productPriceMapper = productPriceMapper;
         this.productService = productService;
@@ -74,6 +81,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         this.brandService = brandService;
         this.productCategoryService = productCategoryService;
         this.priceHistoryService = priceHistoryService;
+        this.kafkaBroker = kafkaBroker;
     }
 
     @Override
@@ -306,6 +314,10 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         logger.info("Update price by id {}", id);
         ProductPrice productPrice = findByIdIfExists(id);
 
+        if(!productPrice.getDiscountPercent().equals(createProductPriceDTO.getDiscountPercent())) {
+
+        }
+
         PriceHistory priceHistory = buildPriceHistory(productPrice, createProductPriceDTO.getPrice());
         productPrice.setDiscountPercent(createProductPriceDTO.getDiscountPercent());
         productPrice.setPrice(createProductPriceDTO.getPrice());
@@ -313,6 +325,23 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         priceHistoryService.save(priceHistory);
         productPriceRepository.update(productPrice);
         logger.info("Successfull updated price {}", productPrice);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void sendSubscribeMessage(Long id) {
+        ProductPrice productPrice = productPriceRepository.findByIdWithFetch(id).orElseThrow(() -> {
+            logger.warn("Product price with id {} not found", id);
+            return new EntityNotFoundException("Product price with id - " + id + " not found!");
+        });
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getDetails();
+
+        SubscriptionMessage subscriptionMessage = new SubscriptionMessage(productPrice.getId(), productPrice.getProduct().getId(), productPrice.getProduct().getName(),
+                productPrice.getShopBranch().getId(), productPrice.getShopBranch().getShop().getName(), userId);
+        String json = objectMapper.writeValueAsString(subscriptionMessage);
+
+        kafkaBroker.sendSubscriptionMessage(userId, json);
     }
 
     private PriceHistory buildPriceHistory(ProductPrice productPrice, Double newPrice) {

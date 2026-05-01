@@ -19,4 +19,6 @@ public interface ProductPriceRepository extends GenericRepository<ProductPrice, 
     void updateList(List<ProductPrice> updateList);
 
     List<ProductPrice> findByUserQuery(Long cityId, String productName, String categoryName, String brandName, String description);
+
+    Optional<ProductPrice> findByIdWithFetch(Long id);
 }
