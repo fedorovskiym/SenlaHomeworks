@@ -1,5 +1,6 @@
 package com.senla.NotificationService.service.impl;
 
+import com.senla.NotificationService.service.SmsSenderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class SmsSenderService {
+public class SmsSenderServiceImpl implements SmsSenderService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
