@@ -5,6 +5,7 @@ import com.senla.UserService.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ public class UserController {
     private final UserService userService;
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -37,7 +39,7 @@ public class UserController {
         logger.info("Recieved update user profile request /api/user-service/profile");
         Long userId = userService.getPrincipalId();
         userService.update(userId, userDTO);
-        logger.info("Updated user with id {}", userId);
+        logger.info("Update user with id {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(userId));
     }
 }

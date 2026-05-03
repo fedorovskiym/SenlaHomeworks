@@ -63,18 +63,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleBadCredentials(UsernameNotFoundException e) {
+    public ResponseEntity<ErrorMessage> handleUsernameNotFound(UsernameNotFoundException e) {
         return new ResponseEntity<>(
-                buildError(HttpStatus.NOT_FOUND, e),
-                HttpStatus.NOT_FOUND
+                buildError(HttpStatus.BAD_REQUEST, e),
+                HttpStatus.BAD_REQUEST
         );
     }
 
     @ExceptionHandler(AuthException.class)
-    public ResponseEntity<ErrorMessage> handleBadCredentials(AuthException e) {
+    public ResponseEntity<ErrorMessage> handleAuthException(AuthException e) {
         return new ResponseEntity<>(
-                buildError(HttpStatus.NOT_FOUND, e),
-                HttpStatus.NOT_FOUND
+                buildError(HttpStatus.BAD_REQUEST, e),
+                HttpStatus.BAD_REQUEST
         );
     }
 
