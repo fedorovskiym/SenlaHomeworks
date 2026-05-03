@@ -1,7 +1,6 @@
 package com.senla.ProductService.service.impl;
 
 import com.senla.ProductService.dto.ShopBranchDTO;
-import com.senla.ProductService.mapper.ProductPriceMapper;
 import com.senla.ProductService.mapper.ShopBranchMapper;
 import com.senla.ProductService.model.City;
 import com.senla.ProductService.model.Shop;
@@ -40,7 +39,7 @@ public class ShopBranchServiceImpl implements ShopBranchService {
 
     @Override
     @Transactional
-    public void save(ShopBranchDTO shopBranchDTO) {
+    public ShopBranchDTO save(ShopBranchDTO shopBranchDTO) {
         logger.info("Save shop branch from dto {}", shopBranchDTO);
         City city = cityService.getCityByIdIfExists(shopBranchDTO.cityId());
         Shop shop = shopService.findByIdIfExists(shopBranchDTO.shopId());
@@ -50,6 +49,7 @@ public class ShopBranchServiceImpl implements ShopBranchService {
         shopBranch.setShop(shop);
         shopBranchRepository.save(shopBranch);
         logger.info("Successfull save shop branch {}", shopBranch);
+        return shopBranchMapper.shopBranchToShopBranchDTO(shopBranch);
     }
 
     @Override

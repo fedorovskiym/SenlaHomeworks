@@ -43,11 +43,11 @@ public class ProductController {
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createProduct(@Valid @RequestPart ProductDTO productDTO, @RequestPart MultipartFile photo) {
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestPart ProductDTO productDTO, @RequestPart MultipartFile photo) {
         logger.info("Recieved request to create product /api/product-service/product/");
-        productService.save(productDTO, photo);
+        ProductDTO createdProduct = productService.save(productDTO, photo);
         logger.info("Succesfull create product /api/product-service/product/");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(productDTO);
     }
 
     @GetMapping(value = "/")
@@ -64,37 +64,37 @@ public class ProductController {
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteById(@Min(1) @PathVariable Long id) {
         logger.info("Recieved request to delete product /api/product-service/product/{}", id);
         productService.delete(id);
         logger.info("Succesfull delete product /api/product-service/product/{}", id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateProduct(@Min(1) @PathVariable Long id, @RequestBody ProductUpdateDTO productUpdateDTO) {
+    public ResponseEntity<ProductDTO> updateProduct(@Min(1) @PathVariable Long id, @RequestBody ProductUpdateDTO productUpdateDTO) {
         logger.info("Recieved request to update product /api/product-service/product/{}", id);
-        productService.update(id, productUpdateDTO);
+        ProductDTO updatedProduct = productService.update(id, productUpdateDTO);
         logger.info("Succesfull update product /api/product-service/product/{}", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 
     @PatchMapping(value = "/{id}/logo")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateProductImage(@Min(1) @PathVariable Long id, @RequestPart MultipartFile photo) {
+    public ResponseEntity<ProductDTO> updateProductImage(@Min(1) @PathVariable Long id, @RequestPart MultipartFile photo) {
         logger.info("Recieved request to update product image by id /api/product-service/product/{}", id);
-        productService.updateImage(id, photo);
+        ProductDTO updatedProduct = productService.updateImage(id, photo);
         logger.info("Succesfull update product image by id /api/product-service/product/{}", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
     }
 
     @PostMapping(value = "/import")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> importProduct(@RequestPart("file") MultipartFile file) {
+    public ResponseEntity<HttpStatus> importProduct(@RequestPart("file") MultipartFile file) {
         logger.info("Recieved request to import products from file /api/product-service/product/import");
         productService.importFromCsv(file);
         logger.info("Succesfull import products from file /api/product-service/product/import");
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -87,7 +87,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional
-    public void save(CreateUpdateProductPriceDTO createProductPriceDTO) {
+    public ProductPriceDTO save(CreateUpdateProductPriceDTO createProductPriceDTO) {
         logger.info("Saving product price {}", createProductPriceDTO);
         if (findByProductIdAndShopBranchId(createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId()) != null) {
             logger.warn("Product price with product id {} and shop branch id {} already exists", createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId());
@@ -106,6 +106,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
         productPriceRepository.save(productPrice);
         logger.info("Saved product price {}", productPrice);
+        return productPriceMapper.productPriceToProductPriceDTO(productPrice);
     }
 
     @Override
@@ -224,7 +225,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
                                 if (productPrice.getDiscountPercent() > presentProductPrice.getDiscountPercent()) {
                                     UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(productPrice.getId(),
-                                            productPrice.getPrice(),productPrice.getDiscountPercent());
+                                            productPrice.getPrice(), productPrice.getDiscountPercent());
                                     String json = objectMapper.writeValueAsString(updateProductPriceMessage);
                                     logger.info("Build message for notification service {}", updateProductPriceMessage);
                                     kafkaBroker.sendUpdateProductPriceMessage(productPrice.getId(), json);
@@ -321,7 +322,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional
-    public void update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO) {
+    public ProductPriceDTO update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO) {
         logger.info("Update price by id {}", id);
         ProductPrice productPrice = findByIdIfExists(id);
 
@@ -339,6 +340,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         priceHistoryService.save(priceHistory);
         productPriceRepository.update(productPrice);
         logger.info("Successfull updated price {}", productPrice);
+        return productPriceMapper.productPriceToProductPriceDTO(productPrice);
     }
 
     @Override

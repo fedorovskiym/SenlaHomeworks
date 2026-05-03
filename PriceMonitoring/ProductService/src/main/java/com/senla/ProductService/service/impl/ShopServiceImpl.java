@@ -36,7 +36,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
-    public void save(ShopDTO shopDTO, MultipartFile photo) {
+    public ShopDTO save(ShopDTO shopDTO, MultipartFile photo) {
         logger.info("Save shop from dto {}", shopDTO);
         if (!shopRepository.findByName(shopDTO.name()).isEmpty()) {
             logger.warn("Error while save shop, shop with name {} already exists", shopDTO.name());
@@ -49,7 +49,8 @@ public class ShopServiceImpl implements ShopService {
             logger.info("Save shop logo image to Yandex Cloud Storage");
         }
         shopRepository.save(shop);
-        logger.info("Save shop successfully");
+        logger.info("Successfull saved shop {}", shop);
+        return shopMapper.shopToShopDTO(shop);
     }
 
     @Override

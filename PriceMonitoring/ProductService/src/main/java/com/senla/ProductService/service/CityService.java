@@ -2,14 +2,12 @@ package com.senla.ProductService.service;
 
 import com.senla.ProductService.dto.CityDTO;
 import com.senla.ProductService.model.City;
-import jakarta.validation.Valid;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CityService {
 
-    void saveCity(CityDTO cityDTO);
+    CityDTO saveCity(CityDTO cityDTO);
 
     List<CityDTO> findAll();
 
@@ -19,5 +17,5 @@ public interface CityService {
 
     City getCityByIdIfExists(Long id);
 
-    void update(Long id, CityDTO cityDTO);
+    CityDTO update(Long id, CityDTO cityDTO);
 }

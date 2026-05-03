@@ -3,7 +3,6 @@ package com.senla.ProductService.service;
 import com.senla.ProductService.dto.productCategory.ProductCategoryDTO;
 import com.senla.ProductService.dto.productCategory.ProductCategoryUpdateDTO;
 import com.senla.ProductService.model.ProductCategory;
-import jakarta.validation.constraints.Min;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.Optional;
 
 public interface ProductCategoryService {
 
-    void save(ProductCategoryDTO productCategoryDTO, MultipartFile photo);
+    ProductCategoryDTO save(ProductCategoryDTO productCategoryDTO, MultipartFile photo);
 
     List<ProductCategoryDTO> findAll();
 
@@ -23,9 +22,9 @@ public interface ProductCategoryService {
 
     void deleteById(Long id);
 
-    void update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO);
+    ProductCategoryDTO update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO);
 
-    void updateImage(Long id, MultipartFile photo);
+    ProductCategoryDTO updateImage(Long id, MultipartFile photo);
 
     Optional<ProductCategory> findByIdOptional(Long id);
 }

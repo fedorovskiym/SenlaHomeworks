@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    void save(ProductDTO productDTO, MultipartFile photo);
+    ProductDTO save(ProductDTO productDTO, MultipartFile photo);
 
     List<ProductDTO> findAll();
 
@@ -19,9 +19,9 @@ public interface ProductService {
 
     void delete(Long id);
 
-    void update(Long id, ProductUpdateDTO productUpdateDTO);
+    ProductDTO update(Long id, ProductUpdateDTO productUpdateDTO);
 
-    void updateImage(Long id, MultipartFile photo);
+    ProductDTO updateImage(Long id, MultipartFile photo);
 
     void importFromCsv(MultipartFile file);
 

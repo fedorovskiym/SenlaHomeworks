@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ProductPriceService {
 
-    void save(CreateUpdateProductPriceDTO createProductPriceDTO);
+    ProductPriceDTO save(CreateUpdateProductPriceDTO createProductPriceDTO);
 
     ProductPriceDTO findById(Long id);
 
@@ -27,7 +27,7 @@ public interface ProductPriceService {
 
     ProductPrice findByIdIfExists(Long id);
 
-    void update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO);
+    ProductPriceDTO update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO);
 
     void sendSubscribeMessage(Long id);
 }

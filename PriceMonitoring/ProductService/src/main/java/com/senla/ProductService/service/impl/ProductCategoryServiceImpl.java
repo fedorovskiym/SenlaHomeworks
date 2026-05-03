@@ -38,7 +38,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public void save(ProductCategoryDTO productCategoryDTO, MultipartFile photo) {
+    public ProductCategoryDTO save(ProductCategoryDTO productCategoryDTO, MultipartFile photo) {
         logger.info("Saving product category from dto {}", productCategoryDTO);
         if (findByNameIfExists(productCategoryDTO.name()) != null) {
             logger.warn("Product category with name {} already exists", productCategoryDTO.name());
@@ -52,6 +52,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         }
         productCategoryRepository.save(productCategory);
         logger.info("Successfully save product category {}", productCategoryDTO);
+        return productCategoryMapper.productCategoryToProductCategoryDTO(productCategory);
     }
 
     @Override
@@ -102,7 +103,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public void update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO) {
+    public ProductCategoryDTO update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO) {
         logger.info("Updating product category by id {}", id);
         ProductCategory productCategory = findByIdIfExists(id);
 
@@ -114,11 +115,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         productCategory = productCategoryMapper.updateProductCategoryFromDTO(productCategoryUpdateDTO, productCategory);
         productCategoryRepository.update(productCategory);
         logger.info("Successfully update product category {}", productCategory);
+        return productCategoryMapper.productCategoryToProductCategoryDTO(productCategory);
     }
 
     @Override
     @Transactional
-    public void updateImage(Long id, MultipartFile photo) {
+    public ProductCategoryDTO updateImage(Long id, MultipartFile photo) {
         logger.info("Updating product category image from Yandex Cloud Storage by id {}", id);
         ProductCategory productCategory = findByIdIfExists(id);
 
@@ -132,6 +134,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         logger.info("Successfull save product category image to Yandex Cloud Storage");
         productCategoryRepository.update(productCategory);
         logger.info("Successfully update product category {}", productCategory);
+        return productCategoryMapper.productCategoryToProductCategoryDTO(productCategory);
     }
 
     @Override

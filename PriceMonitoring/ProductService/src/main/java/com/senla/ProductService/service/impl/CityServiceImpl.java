@@ -31,7 +31,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional
-    public void saveCity(CityDTO cityDTO) {
+    public CityDTO saveCity(CityDTO cityDTO) {
         logger.info("Saving city from dto {}", cityDTO);
         if (getCityByNameIfExists(cityDTO.name()) != null) {
             logger.warn("City with name {} already exists", cityDTO.name());
@@ -40,6 +40,7 @@ public class CityServiceImpl implements CityService {
         City city = cityMapper.cityDTOToCity(cityDTO);
         cityRepository.save(city);
         logger.info("Succesfully saved city {}", city);
+        return cityMapper.cityToCityDTO(city);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional
-    public void update(Long id, CityDTO cityDTO) {
+    public CityDTO update(Long id, CityDTO cityDTO) {
         logger.info("Updating city with id {}", id);
         City city = getCityByIdIfExists(id);
 
@@ -87,6 +88,7 @@ public class CityServiceImpl implements CityService {
         city.setName(cityDTO.name());
         cityRepository.update(city);
         logger.info("Succesfully updated city {}", city);
+        return cityMapper.cityToCityDTO(city);
     }
 
 }

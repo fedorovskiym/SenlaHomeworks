@@ -43,11 +43,11 @@ public class CityController {
 
     @PostMapping(value = "/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createCity(@Valid @RequestBody CityDTO cityDTO) {
+    public ResponseEntity<CityDTO> createCity(@Valid @RequestBody CityDTO cityDTO) {
         logger.info("Recieved request to save a city /api/product-service/city/");
-        cityService.saveCity(cityDTO);
+        CityDTO createdCity = cityService.saveCity(cityDTO);
         logger.info("Succesfull save a city /api/product-service/city/");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCity);
     }
 
     @GetMapping(value = "/{id}")
@@ -58,10 +58,10 @@ public class CityController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateCity(@Min(1) @PathVariable Long id, @Valid @RequestBody CityDTO cityDTO) {
+    public ResponseEntity<CityDTO> updateCity(@Min(1) @PathVariable Long id, @Valid @RequestBody CityDTO cityDTO) {
         logger.info("Recieved request to update city by id /api/product-service/city/id/{}", id);
-        cityService.update(id, cityDTO);
+        CityDTO updatedCity = cityService.update(id, cityDTO);
         logger.info("Succesfull update city by id /api/product-service/city/id/{}", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCity);
     }
 }

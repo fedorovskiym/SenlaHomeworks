@@ -38,7 +38,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
-    public void save(BrandDTO brandDTO, MultipartFile photo) {
+    public BrandDTO save(BrandDTO brandDTO, MultipartFile photo) {
         logger.info("Save brand from dto {} with logo image", brandDTO);
         if (findByNameIfExists(brandDTO.name()) != null) {
             logger.warn("Brand with name {} already exists", brandDTO.name());
@@ -52,6 +52,7 @@ public class BrandServiceImpl implements BrandService {
         }
         logger.info("Succesfull save brand {}", brand);
         brandRepository.save(brand);
+        return brandMapper.brandToBrandDTO(brand);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class BrandServiceImpl implements BrandService {
     public void delete(Long id) {
         logger.info("Delete brand by id {}", id);
         Brand brand = findByIdIfExists(id);
-        if(brand.getLogoImageUrl() != null) {
+        if (brand.getLogoImageUrl() != null) {
             logger.info("Deleting brand logo image from Yandex Cloud Storage");
             yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
             logger.info("Succesfully deleted logo image from Yandex Cloud Storage");
@@ -101,25 +102,26 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
-    public void update(Long id, BrandUpdateDTO brandDTO) {
+    public BrandDTO update(Long id, BrandUpdateDTO brandDTO) {
         logger.info("Update brand with id {}", id);
         Brand brand = findByIdIfExists(id);
-        if(brand.getName().equals(brandDTO.name()) || findByNameIfExists(brandDTO.name()) != null) {
+        if (brand.getName().equals(brandDTO.name()) || findByNameIfExists(brandDTO.name()) != null) {
             logger.warn("Brand with name {} already exists", brandDTO.name());
             throw new EntityExistsException("Brand with name - " + brandDTO.name() + " already exists!");
         }
         brand = brandMapper.updateBrandFromBrandUpdateDTO(brandDTO, brand);
         brandRepository.update(brand);
         logger.info("Succesfully updated brand {}", brand);
+        return brandMapper.brandToBrandDTO(brand);
     }
 
     @Override
     @Transactional
-    public void updateLogo(Long id, MultipartFile photo) {
+    public BrandDTO updateLogo(Long id, MultipartFile photo) {
         logger.info("Update logo by brand id {}", id);
         Brand brand = findByIdIfExists(id);
 
-        if(brand.getLogoImageUrl() != null) {
+        if (brand.getLogoImageUrl() != null) {
             logger.info("Update logo image to Yandex Cloud Storage");
             yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
             logger.info("Succesfully updated logo image to Yandex Cloud Storage");
@@ -128,6 +130,7 @@ public class BrandServiceImpl implements BrandService {
         brand.setLogoImageUrl(photo.getOriginalFilename());
         brandRepository.update(brand);
         logger.info("Succesfully updated brand {}", brand);
+        return brandMapper.brandToBrandDTO(brand);
     }
 
     @Override

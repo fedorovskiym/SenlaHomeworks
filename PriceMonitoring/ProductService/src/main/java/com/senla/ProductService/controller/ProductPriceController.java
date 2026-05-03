@@ -41,11 +41,11 @@ public class ProductPriceController {
 
     @PostMapping(value = "/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createProductPrice(@Valid @RequestBody CreateUpdateProductPriceDTO createProductPriceDTO) {
+    public ResponseEntity<ProductPriceDTO> createProductPrice(@Valid @RequestBody CreateUpdateProductPriceDTO createProductPriceDTO) {
         logger.info("Received request to create product price /api/product-service/price/");
-        productPriceService.save(createProductPriceDTO);
+        ProductPriceDTO createdProductPrice = productPriceService.save(createProductPriceDTO);
         logger.info("Succesfull create product price /api/product-service/price/");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProductPrice);
     }
 
     @GetMapping(value = "/{id}")
@@ -61,12 +61,12 @@ public class ProductPriceController {
     }
 
     @PatchMapping(value = "/{id}")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateProductPrice(@Min(1) @PathVariable Long id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ProductPriceDTO> updateProductPrice(@Min(1) @PathVariable Long id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
         logger.info("Received request to update product price by id /api/product-service/price/{}", id);
-        productPriceService.update(id, createUpdateProductPriceDTO);
+        ProductPriceDTO updatedProductPrice = productPriceService.update(id, createUpdateProductPriceDTO);
         logger.info("Succesfull update product price by id /api/product-service/price/{}", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(updatedProductPrice);
     }
 
     @GetMapping(value = "/compare")
@@ -77,11 +77,11 @@ public class ProductPriceController {
 
     @PostMapping(value = "/import")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> importPrices(@RequestPart MultipartFile file) {
+    public ResponseEntity<HttpStatus> importPrices(@RequestPart MultipartFile file) {
         logger.info("Received request to import prices from file /api/product-service/price/import");
         productPriceService.importFromCsv(file);
         logger.info("Succesfull import prices from file /api/product-service/price/");
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/search")
@@ -91,9 +91,9 @@ public class ProductPriceController {
     }
 
     @PostMapping(value = "/{id}")
-    public ResponseEntity<?> subscribe(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> subscribe(@PathVariable Long id) {
         logger.info("Received request to subscribe /product-service/price/{}", id);
         productPriceService.sendSubscribeMessage(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

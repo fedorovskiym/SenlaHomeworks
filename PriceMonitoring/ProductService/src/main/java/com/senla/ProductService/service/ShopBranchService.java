@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ShopBranchService {
 
-    void save(ShopBranchDTO shopBranchDTO);
+    ShopBranchDTO save(ShopBranchDTO shopBranchDTO);
 
     List<ShopBranchDTO> findAllByShopId(Long shopId);
 

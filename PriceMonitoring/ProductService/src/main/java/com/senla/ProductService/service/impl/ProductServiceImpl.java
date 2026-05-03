@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void save(ProductDTO productDTO, MultipartFile photo) {
+    public ProductDTO save(ProductDTO productDTO, MultipartFile photo) {
         logger.info("Saving product from dto {}", productDTO);
         Brand brand = brandService.findByIdIfExists(productDTO.brandId());
         ProductCategory productCategory = productCategoryService.findByIdIfExists(productDTO.categoryId());
@@ -76,6 +76,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
         logger.info("Succesfull save product {}", product);
+        return productMapper.productToProductDTO(product);
     }
 
     @Override
@@ -118,7 +119,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void update(Long id, ProductUpdateDTO productUpdateDTO) {
+    public ProductDTO update(Long id, ProductUpdateDTO productUpdateDTO) {
         logger.info("Updating product by id {} from dto {}", id, productUpdateDTO);
         Product product = findByIdIfExists(id);
 
@@ -132,11 +133,12 @@ public class ProductServiceImpl implements ProductService {
         product = productMapper.updateProductFromDTO(productUpdateDTO, product);
         productRepository.update(product);
         logger.info("Successfull updated product {}", product);
+        return productMapper.productToProductDTO(product);
     }
 
     @Override
     @Transactional
-    public void updateImage(Long id, MultipartFile photo) {
+    public ProductDTO updateImage(Long id, MultipartFile photo) {
         logger.info("Updating product image with id {}", id);
         Product product = findByIdIfExists(id);
 
@@ -151,6 +153,7 @@ public class ProductServiceImpl implements ProductService {
         logger.info("Successfull saved product image to Yandex Cloud Storage");
         productRepository.update(product);
         logger.info("Successfull updated product {} ", product);
+        return productMapper.productToProductDTO(product);
     }
 
     @Override

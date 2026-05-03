@@ -3,7 +3,6 @@ package com.senla.ProductService.service;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.brand.BrandUpdateDTO;
 import com.senla.ProductService.model.Brand;
-import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.Optional;
 
 public interface BrandService {
 
-    void save(BrandDTO brandDTO, MultipartFile photo);
+    BrandDTO save(BrandDTO brandDTO, MultipartFile photo);
 
     List<BrandDTO> findAll();
 
@@ -23,9 +22,9 @@ public interface BrandService {
 
     Brand findByNameIfExists(String name);
 
-    void update(Long id, BrandUpdateDTO brandDTO);
+    BrandDTO update(Long id, BrandUpdateDTO brandDTO);
 
-    void updateLogo(Long id, MultipartFile photo);
+    BrandDTO updateLogo(Long id, MultipartFile photo);
 
     Optional<Brand> findByIdOptional(Long id);
 }

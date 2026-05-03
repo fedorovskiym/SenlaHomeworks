@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ShopService {
 
-    void save (ShopDTO shopDTO, MultipartFile photo);
+    ShopDTO save (ShopDTO shopDTO, MultipartFile photo);
 
     List<ShopDTO> findAllByCityId(Long cityId);
 

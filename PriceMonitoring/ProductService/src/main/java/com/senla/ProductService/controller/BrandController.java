@@ -5,7 +5,6 @@ import com.senla.ProductService.dto.brand.BrandUpdateDTO;
 import com.senla.ProductService.service.BrandService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +41,11 @@ public class BrandController {
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> save(@Valid @RequestPart("brandDTO") BrandDTO brandDTO, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<BrandDTO> save(@Valid @RequestPart("brandDTO") BrandDTO brandDTO, @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to save brand /api/product-service/brand/");
-        brandService.save(brandDTO, photo);
+        BrandDTO brand = brandService.save(brandDTO, photo);
         logger.info("Succesfull save brand /api/product-service/brand/");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(brand);
     }
 
     @GetMapping(value = "/")
@@ -63,28 +62,28 @@ public class BrandController {
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteBrandById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteBrandById(@Min(1) @PathVariable Long id) {
         logger.info("Recieved request to delete brand by id /api/product-service/brand/{}", id);
         brandService.delete(id);
         logger.info("Succesfull delete brand by id /api/product-service/brand/{}", id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateBrand(@Min(1) @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
+    public ResponseEntity<BrandDTO> updateBrand(@Min(1) @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
         logger.info("Recieved request to update brand with id /api/product-service/brand/{}", id);
-        brandService.update(id, brandDTO);
+        BrandDTO updateBrand = brandService.update(id, brandDTO);
         logger.info("Succesfull update brand with id /api/product-service/brand/{}", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(updateBrand);
     }
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateBrandLogo(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<BrandDTO> updateBrandLogo(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to update brand logo with id /api/product-service/brand/{}", id);
-        brandService.updateLogo(id, photo);
+        BrandDTO updateBrand = brandService.updateLogo(id, photo);
         logger.info("Succesfull update brand logo with id /api/product-service/brand/{}", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(updateBrand);
     }
 }

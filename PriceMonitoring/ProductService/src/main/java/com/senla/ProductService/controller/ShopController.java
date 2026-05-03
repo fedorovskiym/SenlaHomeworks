@@ -4,9 +4,9 @@ import com.senla.ProductService.dto.ShopDTO;
 import com.senla.ProductService.service.ShopService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,17 +32,18 @@ public class ShopController {
     private final ShopService shopService;
     private static final Logger logger = LoggerFactory.getLogger(ShopController.class);
 
+    @Autowired
     public ShopController(ShopService shopService) {
         this.shopService = shopService;
     }
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createShop(@Valid @RequestPart("shopDTO") ShopDTO shopDTO, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<ShopDTO> createShop(@Valid @RequestPart("shopDTO") ShopDTO shopDTO, @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to create shop /api/product-service/shop/");
-        shopService.save(shopDTO, photo);
+        ShopDTO createdShop = shopService.save(shopDTO, photo);
         logger.info("Succesfully uploaded shop /api/product-service/shop/");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdShop);
     }
 
     @GetMapping(value = "/")
@@ -59,10 +60,10 @@ public class ShopController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteShop(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteShop(@Min(1) @PathVariable Long id) {
         logger.info("Recieved request to delete shop by id /api/product-service/shop/{}", id);
         shopService.delete(id);
         logger.info("Succesfully deleted shop by id /api/product-service/shop/{}", id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

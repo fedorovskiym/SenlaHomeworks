@@ -38,11 +38,11 @@ public class ShopBranchController {
 
     @PostMapping(value = "/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createShopBranch(@Valid @RequestBody ShopBranchDTO shopBranchDTO) {
+    public ResponseEntity<ShopBranchDTO> createShopBranch(@Valid @RequestBody ShopBranchDTO shopBranchDTO) {
         logger.info("Received request to create shop branch /api/product-service/shop_branch/");
-        shopBranchService.save(shopBranchDTO);
+        ShopBranchDTO createdShopBranch = shopBranchService.save(shopBranchDTO);
         logger.info("Succesfull create shop branch /api/product-service/shop_branch/");
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdShopBranch);
     }
 
     @GetMapping(value = "/")
