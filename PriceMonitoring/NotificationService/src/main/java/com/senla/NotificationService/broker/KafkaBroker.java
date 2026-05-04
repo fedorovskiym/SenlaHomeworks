@@ -61,7 +61,7 @@ public class KafkaBroker {
             logger.error("Error while parsing message {} from kafka", json, e);
         }
     }
-
+    //
     @KafkaListener(topics = "update-product-price", groupId = "group", containerFactory = "kafkaListenerContainerFactory")
     public void consumeUpdatePrice(String json) {
         try {
