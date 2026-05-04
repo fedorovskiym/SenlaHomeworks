@@ -19,7 +19,7 @@ public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Long id; //TODO: огромная рекомендация перенести все id в UUID тип
     @Column(name = "name")
     private String name;
     @Column(name = "country")

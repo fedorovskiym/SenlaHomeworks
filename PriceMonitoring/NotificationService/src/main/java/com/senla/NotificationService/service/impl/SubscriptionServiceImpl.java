@@ -31,7 +31,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private static final Logger logger = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
     @Autowired
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, LocalUserService localUserService, SubscriptionMapper subscriptionMapper, SmsSenderService smsSenderService, NotificationService notificationService) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, LocalUserService localUserService, SubscriptionMapper subscriptionMapper, SmsSenderService smsSenderService, NotificationService notificationService) {//TODO: следи за длиной строки,на реальных проектах стоит сонар и может не скомпилироватсья даже
         this.subscriptionRepository = subscriptionRepository;
         this.localUserService = localUserService;
         this.subscriptionMapper = subscriptionMapper;
@@ -46,7 +46,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         LocalUser localUser = localUserService.findByIdOptional(subscriptionDTO.userId());
         if (localUser == null) {
             logger.warn("User with id {} not found", subscriptionDTO.userId());
-            return;
+            return;//TODO: а если нет пользователя просто будет проигнорировано?? нужно либо вернуть либо ошибочное уведомление либо ещё что но не умалчивать
         }
 
         Subscription subscription = subscriptionMapper.subscriptionDTOToSubscription(subscriptionDTO);

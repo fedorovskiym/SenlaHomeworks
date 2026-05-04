@@ -26,6 +26,7 @@ public class KafkaBroker {
         });
     }
 
+    //todo: делать не обязательно, но прочитай про варианты если запрос не успел уйти в брокер, как сделать повтроный запрос через время и нужны сообщения обошибках, просто логов мало
     public void sendUpdateProductPriceMessage(Long id, String json) {
         kafkaTemplate.executeInTransaction(t -> {
             t.send("update-product-price", String.valueOf(id), json);

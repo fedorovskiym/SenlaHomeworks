@@ -45,7 +45,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CityDTO> findAll() {
+    public List<CityDTO> findAll() {//пагианция
         logger.info("Finding all cities");
         return cityRepository.findAll().stream().map(cityMapper::cityToCityDTO).collect(Collectors.toList());
     }
