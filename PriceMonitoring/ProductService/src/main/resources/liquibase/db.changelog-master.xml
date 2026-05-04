@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
-    <include file="/liquibase/changelog-tables/create-table-changelog v1.0.sql"/>
-    <include file="/liquibase/changelog-tables/create-table-changelog v1.1.sql"/>
-    <include file="/liquibase/changelog-tables/create-table-changelog v1.2.sql"/>
+    <include file="/liquibase/changelog-tables/create-table-changelog_v1.0.sql"/>
+    <include file="/liquibase/changelog-tables/create-table-changelog_v1.1.sql"/>
+    <include file="/liquibase/changelog-tables/create-table-changelog_v1.2.sql"/>
 </databaseChangeLog>

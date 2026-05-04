@@ -10,12 +10,12 @@ spring:
       server:
         webmvc:
           routes:
-            - id: product-service
-              uri: http://localhost:8081
-              predicates:
-                - Path=/api/product-service/**
-
             - id: user-service
-              uri: http://localhost:8082
+              uri: lb://user-service
               predicates:
                 - Path=/api/user-service/**
+
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+                - Path=/api/product-service/**

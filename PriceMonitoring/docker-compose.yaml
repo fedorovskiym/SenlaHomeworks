@@ -31,6 +31,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1304
     depends_on:
       - postgres
+    networks:
+      - kafka
 
   user-service:
     build: ./UserService
@@ -43,6 +45,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1304
     depends_on:
       - postgres
+    networks:
+      - kafka
 
   notification-service:
     build: ./NotificationService
@@ -55,12 +59,24 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1304
     depends_on:
       - postgres
+    networks:
+      - kafka
 
   api-gateway:
     build: ./ApiGateway
     container_name: api-gateway
     ports:
       - "8080:8080"
+    networks:
+      - kafka
+
+  eureka-service:
+    build: ./EurekaService
+    container_name: eureka-service
+    ports:
+      - "8761:8761"
+    networks:
+      - kafka
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
