@@ -42,4 +42,5 @@ public class UserController {
         logger.info("Update user with id {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(userId));
     }
+    //удаление юзера нужно будет добавть, важно
 }

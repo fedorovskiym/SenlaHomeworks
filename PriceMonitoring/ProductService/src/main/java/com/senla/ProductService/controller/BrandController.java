@@ -71,7 +71,7 @@ public class BrandController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BrandDTO> updateBrand(@Min(1) @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {
+    public ResponseEntity<BrandDTO> updateBrand(@Min(1) @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {//TODO: переносы
         logger.info("Recieved request to update brand with id /api/product-service/brand/{}", id);
         BrandDTO updateBrand = brandService.update(id, brandDTO);
         logger.info("Succesfull update brand with id /api/product-service/brand/{}", id);

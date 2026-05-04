@@ -46,6 +46,7 @@ public class ProductController {
     public ResponseEntity<ProductDTO> createProduct(@Valid @RequestPart ProductDTO productDTO, @RequestPart MultipartFile photo) {
         logger.info("Recieved request to create product /api/product-service/product/");
         ProductDTO createdProduct = productService.save(productDTO, photo);
+        //TODO: тут нужен обратный маппер на productDTO, нельзя отдавать то что пришло,как минимум появится id
         logger.info("Succesfull create product /api/product-service/product/");
         return ResponseEntity.status(HttpStatus.CREATED).body(productDTO);
     }
@@ -53,6 +54,7 @@ public class ProductController {
     @GetMapping(value = "/")
     public ResponseEntity<List<ProductDTO>> findAll() {
         logger.info("Recieved request to find all /api/product-service/product/");
+        //TODO: очень ббудет здорово если добавишь пагинацию через спецификацию, всё тянуть из бд будет не очень правильно
         return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
     }
 

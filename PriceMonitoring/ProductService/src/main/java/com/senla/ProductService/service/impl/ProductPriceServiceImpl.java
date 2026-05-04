@@ -161,6 +161,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 ))
                 .toList();
 
+        //todo:  аналогично методу buildPriceHistory вынеси ниже в приватный метод
         comparePrice.setProductId(productId);
         comparePrice.setProductName(productPrices.get(0).getProduct().getName());
         comparePrice.setProductImageUrl(productPrices.get(0).getProduct().getImageUrl());
@@ -197,7 +198,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                         if (row.getProductId() == null || row.getShopBranchId() == null) {
                             return null;
                         }
-
+                        //todo: очень плохой подход ты делаешь цикл в цикле и как минимум n количество запросов а нужно всё уместить в 2 под каждую сущность
                         Product product = productService.findByIdIfExists(row.getProductId());
                         if (product == null) {
                             return null;

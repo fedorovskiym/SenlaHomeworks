@@ -32,6 +32,7 @@ public class SmsSenderServiceImpl implements SmsSenderService {
         map.add("message", message);
         map.add("apikey", apiKey);
 
+        //TODO: чуть подробнее распиши про данный функционал
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "x-www-form-urlencoded", StandardCharsets.UTF_8));
 
