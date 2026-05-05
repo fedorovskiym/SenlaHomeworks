@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -15,9 +16,10 @@ import java.util.UUID;
 public class Brand {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @UuidGenerator
     @Column(name = "id")
-    private UUID id; //TODO: огромная рекомендация перенести все id в UUID тип
+    private UUID id;
     @Column(name = "name")
     private String name;
     @Column(name = "country")
