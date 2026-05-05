@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PriceHistoryServiceImpl implements PriceHistoryService {
@@ -45,7 +46,7 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public PriceHistoryDTO getCoordsForChart(Long productId, Long shopBranchId) {
+    public PriceHistoryDTO getCoordsForChart(UUID productId, UUID shopBranchId) {
         logger.info("Get coords for chart by shopBranchId {}", shopBranchId);
         List<PriceHistory> priceHistoryList = priceHistoryRepository.findAllByProductIdAndShopBranchId(productId, shopBranchId);
         if (priceHistoryList.isEmpty()) {

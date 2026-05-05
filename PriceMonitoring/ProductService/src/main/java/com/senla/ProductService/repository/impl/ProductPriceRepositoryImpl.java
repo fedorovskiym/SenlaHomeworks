@@ -10,9 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<ProductPrice, Long> implements ProductPriceRepository {
+public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<ProductPrice, UUID> implements ProductPriceRepository {
 
     private static final String HQL_FIND_ALL = """
             SELECT pp FROM ProductPrice pp
@@ -68,7 +69,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public List<ProductPrice> findAllWithPagination(Integer page, Integer size, Long shopBranchId, String sortBy, Boolean asc, Long brandId, Long categoryId) {
+    public List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId) {
         EntityManager entityManager = getEntityManager();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HQL_FIND_ALL);
@@ -79,7 +80,12 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
         if (categoryId != null) {
             stringBuilder.append("AND pp.category.id = ").append(categoryId);
         }
-        stringBuilder.append("ORDER BY pp.price ").append((asc ? "ASC" : "DESC"));;
+        if(sortBy != null) {
+            stringBuilder.append("ORDER BY ").append(sortBy).append(" ");
+        } else {
+            stringBuilder.append("ORDER BY pp.price ");
+        }
+        stringBuilder.append((asc ? "ASC" : "DESC"));;
 
         return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setFirstResult((page - 1) * size)
@@ -89,7 +95,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public List<ProductPrice> findProductInShops(Long productId, Long cityId) {
+    public List<ProductPrice> findProductInShops(UUID productId, UUID cityId) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_PRODUCT_IN_SHOPS, ProductPrice.class)
@@ -99,7 +105,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public Optional<ProductPrice> findByProductIdAndShopBranchId(Long productId, Long shopBranchId) {
+    public Optional<ProductPrice> findByProductIdAndShopBranchId(UUID productId, UUID shopBranchId) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_BY_PRODUCT_ID_AND_SHOP_BRANCH_ID, ProductPrice.class)
@@ -129,7 +135,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
 
 
     @Override
-    public List<ProductPrice> findByUserQuery(Long cityId, String productName, String categoryName, String brandName, String description) {
+    public List<ProductPrice> findByUserQuery(UUID cityId, String productName, String categoryName, String brandName, String description) {
         EntityManager entityManager = getEntityManager();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HQL_FIND_PRODUCT_PRICES_BY_USER_REQUEST);
@@ -153,7 +159,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public Optional<ProductPrice> findByIdWithFetch(Long id) {
+    public Optional<ProductPrice> findByIdWithFetch(UUID id) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_BY_ID_WITH_FETCH, ProductPrice.class)

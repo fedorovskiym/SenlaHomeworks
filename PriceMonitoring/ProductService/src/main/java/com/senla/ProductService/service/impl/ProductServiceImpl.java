@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -88,14 +89,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductDTO findById(Long id) {
+    public ProductDTO findById(UUID id) {
         logger.info("Finding product dto by id {}", id);
         return productMapper.productToProductDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Product findByIdIfExists(Long id) {
+    public Product findByIdIfExists(UUID id) {
         logger.info("Finding product by id is exists {}", id);
         return productRepository.findById(id).orElseThrow(() -> {
             logger.warn("Product with id {} not found", id);
@@ -105,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public void delete(Long id) {
+    public void delete(UUID id) {
         logger.info("Deleting product by id {}", id);
         Product product = findByIdIfExists(id);
         if (product.getImageUrl() != null) {
@@ -119,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductDTO update(Long id, ProductUpdateDTO productUpdateDTO) {
+    public ProductDTO update(UUID id, ProductUpdateDTO productUpdateDTO) {
         logger.info("Updating product by id {} from dto {}", id, productUpdateDTO);
         Product product = findByIdIfExists(id);
 
@@ -138,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductDTO updateImage(Long id, MultipartFile photo) {
+    public ProductDTO updateImage(UUID id, MultipartFile photo) {
         logger.info("Updating product image with id {}", id);
         Product product = findByIdIfExists(id);
 

@@ -1,20 +1,21 @@
 package com.senla.ProductService.dto.price;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record ProductPriceDTO(
-        Long id,
-        Long productId,
+        UUID id,
+        UUID productId,
         String productName,
         String productDescription,
         Double productAmount,
         String productUnit,
-        Long productCategoryId,
+        UUID productCategoryId,
         String productCategoryName,
-        Long shopBranchId,
+        UUID shopBranchId,
         String shopAddress,
         String shopName,
-        Long cityId,
+        UUID cityId,
         String cityName,
         Double price,
         LocalDate startDate,

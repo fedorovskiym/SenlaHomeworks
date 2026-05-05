@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public class PriceHistoryRepositoryImpl extends AbstractGenericRepositoryImpl<PriceHistory, Long> implements PriceHistoryRepository {
+public class PriceHistoryRepositoryImpl extends AbstractGenericRepositoryImpl<PriceHistory, UUID> implements PriceHistoryRepository {
 
     private static final String HQL_FIND_BY_PRODUCT_ID_AND_SHOP_BRANCH_ID = """
             SELECT ph FROM PriceHistory ph
@@ -33,7 +34,7 @@ public class PriceHistoryRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public List<PriceHistory> findAllByProductIdAndShopBranchId(Long productId, Long shopBranchId) {
+    public List<PriceHistory> findAllByProductIdAndShopBranchId(UUID productId, UUID shopBranchId) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_BY_PRODUCT_ID_AND_SHOP_BRANCH_ID, PriceHistory.class)
@@ -43,7 +44,7 @@ public class PriceHistoryRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public List<PriceHistory> findOverPeriodOfTime(Long productId, Long shopBranchId, LocalDate startDate, LocalDate endDate) {
+    public List<PriceHistory> findOverPeriodOfTime(UUID productId, UUID shopBranchId, LocalDate startDate, LocalDate endDate) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_OVER_PERIOD_OF_TIME, PriceHistory.class)

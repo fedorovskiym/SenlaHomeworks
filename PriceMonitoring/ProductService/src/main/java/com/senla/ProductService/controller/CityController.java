@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/city")
@@ -51,14 +52,14 @@ public class CityController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CityDTO> getCityById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<CityDTO> getCityById(@PathVariable UUID id) {
         logger.info("Recieved request to get city by id /api/product-service/city/id/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(cityService.getCityById(id));
     }
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CityDTO> updateCity(@Min(1) @PathVariable Long id, @Valid @RequestBody CityDTO cityDTO) {
+    public ResponseEntity<CityDTO> updateCity(@PathVariable UUID id, @Valid @RequestBody CityDTO cityDTO) {
         logger.info("Recieved request to update city by id /api/product-service/city/id/{}", id);
         CityDTO updatedCity = cityService.update(id, cityDTO);
         logger.info("Succesfull update city by id /api/product-service/city/id/{}", id);

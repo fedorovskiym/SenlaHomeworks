@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "shop_branches")
@@ -21,7 +22,7 @@ public class ShopBranch {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
@@ -37,7 +38,7 @@ public class ShopBranch {
     @OneToMany(mappedBy = "shopBranch")
     private List<ProductPrice> productPrices;
 
-    public ShopBranch(Long id, Shop shop, City city, String street, Integer house, Integer room) {
+    public ShopBranch(UUID id, Shop shop, City city, String street, Integer house, Integer room) {
         this.id = id;
         this.shop = shop;
         this.city = city;
@@ -49,11 +50,11 @@ public class ShopBranch {
     public ShopBranch() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/brand")
@@ -55,14 +56,14 @@ public class BrandController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<BrandDTO> findById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<BrandDTO> findById(@PathVariable UUID id) {
         logger.info("Recieved request to find brand by id /api/product-service/brand/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(brandService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<HttpStatus> deleteBrandById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteBrandById(@PathVariable UUID id) {
         logger.info("Recieved request to delete brand by id /api/product-service/brand/{}", id);
         brandService.delete(id);
         logger.info("Succesfull delete brand by id /api/product-service/brand/{}", id);
@@ -71,7 +72,7 @@ public class BrandController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BrandDTO> updateBrand(@Min(1) @PathVariable Long id, @Valid @RequestBody BrandUpdateDTO brandDTO) {//TODO: переносы
+    public ResponseEntity<BrandDTO> updateBrand(@PathVariable UUID id, @Valid @RequestBody BrandUpdateDTO brandDTO) {//TODO: переносы
         logger.info("Recieved request to update brand with id /api/product-service/brand/{}", id);
         BrandDTO updateBrand = brandService.update(id, brandDTO);
         logger.info("Succesfull update brand with id /api/product-service/brand/{}", id);
@@ -80,7 +81,7 @@ public class BrandController {
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BrandDTO> updateBrandLogo(@Min(1) @PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<BrandDTO> updateBrandLogo(@PathVariable UUID id, @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to update brand logo with id /api/product-service/brand/{}", id);
         BrandDTO updateBrand = brandService.updateLogo(id, photo);
         logger.info("Succesfull update brand logo with id /api/product-service/brand/{}", id);

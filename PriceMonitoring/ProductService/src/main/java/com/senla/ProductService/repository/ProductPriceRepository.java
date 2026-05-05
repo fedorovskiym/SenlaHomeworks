@@ -5,20 +5,21 @@ import com.senla.ProductService.model.ProductPrice;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface ProductPriceRepository extends GenericRepository<ProductPrice, Long> {
+public interface ProductPriceRepository extends GenericRepository<ProductPrice, UUID> {
 
-    List<ProductPrice> findAllWithPagination(Integer page, Integer size, Long shopBranchId, String sortBy, Boolean asc, Long brandId, Long categoryId);
+    List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId);
 
-    List<ProductPrice> findProductInShops(Long productId, Long cityId);
+    List<ProductPrice> findProductInShops(UUID productId, UUID cityId);
 
-    Optional<ProductPrice> findByProductIdAndShopBranchId(Long productId, Long shopBranchId);
+    Optional<ProductPrice> findByProductIdAndShopBranchId(UUID productId, UUID shopBranchId);
 
     void saveList(List<ProductPrice> saveList);
 
     void updateList(List<ProductPrice> updateList);
 
-    List<ProductPrice> findByUserQuery(Long cityId, String productName, String categoryName, String brandName, String description);
+    List<ProductPrice> findByUserQuery(UUID cityId, String productName, String categoryName, String brandName, String description);
 
-    Optional<ProductPrice> findByIdWithFetch(Long id);
+    Optional<ProductPrice> findByIdWithFetch(UUID id);
 }

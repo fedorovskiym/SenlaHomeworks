@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface ProductCategoryService {
 
@@ -14,17 +15,17 @@ public interface ProductCategoryService {
 
     List<ProductCategoryDTO> findAll();
 
-    ProductCategoryDTO findById(Long id);
+    ProductCategoryDTO findById(UUID id);
 
-    ProductCategory findByIdIfExists(Long id);
+    ProductCategory findByIdIfExists(UUID id);
 
     ProductCategory findByNameIfExists(String name);
 
-    void deleteById(Long id);
+    void deleteById(UUID id);
 
-    ProductCategoryDTO update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO);
+    ProductCategoryDTO update(UUID id, ProductCategoryUpdateDTO productCategoryUpdateDTO);
 
-    ProductCategoryDTO updateImage(Long id, MultipartFile photo);
+    ProductCategoryDTO updateImage(UUID id, MultipartFile photo);
 
-    Optional<ProductCategory> findByIdOptional(Long id);
+    Optional<ProductCategory> findByIdOptional(UUID id);
 }

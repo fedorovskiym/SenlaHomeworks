@@ -6,9 +6,10 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public class ShopBranchRepositoryImpl extends AbstractGenericRepositoryImpl<ShopBranch, Long> implements ShopBranchRepository {
+public class ShopBranchRepositoryImpl extends AbstractGenericRepositoryImpl<ShopBranch, UUID> implements ShopBranchRepository {
 
     private static final String HQL_FIND_ALL_BY_CITY_ORDER_BY_ID = """
             SELECT sb FROM ShopBranch sb
@@ -23,7 +24,7 @@ public class ShopBranchRepositoryImpl extends AbstractGenericRepositoryImpl<Shop
     }
 
     @Override
-    public List<ShopBranch> findAllByShopIdFetch(Long shopId) {
+    public List<ShopBranch> findAllByShopIdFetch(UUID shopId) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_ALL_BY_CITY_ORDER_BY_ID, ShopBranch.class)

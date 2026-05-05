@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/product")
@@ -46,9 +47,8 @@ public class ProductController {
     public ResponseEntity<ProductDTO> createProduct(@Valid @RequestPart ProductDTO productDTO, @RequestPart MultipartFile photo) {
         logger.info("Recieved request to create product /api/product-service/product/");
         ProductDTO createdProduct = productService.save(productDTO, photo);
-        //TODO: тут нужен обратный маппер на productDTO, нельзя отдавать то что пришло,как минимум появится id
         logger.info("Succesfull create product /api/product-service/product/");
-        return ResponseEntity.status(HttpStatus.CREATED).body(productDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @GetMapping(value = "/")
@@ -59,14 +59,14 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductDTO> findById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<ProductDTO> findById(@PathVariable UUID id) {
         logger.info("Recieved request to find product /api/product-service/product/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(productService.findById(id));
     }
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<HttpStatus> deleteById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteById(@PathVariable UUID id) {
         logger.info("Recieved request to delete product /api/product-service/product/{}", id);
         productService.delete(id);
         logger.info("Succesfull delete product /api/product-service/product/{}", id);
@@ -75,7 +75,7 @@ public class ProductController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductDTO> updateProduct(@Min(1) @PathVariable Long id, @RequestBody ProductUpdateDTO productUpdateDTO) {
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable UUID id, @RequestBody ProductUpdateDTO productUpdateDTO) {
         logger.info("Recieved request to update product /api/product-service/product/{}", id);
         ProductDTO updatedProduct = productService.update(id, productUpdateDTO);
         logger.info("Succesfull update product /api/product-service/product/{}", id);
@@ -84,7 +84,7 @@ public class ProductController {
 
     @PatchMapping(value = "/{id}/logo")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductDTO> updateProductImage(@Min(1) @PathVariable Long id, @RequestPart MultipartFile photo) {
+    public ResponseEntity<ProductDTO> updateProductImage(@PathVariable UUID id, @RequestPart MultipartFile photo) {
         logger.info("Recieved request to update product image by id /api/product-service/product/{}", id);
         ProductDTO updatedProduct = productService.updateImage(id, photo);
         logger.info("Succesfull update product image by id /api/product-service/product/{}", id);

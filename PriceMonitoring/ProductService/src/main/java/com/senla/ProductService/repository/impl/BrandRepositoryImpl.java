@@ -8,11 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class BrandRepositoryImpl extends AbstractGenericRepositoryImpl<Brand, Long> implements BrandRepository {
+public class BrandRepositoryImpl extends AbstractGenericRepositoryImpl<Brand, UUID> implements BrandRepository {
     private static final String HQL_FIND_BY_NAME = """
-            SELECT b FROM Brand b WHERE  b.name = :name
+            SELECT b FROM Brand b WHERE b.name = :name
             """;
 
     public BrandRepositoryImpl() {

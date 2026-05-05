@@ -2,7 +2,10 @@ package com.senla.ProductService.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.UUID;
+
 public record CityDTO(
-        Long id,
-        @NotBlank(message = "City name must be not null") String name) {
+        UUID id,
+        @NotBlank(message = "City name must be not null") String name
+) {
 }

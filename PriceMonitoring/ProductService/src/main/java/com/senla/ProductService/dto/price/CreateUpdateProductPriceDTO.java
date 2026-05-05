@@ -5,14 +5,16 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
+import java.util.UUID;
+
 public class CreateUpdateProductPriceDTO {
 
     @NotNull(message = "Product's id must be not null")
     @CsvBindByName(column = "productId")
-    private Long productId;
+    private UUID productId;
     @NotNull(message = "Shop branch's id must be not null")
     @CsvBindByName(column = "shopBranchId")
-    private Long shopBranchId;
+    private UUID shopBranchId;
     @Min(value = 0, message = "Price must be positive")
     @CsvBindByName(column = "price")
     private Double price;
@@ -24,26 +26,26 @@ public class CreateUpdateProductPriceDTO {
     public CreateUpdateProductPriceDTO() {
     }
 
-    public CreateUpdateProductPriceDTO(Long productId, Long shopBranchId, Double price, Integer discountPercent) {
+    public CreateUpdateProductPriceDTO(UUID productId, UUID shopBranchId, Double price, Integer discountPercent) {
         this.productId = productId;
         this.shopBranchId = shopBranchId;
         this.price = price;
         this.discountPercent = discountPercent;
     }
 
-    public Long getProductId() {
+    public UUID getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(UUID productId) {
         this.productId = productId;
     }
 
-    public Long getShopBranchId() {
+    public UUID getShopBranchId() {
         return shopBranchId;
     }
 
-    public void setShopBranchId(Long shopBranchId) {
+    public void setShopBranchId(UUID shopBranchId) {
         this.shopBranchId = shopBranchId;
     }
 

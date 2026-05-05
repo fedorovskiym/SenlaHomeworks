@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "price_history")
@@ -20,7 +21,7 @@ public class  PriceHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
@@ -34,7 +35,7 @@ public class  PriceHistory {
     @Column(name = "change_date")
     private LocalDate changeDate;
 
-    public PriceHistory(Long id, Product product, ShopBranch shopBranch, Double oldPrice, Double newPrice, LocalDate changeDate) {
+    public PriceHistory(UUID id, Product product, ShopBranch shopBranch, Double oldPrice, Double newPrice, LocalDate changeDate) {
         this.id = id;
         this.product = product;
         this.shopBranch = shopBranch;
@@ -46,11 +47,11 @@ public class  PriceHistory {
     public PriceHistory() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

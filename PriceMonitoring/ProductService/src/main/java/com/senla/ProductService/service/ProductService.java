@@ -6,6 +6,7 @@ import com.senla.ProductService.model.Product;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductService {
 
@@ -13,15 +14,15 @@ public interface ProductService {
 
     List<ProductDTO> findAll();
 
-    ProductDTO findById(Long id);
+    ProductDTO findById(UUID id);
 
-    Product findByIdIfExists(Long id);
+    Product findByIdIfExists(UUID id);
 
-    void delete(Long id);
+    void delete(UUID id);
 
-    ProductDTO update(Long id, ProductUpdateDTO productUpdateDTO);
+    ProductDTO update(UUID id, ProductUpdateDTO productUpdateDTO);
 
-    ProductDTO updateImage(Long id, MultipartFile photo);
+    ProductDTO updateImage(UUID id, MultipartFile photo);
 
     void importFromCsv(MultipartFile file);
 

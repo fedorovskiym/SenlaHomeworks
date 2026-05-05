@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,14 +66,14 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductCategoryDTO findById(Long id) {
+    public ProductCategoryDTO findById(UUID id) {
         logger.info("Finding product category dto by id {}", id);
         return productCategoryMapper.productCategoryToProductCategoryDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProductCategory findByIdIfExists(Long id) {
+    public ProductCategory findByIdIfExists(UUID id) {
         logger.info("Finding product category by id if exists {}", id);
         return productCategoryRepository.findById(id).orElseThrow(() -> {
             logger.warn("Product category with id {} not found", id);
@@ -89,7 +90,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         logger.info("Deleting product category by id {}", id);
         ProductCategory productCategory = findByIdIfExists(id);
         if (productCategory.getImageUrl() != null) {
@@ -103,7 +104,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public ProductCategoryDTO update(Long id, ProductCategoryUpdateDTO productCategoryUpdateDTO) {
+    public ProductCategoryDTO update(UUID id, ProductCategoryUpdateDTO productCategoryUpdateDTO) {
         logger.info("Updating product category by id {}", id);
         ProductCategory productCategory = findByIdIfExists(id);
 
@@ -120,7 +121,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public ProductCategoryDTO updateImage(Long id, MultipartFile photo) {
+    public ProductCategoryDTO updateImage(UUID id, MultipartFile photo) {
         logger.info("Updating product category image from Yandex Cloud Storage by id {}", id);
         ProductCategory productCategory = findByIdIfExists(id);
 
@@ -138,7 +139,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
-    public Optional<ProductCategory> findByIdOptional(Long id) {
+    public Optional<ProductCategory> findByIdOptional(UUID id) {
         logger.info("Finding product category by id {}", id);
         return productCategoryRepository.findById(id);
     }

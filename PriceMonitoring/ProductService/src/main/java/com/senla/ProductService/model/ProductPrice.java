@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "product_prices")
@@ -23,7 +24,7 @@ public class ProductPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
@@ -41,7 +42,7 @@ public class ProductPrice {
     private PriceStatus status;
 
 
-    public ProductPrice(Long id, Product product, ShopBranch shopBranch, Double price, LocalDate startDate, Integer discountPercent, PriceStatus status) {
+    public ProductPrice(UUID id, Product product, ShopBranch shopBranch, Double price, LocalDate startDate, Integer discountPercent, PriceStatus status) {
         this.id = id;
         this.product = product;
         this.shopBranch = shopBranch;
@@ -54,11 +55,11 @@ public class ProductPrice {
     public ProductPrice() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

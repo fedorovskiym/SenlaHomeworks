@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shop_branch")
@@ -46,7 +47,7 @@ public class ShopBranchController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@Min(1) @RequestParam Long shopId) {
+    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@RequestParam UUID shopId) {
         logger.info("Recieved request to get shop branch by id product-service/shop_branch/{}", shopId);
         return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByShopId(shopId));
     }

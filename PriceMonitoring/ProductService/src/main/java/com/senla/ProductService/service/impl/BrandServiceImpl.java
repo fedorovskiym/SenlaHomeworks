@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,7 +66,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(UUID id) {
         logger.info("Delete brand by id {}", id);
         Brand brand = findByIdIfExists(id);
         if (brand.getLogoImageUrl() != null) {
@@ -79,14 +80,14 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
-    public BrandDTO findById(Long id) {
+    public BrandDTO findById(UUID id) {
         logger.info("Find brand with id {}", id);
         return brandMapper.brandToBrandDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Brand findByIdIfExists(Long id) {
+    public Brand findByIdIfExists(UUID id) {
         logger.info("Find brand with id is exists {}", id);
         return brandRepository.findById(id).orElseThrow(() -> {
             logger.warn("Brand with id {} not found", id);
@@ -102,7 +103,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
-    public BrandDTO update(Long id, BrandUpdateDTO brandDTO) {
+    public BrandDTO update(UUID id, BrandUpdateDTO brandDTO) {
         logger.info("Update brand with id {}", id);
         Brand brand = findByIdIfExists(id);
         if (brand.getName().equals(brandDTO.name()) || findByNameIfExists(brandDTO.name()) != null) {
@@ -117,7 +118,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
-    public BrandDTO updateLogo(Long id, MultipartFile photo) {
+    public BrandDTO updateLogo(UUID id, MultipartFile photo) {
         logger.info("Update logo by brand id {}", id);
         Brand brand = findByIdIfExists(id);
 
@@ -135,7 +136,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Brand> findByIdOptional(Long id) {
+    public Optional<Brand> findByIdOptional(UUID id) {
         logger.info("Find brand with id {}", id);
         return brandRepository.findById(id);
     }

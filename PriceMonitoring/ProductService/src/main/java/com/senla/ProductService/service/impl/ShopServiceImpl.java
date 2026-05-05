@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,14 +56,14 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopDTO> findAllByCityId(Long cityId) {
+    public List<ShopDTO> findAllByCityId(UUID cityId) {
         logger.info("Find shops dto by city id {}", cityId);
         return shopRepository.findAllByCityId(cityId).stream().map(shopMapper::shopToShopDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(UUID id) {
         logger.info("Delete shop with id {}", id);
         Shop shop = shopRepository.findById(id).orElseThrow(() -> {
             logger.warn("Shop with id {} not found", id);
@@ -77,14 +78,14 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional(readOnly = true)
-    public ShopDTO findById(Long id) {
+    public ShopDTO findById(UUID id) {
         logger.info("Find shop dto with id {}", id);
         return shopMapper.shopToShopDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Shop findByIdIfExists(Long id) {
+    public Shop findByIdIfExists(UUID id) {
         logger.info("Find shop with id {}", id);
         return shopRepository.findById(id).orElseThrow(() -> {
             logger.warn("Shop with id {} not found", id);

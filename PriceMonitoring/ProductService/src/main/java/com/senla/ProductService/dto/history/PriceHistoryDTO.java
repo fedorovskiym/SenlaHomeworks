@@ -1,12 +1,13 @@
 package com.senla.ProductService.dto.history;
 
 import java.util.List;
+import java.util.UUID;
 
 public record PriceHistoryDTO(
-        Long id,
-        Long productId,
+        UUID id,
+        UUID productId,
         String productName,
-        Long shopBranchId,
+        UUID shopBranchId,
         String shopBranchName,
         List<PriceHistoryDataDTO> prices
 ) {

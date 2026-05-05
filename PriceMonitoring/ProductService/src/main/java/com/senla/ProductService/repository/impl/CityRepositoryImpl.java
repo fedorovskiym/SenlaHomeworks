@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class CityRepositoryImpl extends AbstractGenericRepositoryImpl<City, Long> implements CityRepository {
+public class CityRepositoryImpl extends AbstractGenericRepositoryImpl<City, UUID> implements CityRepository {
 
     private static final String HQL_FIND_BY_NAME = """
             SELECT c FROM City c WHERE c.name = :name

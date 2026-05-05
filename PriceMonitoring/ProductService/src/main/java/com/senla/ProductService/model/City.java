@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "city")
@@ -17,12 +18,12 @@ public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "name")
     @NotBlank
     private String name;
 
-    public City(Long id, String name) {
+    public City(UUID id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -30,11 +31,11 @@ public class City {
     public City() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

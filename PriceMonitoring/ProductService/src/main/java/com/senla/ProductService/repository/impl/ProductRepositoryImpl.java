@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product, Long> implements ProductRepository {
+public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product, UUID> implements ProductRepository {
 
     private static final String HQL_FIND_ALL_WITH_FETCH = """
             SELECT p FROM Product p
@@ -44,7 +45,7 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
     }
 
     @Override
-    public Optional<Product> findByIdWithPrices(Long id) {
+    public Optional<Product> findByIdWithPrices(UUID id) {
         EntityManager entityManager = getEntityManager();
 
         return Optional.ofNullable(entityManager.createQuery(HQL_FIND_PRODUCT_PRICES_WITH_FETCH, Product.class)

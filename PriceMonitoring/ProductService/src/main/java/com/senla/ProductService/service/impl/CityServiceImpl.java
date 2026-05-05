@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +53,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional(readOnly = true)
-    public CityDTO getCityById(Long id) {
+    public CityDTO getCityById(UUID id) {
         logger.info("Finding city with id {}", id);
         return cityMapper.cityToCityDTO(getCityByIdIfExists(id));
     }
@@ -66,7 +67,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional(readOnly = true)
-    public City getCityByIdIfExists(Long id) {
+    public City getCityByIdIfExists(UUID id) {
         logger.info("Finding city with id if exists {}", id);
         return cityRepository.findById(id).orElseThrow(() -> {
             logger.warn("City with id {} not found", id);
@@ -76,7 +77,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional
-    public CityDTO update(Long id, CityDTO cityDTO) {
+    public CityDTO update(UUID id, CityDTO cityDTO) {
         logger.info("Updating city with id {}", id);
         City city = getCityByIdIfExists(id);
 

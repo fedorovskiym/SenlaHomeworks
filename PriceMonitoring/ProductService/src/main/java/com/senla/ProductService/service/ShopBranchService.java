@@ -4,14 +4,15 @@ import com.senla.ProductService.dto.ShopBranchDTO;
 import com.senla.ProductService.model.ShopBranch;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ShopBranchService {
 
     ShopBranchDTO save(ShopBranchDTO shopBranchDTO);
 
-    List<ShopBranchDTO> findAllByShopId(Long shopId);
+    List<ShopBranchDTO> findAllByShopId(UUID shopId);
 
-    ShopBranchDTO findById(Long id);
+    ShopBranchDTO findById(UUID id);
 
-    ShopBranch findByIdIfExists(Long id);
+    ShopBranch findByIdIfExists(UUID id);
 }

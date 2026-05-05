@@ -5,16 +5,17 @@ import com.senla.ProductService.model.Shop;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ShopService {
 
     ShopDTO save (ShopDTO shopDTO, MultipartFile photo);
 
-    List<ShopDTO> findAllByCityId(Long cityId);
+    List<ShopDTO> findAllByCityId(UUID cityId);
 
-    void delete(Long id);
+    void delete(UUID id);
 
-    ShopDTO findById(Long id);
+    ShopDTO findById(UUID id);
 
-    Shop findByIdIfExists(Long id);
+    Shop findByIdIfExists(UUID id);
 }

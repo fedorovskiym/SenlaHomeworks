@@ -1,9 +1,10 @@
 package com.senla.ProductService.dto.price;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ComparePrice {
-    private Long productId;
+    private UUID productId;
     private String productName;
     private String productImageUrl;
     private Double minPrice;
@@ -12,7 +13,7 @@ public class ComparePrice {
     private String shopAddressMin;
     private List<PriceDTO> otherPrices;
 
-    public ComparePrice(Long productId, String productName, String productImageUrl, Double minPrice, String shopNameMin, String shopLogoImageUrl, String shopAddressMin, List<PriceDTO> otherPrices) {
+    public ComparePrice(UUID productId, String productName, String productImageUrl, Double minPrice, String shopNameMin, String shopLogoImageUrl, String shopAddressMin, List<PriceDTO> otherPrices) {
         this.productId = productId;
         this.productName = productName;
         this.productImageUrl = productImageUrl;
@@ -26,11 +27,11 @@ public class ComparePrice {
     public ComparePrice() {
     }
 
-    public Long getProductId() {
+    public UUID getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(UUID productId) {
         this.productId = productId;
     }
 

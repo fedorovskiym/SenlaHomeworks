@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface BrandService {
 
@@ -14,17 +15,17 @@ public interface BrandService {
 
     List<BrandDTO> findAll();
 
-    void delete(Long id);
+    void delete(UUID id);
 
-    BrandDTO findById(Long id);
+    BrandDTO findById(UUID id);
 
-    Brand findByIdIfExists(Long id);
+    Brand findByIdIfExists(UUID id);
 
     Brand findByNameIfExists(String name);
 
-    BrandDTO update(Long id, BrandUpdateDTO brandDTO);
+    BrandDTO update(UUID id, BrandUpdateDTO brandDTO);
 
-    BrandDTO updateLogo(Long id, MultipartFile photo);
+    BrandDTO updateLogo(UUID id, MultipartFile photo);
 
-    Optional<Brand> findByIdOptional(Long id);
+    Optional<Brand> findByIdOptional(UUID id);
 }

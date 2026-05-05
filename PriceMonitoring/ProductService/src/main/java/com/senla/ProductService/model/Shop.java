@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "shops")
@@ -19,13 +20,13 @@ public class Shop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "name")
     private String name;
     @Column(name = "logo_image_url")
     private String logoImageUrl;
 
-    public Shop(Long id, String name, String logoImageUrl) {
+    public Shop(UUID id, String name, String logoImageUrl) {
         this.id = id;
         this.name = name;
         this.logoImageUrl = logoImageUrl;
@@ -34,11 +35,11 @@ public class Shop {
     public Shop() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

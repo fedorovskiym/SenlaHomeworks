@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class ProductCategoryRepositoryImpl extends AbstractGenericRepositoryImpl<ProductCategory, Long> implements ProductCategoryRepository {
+public class ProductCategoryRepositoryImpl extends AbstractGenericRepositoryImpl<ProductCategory, UUID> implements ProductCategoryRepository {
 
     private static final String HQL_FIND_BY_NAME = """
             SELECT pc FROM ProductCategory pc WHERE pc.name = :name

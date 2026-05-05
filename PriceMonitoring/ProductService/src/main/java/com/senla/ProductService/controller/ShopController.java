@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shop")
@@ -47,20 +48,20 @@ public class ShopController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopDTO>> findAllByCityId(@Min(1) @RequestParam Long cityId) {
+    public ResponseEntity<List<ShopDTO>> findAllByCityId(@RequestParam UUID cityId) {
         logger.info("Recieved request to get all shops by cityId {} /api/product-service/shop/", cityId);
         return ResponseEntity.status(HttpStatus.OK).body(shopService.findAllByCityId(cityId));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ShopDTO> findShopById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<ShopDTO> findShopById(@PathVariable UUID id) {
         logger.info("Recieved request to get shop by id /api/product-service/shop/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(shopService.findById(id));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<HttpStatus> deleteShop(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteShop(@PathVariable UUID id) {
         logger.info("Recieved request to delete shop by id /api/product-service/shop/{}", id);
         shopService.delete(id);
         logger.info("Succesfully deleted shop by id /api/product-service/shop/{}", id);

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "product_categories")
@@ -16,7 +17,7 @@ public class ProductCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "name")
     private String name;
     @Column(name = "description")
@@ -24,7 +25,7 @@ public class ProductCategory {
     @Column(name = "image_url")
     private String imageUrl;
 
-    public ProductCategory(Long id, String name, String description, String imageUrl) {
+    public ProductCategory(UUID id, String name, String description, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -34,11 +35,11 @@ public class ProductCategory {
     public ProductCategory() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

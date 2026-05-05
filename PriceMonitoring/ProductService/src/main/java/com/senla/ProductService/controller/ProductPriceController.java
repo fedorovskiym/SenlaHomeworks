@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/price")
@@ -49,7 +50,7 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductPriceDTO> findById(@Min(1) @PathVariable Long id) {
+    public ResponseEntity<ProductPriceDTO> findById(@PathVariable UUID id) {
         logger.info("Received request to find product price /api/product-service/price/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findById(id));
     }
@@ -62,7 +63,7 @@ public class ProductPriceController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductPriceDTO> updateProductPrice(@Min(1) @PathVariable Long id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
+    public ResponseEntity<ProductPriceDTO> updateProductPrice(@PathVariable UUID id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
         logger.info("Received request to update product price by id /api/product-service/price/{}", id);
         ProductPriceDTO updatedProductPrice = productPriceService.update(id, createUpdateProductPriceDTO);
         logger.info("Succesfull update product price by id /api/product-service/price/{}", id);
@@ -70,7 +71,7 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/compare")
-    public ResponseEntity<ComparePrice> comparePricesInShop(@Min(1) @RequestParam("productId") Long productId, @Min(1) @RequestParam("cityId") Long cityId) {
+    public ResponseEntity<ComparePrice> comparePricesInShop(@RequestParam("productId") UUID productId, @RequestParam("cityId") UUID cityId) {
         logger.info("Recieved request to compare prices in shops by productId {} and cityId {} /api/product-service/price/compare", productId, cityId);
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.comparePricesInShops(productId, cityId));
     }
@@ -85,13 +86,13 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<List<ProductPriceDTO>> searchProducts(@Min(1) @RequestParam("cityId") Long cityId, @RequestParam("searchQuery") String searchQuery) {
+    public ResponseEntity<List<ProductPriceDTO>> searchProducts(@RequestParam("cityId") UUID cityId, @RequestParam("searchQuery") String searchQuery) {
         logger.info("Received request to search prices /api/product-service/price/search");
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.search(cityId, searchQuery));
     }
 
     @PostMapping(value = "/{id}")
-    public ResponseEntity<HttpStatus> subscribe(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> subscribe(@PathVariable UUID id) {
         logger.info("Received request to subscribe /product-service/price/{}", id);
         productPriceService.sendSubscribeMessage(id);
         return new ResponseEntity<>(HttpStatus.OK);

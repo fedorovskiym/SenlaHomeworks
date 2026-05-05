@@ -4,10 +4,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record ShopBranchDTO(
-        Long id,
-        @Min(1) @NotNull(message = "Shop id must be not null") Long shopId,
-        @Min(1) @NotNull(message = "City id must be not null") Long cityId,
+        UUID id,
+        @NotNull(message = "Shop id must be not null") UUID shopId,
+        @NotNull(message = "City id must be not null") UUID cityId,
         String shopName,
         String cityName,
         @NotBlank(message = "Street must be not null") String street,

@@ -4,15 +4,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record ProductDTO(
-        Long id,
+        UUID id,
         @NotBlank(message = "Product name must be not null") String name,
         @NotBlank(message = "Product description must be not null") String description,
         @NotNull(message = "Product amount must be not null") Double amount,
         @NotBlank(message = "Product unit must be not null") String unit,
-        @Min(1) @NotNull(message = "Product's brand id must be not null") Long brandId,
+        @NotNull(message = "Product's brand id must be not null") UUID brandId,
         String brandName,
-        @Min(1) @NotNull(message = "Product's category id must be not null") Long categoryId,
+        @NotNull(message = "Product's category id must be not null") UUID categoryId,
         String categoryName,
         String imageUrl
 ) {

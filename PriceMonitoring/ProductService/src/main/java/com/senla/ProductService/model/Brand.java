@@ -1,16 +1,14 @@
 package com.senla.ProductService.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "brands")
@@ -19,7 +17,7 @@ public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id; //TODO: огромная рекомендация перенести все id в UUID тип
+    private UUID id; //TODO: огромная рекомендация перенести все id в UUID тип
     @Column(name = "name")
     private String name;
     @Column(name = "country")
@@ -27,7 +25,7 @@ public class Brand {
     @Column(name = "logo_image_url")
     private String logoImageUrl;
 
-    public Brand(Long id, String name, String country, String logoImageUrl) {
+    public Brand(UUID id, String name, String country, String logoImageUrl) {
         this.id = id;
         this.name = name;
         this.country = country;
@@ -37,11 +35,11 @@ public class Brand {
     public Brand() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

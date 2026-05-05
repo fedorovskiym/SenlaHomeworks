@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/history")
 @Validated
@@ -34,7 +36,7 @@ public class PriceHistoryController {
     }
 
     @GetMapping(value = "/chart")
-    public ResponseEntity<PriceHistoryDTO> getPriceHistory(@Min(1) @RequestParam Long productId, @Min(1) @RequestParam Long shopBranchId) {
+    public ResponseEntity<PriceHistoryDTO> getPriceHistory(@RequestParam UUID productId, @RequestParam UUID shopBranchId) {
         logger.info("Recieved request to get price history by product id {} and shop branch {} id /api/product-service/history", productId, shopBranchId);
         return ResponseEntity.status(HttpStatus.OK).body(priceHistoryService.getCoordsForChart(productId, shopBranchId));
     }

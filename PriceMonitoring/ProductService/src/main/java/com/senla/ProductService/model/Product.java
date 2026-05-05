@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "products")
@@ -21,7 +22,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "name")
     private String name;
     @Column(name = "description")
@@ -41,7 +42,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<ProductPrice> priceList;
 
-    public Product(Long id, String name, String description, Double amount, String unit, Brand brand, String imageUrl) {
+    public Product(UUID id, String name, String description, Double amount, String unit, Brand brand, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -54,11 +55,11 @@ public class Product {
     public Product() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

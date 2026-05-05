@@ -8,26 +8,27 @@ import com.senla.ProductService.model.ProductPrice;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductPriceService {
 
     ProductPriceDTO save(CreateUpdateProductPriceDTO createProductPriceDTO);
 
-    ProductPriceDTO findById(Long id);
+    ProductPriceDTO findById(UUID id);
 
     List<ProductPriceDTO> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO);
 
-    ComparePrice comparePricesInShops(Long productId, Long cityId);
+    ComparePrice comparePricesInShops(UUID productId, UUID cityId);
 
     void importFromCsv(MultipartFile file);
 
-    ProductPrice findByProductIdAndShopBranchId(Long productId, Long shopBranchId);
+    ProductPrice findByProductIdAndShopBranchId(UUID productId, UUID shopBranchId);
 
-    List<ProductPriceDTO> search(Long cityId, String searchQuery);
+    List<ProductPriceDTO> search(UUID cityId, String searchQuery);
 
-    ProductPrice findByIdIfExists(Long id);
+    ProductPrice findByIdIfExists(UUID id);
 
-    ProductPriceDTO update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO);
+    ProductPriceDTO update(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO);
 
-    void sendSubscribeMessage(Long id);
+    void sendSubscribeMessage(UUID id);
 }

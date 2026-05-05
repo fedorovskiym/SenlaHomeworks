@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class ShopRepositoryImpl extends AbstractGenericRepositoryImpl<Shop, Long> implements ShopRepository {
+public class ShopRepositoryImpl extends AbstractGenericRepositoryImpl<Shop, UUID> implements ShopRepository {
 
     private static final String HQL_FIND_BY_NAME = """
             SELECT s FROM Shop s WHERE s.name = :name
@@ -38,7 +39,7 @@ public class ShopRepositoryImpl extends AbstractGenericRepositoryImpl<Shop, Long
     }
 
     @Override
-    public List<Shop> findAllByCityId(Long cityId) {
+    public List<Shop> findAllByCityId(UUID cityId) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_BY_CITY_ID, Shop.class)

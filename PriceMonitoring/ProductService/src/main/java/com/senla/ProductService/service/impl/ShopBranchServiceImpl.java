@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +55,7 @@ public class ShopBranchServiceImpl implements ShopBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopBranchDTO> findAllByShopId(Long shopId) {
+    public List<ShopBranchDTO> findAllByShopId(UUID shopId) {
         logger.info("Find all shop branches dto by city id {}", shopId);
         return shopBranchRepository.findAllByShopIdFetch(shopId)
                 .stream().map(shopBranchMapper::shopBranchToShopBranchDTO).collect(Collectors.toList());
@@ -62,14 +63,14 @@ public class ShopBranchServiceImpl implements ShopBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public ShopBranchDTO findById(Long id) {
+    public ShopBranchDTO findById(UUID id) {
         logger.info("Find shop branch dto by id {}", id);
         return shopBranchMapper.shopBranchToShopBranchDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ShopBranch findByIdIfExists(Long id) {
+    public ShopBranch findByIdIfExists(UUID id) {
         logger.info("Find shop branch by id {}", id);
         return shopBranchRepository.findById(id).orElseThrow(() -> {
             logger.warn("Shop branch not found with id {}", id);

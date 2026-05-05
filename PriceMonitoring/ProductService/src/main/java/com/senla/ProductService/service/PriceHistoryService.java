@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PriceHistoryService {
 
@@ -14,7 +15,7 @@ public interface PriceHistoryService {
 
     void saveList(List<PriceHistory> priceHistoryList);
 
-    PriceHistoryDTO getCoordsForChart(Long productId, Long shopBranchId);
+    PriceHistoryDTO getCoordsForChart(UUID productId, UUID shopBranchId);
 
     String generateCsv(PriceHistoryOverPeriodOfTimeDTO periodOfTimeDTO);
 }

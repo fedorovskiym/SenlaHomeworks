@@ -55,6 +55,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -111,7 +112,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductPriceDTO findById(Long id) {
+    public ProductPriceDTO findById(UUID id) {
         logger.info("Finding product price dto by id {}", id);
         return productPriceMapper.productPriceToProductPriceDTO(findByIdIfExists(id));
     }
@@ -136,7 +137,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public ComparePrice comparePricesInShops(Long productId, Long cityId) {
+    public ComparePrice comparePricesInShops(UUID productId, UUID cityId) {
         logger.info("Compare price on product with id {} in city with id {}", productId, cityId);
         List<ProductPrice> productPrices = productPriceRepository.findProductInShops(productId, cityId);
 
@@ -253,7 +254,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductPrice findByProductIdAndShopBranchId(Long productId, Long shopBranchId) {
+    public ProductPrice findByProductIdAndShopBranchId(UUID productId, UUID shopBranchId) {
         logger.info("Find price by product id {} and shop branch id {} or null", productId, shopBranchId);
         return productPriceRepository.findByProductIdAndShopBranchId(productId, shopBranchId).orElse(null);
     }
@@ -291,7 +292,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductPriceDTO> search(Long cityId, String searchQuery) {
+    public List<ProductPriceDTO> search(UUID cityId, String searchQuery) {
         logger.info("Searching price by city id {} with query {}", cityId, searchQuery);
         List<String> brandsNames = brandService.findAll().stream().map(BrandDTO::name).toList();
         List<String> categoryNames = productCategoryService.findAll().stream().map(ProductCategoryDTO::name).toList();
@@ -313,7 +314,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductPrice findByIdIfExists(Long id) {
+    public ProductPrice findByIdIfExists(UUID id) {
         logger.info("Find price by id {}", id);
         return productPriceRepository.findById(id).orElseThrow(() -> {
             logger.warn("Product price with id {} not found", id);
@@ -323,7 +324,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional
-    public ProductPriceDTO update(Long id, CreateUpdateProductPriceDTO createProductPriceDTO) {
+    public ProductPriceDTO update(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO) {
         logger.info("Update price by id {}", id);
         ProductPrice productPrice = findByIdIfExists(id);
 
@@ -346,13 +347,13 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional(readOnly = true)
-    public void sendSubscribeMessage(Long id) {
+    public void sendSubscribeMessage(UUID id) {
         ProductPrice productPrice = productPriceRepository.findByIdWithFetch(id).orElseThrow(() -> {
             logger.warn("Product price with id {} not found", id);
             return new EntityNotFoundException("Product price with id - " + id + " not found!");
         });
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getDetails();
+        UUID userId = (UUID) authentication.getDetails();
 
         SubscriptionMessage subscriptionMessage = new SubscriptionMessage(productPrice.getId(), productPrice.getProduct().getId(), productPrice.getProduct().getName(),
                 productPrice.getShopBranch().getId(), productPrice.getShopBranch().getShop().getName(), userId);

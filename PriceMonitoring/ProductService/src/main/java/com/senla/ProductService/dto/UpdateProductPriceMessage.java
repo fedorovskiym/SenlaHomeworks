@@ -1,7 +1,9 @@
 package com.senla.ProductService.dto;
 
+import java.util.UUID;
+
 public record UpdateProductPriceMessage(
-        Long id,
+        UUID id,
         Double price,
         Integer discountPercent
 ) {

@@ -4,6 +4,7 @@ import com.senla.ProductService.dto.CityDTO;
 import com.senla.ProductService.model.City;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CityService {
 
@@ -11,11 +12,11 @@ public interface CityService {
 
     List<CityDTO> findAll();
 
-    CityDTO getCityById(Long id);
+    CityDTO getCityById(UUID id);
 
     City getCityByNameIfExists(String name);
 
-    City getCityByIdIfExists(Long id);
+    City getCityByIdIfExists(UUID id);
 
-    CityDTO update(Long id, CityDTO cityDTO);
+    CityDTO update(UUID id, CityDTO cityDTO);
 }
