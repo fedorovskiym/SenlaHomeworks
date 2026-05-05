@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class KafkaBroker {
 
@@ -17,7 +19,7 @@ public class KafkaBroker {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendSubscriptionMessage(Long id, String json) {
+    public void sendSubscriptionMessage(UUID id, String json) {
         kafkaTemplate.executeInTransaction(t -> {
             t.send("subscription", String.valueOf(id), json);
             t.flush();
@@ -27,7 +29,7 @@ public class KafkaBroker {
     }
 
     //todo: делать не обязательно, но прочитай про варианты если запрос не успел уйти в брокер, как сделать повтроный запрос через время и нужны сообщения обошибках, просто логов мало
-    public void sendUpdateProductPriceMessage(Long id, String json) {
+    public void sendUpdateProductPriceMessage(UUID id, String json) {
         kafkaTemplate.executeInTransaction(t -> {
             t.send("update-product-price", String.valueOf(id), json);
             t.flush();

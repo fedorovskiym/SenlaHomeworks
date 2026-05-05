@@ -7,6 +7,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Component
 public class KafkaBroker {
 
@@ -19,7 +21,7 @@ public class KafkaBroker {
     }
 
     @Transactional
-    public void sendMessageWithNewUser(Long id, String json) {
+    public void sendMessageWithNewUser(UUID id, String json) {
         kafkaTemplate.executeInTransaction(t -> {
             t.send("new-user", String.valueOf(id), json);
             t.flush();
@@ -29,7 +31,7 @@ public class KafkaBroker {
     }
 
     @Transactional
-    public void sendMessageWithUpdateUser(Long id, String json) {
+    public void sendMessageWithUpdateUser(UUID id, String json) {
         kafkaTemplate.executeInTransaction(t -> {
             t.send("update-user", String.valueOf(id), json);
             t.flush();

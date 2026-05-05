@@ -6,9 +6,10 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class UserRepositoryImpl extends AbstractGenericRepositoryImpl<User, Long> implements UserRepository {
+public class UserRepositoryImpl extends AbstractGenericRepositoryImpl<User, UUID> implements UserRepository {
 
     private static final String HQL_FIND_BY_USERNAME = """
             SElECT u FROM User u

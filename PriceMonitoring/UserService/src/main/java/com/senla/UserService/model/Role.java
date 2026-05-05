@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "roles")
@@ -21,13 +22,13 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "name")
     private String name;
     @OneToMany(mappedBy = "role")
     private List<User> userList;
 
-    public Role(Long id, String name, List<User> userList) {
+    public Role(UUID id, String name, List<User> userList) {
         this.id = id;
         this.name = name;
         this.userList = userList;
@@ -36,11 +37,11 @@ public class Role {
     public Role() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -1,4 +1,6 @@
 package com.senla.UserService.dto;
 
-public record KafkaMessageWithUser(Long id, String phoneNumber) {
+import java.util.UUID;
+
+public record KafkaMessageWithUser(UUID id, String phoneNumber) {
 }

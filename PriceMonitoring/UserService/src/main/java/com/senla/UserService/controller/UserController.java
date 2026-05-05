@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -29,7 +31,7 @@ public class UserController {
     @GetMapping(value = "/profile")
     public ResponseEntity<UserDTO> getUserProfile() {
         logger.info("Recieved get user profile request /api/user-service/profile");
-        Long userId = userService.getPrincipalId();
+        UUID userId = userService.getPrincipalId();
         logger.info("Return user with id {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(userId));
     }
@@ -37,7 +39,7 @@ public class UserController {
     @PatchMapping(value = "/profile")
     public ResponseEntity<UserDTO> updateUserProfile(@Valid @RequestBody UserDTO userDTO) {
         logger.info("Recieved update user profile request /api/user-service/profile");
-        Long userId = userService.getPrincipalId();
+        UUID userId = userService.getPrincipalId();
         userService.update(userId, userDTO);
         logger.info("Update user with id {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(userId));

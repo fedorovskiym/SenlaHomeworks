@@ -3,6 +3,8 @@ package com.senla.UserService.service;
 import com.senla.UserService.dto.UserDTO;
 import com.senla.UserService.model.User;
 
+import java.util.UUID;
+
 public interface UserService {
 
     User findByUsername(String username);
@@ -13,9 +15,9 @@ public interface UserService {
 
     void save(User user);
 
-    Long getPrincipalId();
+    UUID getPrincipalId();
 
-    UserDTO getUserById(Long id);
+    UserDTO getUserById(UUID id);
 
-    void update(Long userId, UserDTO userDTO);
+    void update(UUID userId, UserDTO userDTO);
 }

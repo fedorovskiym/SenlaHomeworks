@@ -6,9 +6,10 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public class RoleRepositoryImpl extends AbstractGenericRepositoryImpl<Role, Long> implements RoleRepository {
+public class RoleRepositoryImpl extends AbstractGenericRepositoryImpl<Role, UUID> implements RoleRepository {
 
     private static final String HQL_FIND_ROLE_BY_NAME = """
             SELECT r FROM Role r WHERE r.name = :name

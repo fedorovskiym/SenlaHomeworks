@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -20,7 +21,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "username")
     private String username;
     @Column(name = "phone_number")
@@ -34,7 +35,7 @@ public class User {
     private LocalDate registrationDate;
 
 
-    public User(Long id, String username, String phoneNumber, String password, Role role, LocalDate registrationDate) {
+    public User(UUID id, String username, String phoneNumber, String password, Role role, LocalDate registrationDate) {
         this.id = id;
         this.username = username;
         this.phoneNumber = phoneNumber;
@@ -47,11 +48,11 @@ public class User {
 
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

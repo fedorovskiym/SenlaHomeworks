@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.UUID;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -71,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long getPrincipalId() {
+    public UUID getPrincipalId() {
         logger.info("Getting principal id");
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         logger.info("Find principal {}", principal);
@@ -80,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO getUserById(Long id) {
+    public UserDTO getUserById(UUID id) {
         logger.info("Getting user with id {}", id);
         return userMapper.userToUserDTO(userRepository.findById(id).orElseThrow(() -> {
             logger.warn("User not found with id {}", id);
@@ -90,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(Long userId, UserDTO userDTO) {
+    public void update(UUID userId, UserDTO userDTO) {
         logger.info("Updating user with id {}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> {
             logger.warn("User not found with id {}", userId);
