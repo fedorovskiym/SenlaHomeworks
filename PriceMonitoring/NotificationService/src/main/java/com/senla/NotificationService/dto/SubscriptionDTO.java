@@ -1,11 +1,13 @@
 package com.senla.NotificationService.dto;
 
+import java.util.UUID;
+
 public record SubscriptionDTO(
-        Long productPriceId,
-        Long productId,
+        UUID productPriceId,
+        UUID productId,
         String productName,
-        Long shopBranchId,
+        UUID shopBranchId,
         String shopName,
-        Long userId
+        UUID userId
 ) {
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "subscriptions")
@@ -19,22 +20,22 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subscription_id")
-    private Long id;
+    private UUID id;
     @Column(name = "product_price_id")
-    private Long productPriceId;
+    private UUID productPriceId;
     @Column(name = "product_id")
-    private Long productId;
+    private UUID productId;
     @Column(name = "product_name")
     private String productName;
     @Column(name = "shop_branch_id")
-    private Long shopBranchId;
+    private UUID shopBranchId;
     @Column(name = "shop_name")
     private String shopName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private LocalUser user;
 
-    public Subscription(Long id, Long productPriceId, Long productId, String productName, Long shopBranchId, String shopName, LocalUser user) {
+    public Subscription(UUID id, UUID productPriceId, UUID productId, String productName, UUID shopBranchId, String shopName, LocalUser user) {
         this.id = id;
         this.productPriceId = productPriceId;
         this.productId = productId;
@@ -47,27 +48,27 @@ public class Subscription {
     public Subscription() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public Long getProductPriceId() {
+    public UUID getProductPriceId() {
         return productPriceId;
     }
 
-    public void setProductPriceId(Long productPriceId) {
+    public void setProductPriceId(UUID productPriceId) {
         this.productPriceId = productPriceId;
     }
 
-    public Long getProductId() {
+    public UUID getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(UUID productId) {
         this.productId = productId;
     }
 
@@ -79,11 +80,11 @@ public class Subscription {
         this.productName = productName;
     }
 
-    public Long getShopBranchId() {
+    public UUID getShopBranchId() {
         return shopBranchId;
     }
 
-    public void setShopBranchId(Long shopBranchId) {
+    public void setShopBranchId(UUID shopBranchId) {
         this.shopBranchId = shopBranchId;
     }
 

@@ -6,9 +6,10 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Subscription, Long> implements SubscriptionRepository {
+public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Subscription, UUID> implements SubscriptionRepository {
 
     private static final String HQL_FIND_ALL_BY_PRODUCT_PRICE_ID = """
             SELECT s FROM Subscription s
@@ -21,7 +22,7 @@ public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Su
     }
 
     @Override
-    public List<Subscription> findByProductPriceId(Long id) {
+    public List<Subscription> findByProductPriceId(UUID id) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_ALL_BY_PRODUCT_PRICE_ID, Subscription.class)

@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "local_users")
@@ -13,11 +14,11 @@ public class LocalUser {
 
     @Id
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "phoneNumber")
     private String phoneNumber;
 
-    public LocalUser(Long id, String phoneNumber) {
+    public LocalUser(UUID id, String phoneNumber) {
         this.id = id;
         this.phoneNumber = phoneNumber;
     }
@@ -26,11 +27,11 @@ public class LocalUser {
 
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

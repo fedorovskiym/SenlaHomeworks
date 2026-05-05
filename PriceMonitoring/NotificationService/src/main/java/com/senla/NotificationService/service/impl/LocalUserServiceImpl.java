@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class LocalUserServiceImpl implements LocalUserService {
@@ -43,7 +44,7 @@ public class LocalUserServiceImpl implements LocalUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public LocalUser findByIdIfExists(Long id) {
+    public LocalUser findByIdIfExists(UUID id) {
         return localUserRepository.findById(id).orElseThrow(() -> {
             logger.info("Local user with id {} not found", id);
             return new EntityNotFoundException("Local user with id " + id + " not found!");
@@ -52,7 +53,7 @@ public class LocalUserServiceImpl implements LocalUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public LocalUser findByIdOptional(Long id) {
+    public LocalUser findByIdOptional(UUID id) {
         return localUserRepository.findById(id).orElse(null);
     }
 }

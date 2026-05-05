@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notifications")
@@ -12,7 +13,7 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
     @Column(name = "message")
     private String message;
     @Column(name = "send_date_time")
@@ -21,7 +22,7 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private LocalUser user;
 
-    public Notification(Long id, String message, LocalDateTime sendDateTime, LocalUser user) {
+    public Notification(UUID id, String message, LocalDateTime sendDateTime, LocalUser user) {
         this.id = id;
         this.message = message;
         this.sendDateTime = sendDateTime;
@@ -31,11 +32,11 @@ public class Notification {
     public Notification() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
