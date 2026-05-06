@@ -1,16 +1,17 @@
 package com.senla.ProductService.repository.impl;
 
-import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.repository.ProductPriceRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Table;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<ProductPrice, UUID> implements ProductPriceRepository {
@@ -64,6 +65,11 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             WHERE pp.id = :productPriceId
             """;
 
+    private static final String HQL_FIND_BY_ID = """
+            SELECT pp FROM ProductPrice pp
+            WHERE pp.id IN (:listProductPriceId)
+            """;
+
     public ProductPriceRepositoryImpl() {
         super(ProductPrice.class);
     }
@@ -80,12 +86,13 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
         if (categoryId != null) {
             stringBuilder.append("AND pp.category.id = ").append(categoryId);
         }
-        if(sortBy != null) {
+        if (sortBy != null) {
             stringBuilder.append("ORDER BY ").append(sortBy).append(" ");
         } else {
             stringBuilder.append("ORDER BY pp.price ");
         }
-        stringBuilder.append((asc ? "ASC" : "DESC"));;
+        stringBuilder.append((asc ? "ASC" : "DESC"));
+        ;
 
         return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setFirstResult((page - 1) * size)
@@ -166,5 +173,16 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
                 .setParameter("productPriceId", id)
                 .getResultStream()
                 .findFirst();
+    }
+
+    @Override
+    public Map<UUID, ProductPrice> findAllById(Set<UUID> listProductPriceId) {
+        EntityManager entityManager = getEntityManager();
+
+        List<ProductPrice> productPriceList = entityManager.createQuery(HQL_FIND_BY_ID, ProductPrice.class)
+                .setParameter("listProductPriceId", listProductPriceId)
+                .getResultList();
+
+        return productPriceList.stream().collect(Collectors.toMap(ProductPrice::getId, Function.identity()));
     }
 }

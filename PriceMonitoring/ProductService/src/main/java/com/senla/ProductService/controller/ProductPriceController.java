@@ -94,7 +94,7 @@ public class ProductPriceController {
     @PostMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> subscribe(@PathVariable UUID id) {
         logger.info("Received request to subscribe /product-service/price/{}", id);
-        productPriceService.sendSubscribeMessage(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        productPriceService.subscribe(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

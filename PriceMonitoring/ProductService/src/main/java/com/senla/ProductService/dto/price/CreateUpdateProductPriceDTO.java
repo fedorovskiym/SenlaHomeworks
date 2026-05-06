@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public class CreateUpdateProductPriceDTO {
 
+    @CsvBindByName(column = "id")
+    private UUID id;
     @NotNull(message = "Product's id must be not null")
     @CsvBindByName(column = "productId")
     private UUID productId;
@@ -26,11 +28,20 @@ public class CreateUpdateProductPriceDTO {
     public CreateUpdateProductPriceDTO() {
     }
 
-    public CreateUpdateProductPriceDTO(UUID productId, UUID shopBranchId, Double price, Integer discountPercent) {
+    public CreateUpdateProductPriceDTO(UUID id, UUID productId, UUID shopBranchId, Double price, Integer discountPercent) {
+        this.id = id;
         this.productId = productId;
         this.shopBranchId = shopBranchId;
         this.price = price;
         this.discountPercent = discountPercent;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public UUID getProductId() {
@@ -67,8 +78,9 @@ public class CreateUpdateProductPriceDTO {
 
     @Override
     public String toString() {
-        return "CreateProductPriceDTO{" +
-                "productId=" + productId +
+        return "CreateUpdateProductPriceDTO{" +
+                "id=" + id +
+                ", productId=" + productId +
                 ", shopBranchId=" + shopBranchId +
                 ", price=" + price +
                 ", discountPercent=" + discountPercent +

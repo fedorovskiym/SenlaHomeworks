@@ -19,14 +19,14 @@ public class KafkaBroker {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendSubscriptionMessage(UUID id, String json) {
-        kafkaTemplate.executeInTransaction(t -> {
-            t.send("subscription", String.valueOf(id), json);
-            t.flush();
-            logger.info("Subscription message sent to kafka {} to topic {}", json, "subscription");
-            return null;
-        });
-    }
+//    public void sendSubscriptionMessage(UUID id, String json) {
+//        kafkaTemplate.executeInTransaction(t -> {
+//            t.send("subscription", String.valueOf(id), json);
+//            t.flush();
+//            logger.info("Subscription message sent to kafka {} to topic {}", json, "subscription");
+//            return null;
+//        });
+//    }
 
     //todo: делать не обязательно, но прочитай про варианты если запрос не успел уйти в брокер, как сделать повтроный запрос через время и нужны сообщения обошибках, просто логов мало
     public void sendUpdateProductPriceMessage(UUID id, String json) {

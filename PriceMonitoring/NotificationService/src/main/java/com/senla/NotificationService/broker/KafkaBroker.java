@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 @Component
 public class KafkaBroker {
 
@@ -51,25 +53,28 @@ public class KafkaBroker {
         }
     }
 
-    @KafkaListener(topics = "subscription", groupId = "group", containerFactory = "kafkaListenerContainerFactory")
-    public void consumeSubscription(String json) {
-        try {
-            SubscriptionDTO subscriptionDTO = objectMapper.readValue(json, SubscriptionDTO.class);
-            logger.info("Recieved message from kafka with subscription {}", subscriptionDTO);
-            subscriptionService.saveSubscription(subscriptionDTO);
-        } catch (JsonParseException e) {
-            logger.error("Error while parsing message {} from kafka", json, e);
-        }
-    }
+//    @KafkaListener(topics = "subscription", groupId = "group", containerFactory = "kafkaListenerContainerFactory")
+//    public void consumeSubscription(String json) {
+//        try {
+//            SubscriptionDTO subscriptionDTO = objectMapper.readValue(json, SubscriptionDTO.class);
+//            logger.info("Recieved message from kafka with subscription {}", subscriptionDTO);
+//            subscriptionService.saveSubscription(subscriptionDTO);
+//        } catch (JsonParseException e) {
+//            logger.error("Error while parsing message {} from kafka", json, e);
+//        }
+//    }
+
     //Добавь в readme информацию зачем нужны конкретные топики, чуть подробнее распиши про брокер и его надстройки
-    @KafkaListener(topics = "update-product-price", groupId = "group", containerFactory = "kafkaListenerContainerFactory")
-    public void consumeUpdatePrice(String json) {
-        try {
-            PriceDTO priceDTO = objectMapper.readValue(json, PriceDTO.class);
-            logger.info("Recieved message from kafka with price {}", priceDTO);
-            subscriptionService.sendMessages(priceDTO);
-        } catch (JsonParseException e) {
-            logger.error("Error while parsing message {} from kafka", json, e);
-        }
+    @KafkaListener(topics = "update-product-price", groupId = "group", containerFactory = "kafkaListenerContainerFactory", batch = "true")
+    public void consumeUpdatePrice(List<String> jsons) {
+        jsons.forEach(json -> {
+            try {
+                PriceDTO priceDTO = objectMapper.readValue(json, PriceDTO.class);
+                logger.info("Recieved message from kafka with price {}", priceDTO);
+                subscriptionService.sendMessages(priceDTO);
+            } catch (JsonParseException e) {
+                logger.error("Error while parsing message {} from kafka", json, e);
+            }
+        });
     }
 }

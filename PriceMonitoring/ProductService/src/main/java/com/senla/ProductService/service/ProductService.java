@@ -6,6 +6,8 @@ import com.senla.ProductService.model.Product;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ProductService {
@@ -27,4 +29,6 @@ public interface ProductService {
     void importFromCsv(MultipartFile file);
 
     Product findByName(String name);
+
+    Map<UUID, Product> findAllById(Set<UUID> listProductId);
 }

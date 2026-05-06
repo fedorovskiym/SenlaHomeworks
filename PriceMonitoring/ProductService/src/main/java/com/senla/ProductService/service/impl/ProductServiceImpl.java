@@ -35,7 +35,9 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -219,6 +221,12 @@ public class ProductServiceImpl implements ProductService {
     public Product findByName(String name) {
         logger.info("Finding product by name {} or null", name);
         return productRepository.findByName(name).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<UUID, Product> findAllById(Set<UUID> listProductId) {
+        return productRepository.findAllById(listProductId);
     }
 
     private List<CreateProductDTO> parseCsv(Reader reader) throws IOException {

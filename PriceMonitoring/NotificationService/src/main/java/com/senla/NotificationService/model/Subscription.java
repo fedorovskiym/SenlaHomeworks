@@ -19,8 +19,6 @@ import java.util.UUID;
 public class Subscription {
 
     @Id
-    @GeneratedValue
-    @UuidGenerator
     @Column(name = "subscription_id")
     private UUID id;
     @Column(name = "product_price_id")

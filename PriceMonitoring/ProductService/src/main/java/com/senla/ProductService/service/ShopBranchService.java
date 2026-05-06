@@ -4,6 +4,8 @@ import com.senla.ProductService.dto.ShopBranchDTO;
 import com.senla.ProductService.model.ShopBranch;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ShopBranchService {
@@ -15,4 +17,6 @@ public interface ShopBranchService {
     ShopBranchDTO findById(UUID id);
 
     ShopBranch findByIdIfExists(UUID id);
+
+    Map<UUID, ShopBranch> findAllById(Set<UUID> listShopBranchId);
 }

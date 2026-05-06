@@ -1,5 +1,6 @@
 package com.senla.ProductService.service;
 
+import com.senla.ProductService.dto.SubscriptionMessage;
 import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
@@ -30,5 +31,5 @@ public interface ProductPriceService {
 
     ProductPriceDTO update(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO);
 
-    void sendSubscribeMessage(UUID id);
+    void subscribe(UUID id);
 }

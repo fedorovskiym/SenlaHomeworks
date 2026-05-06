@@ -8,7 +8,6 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.senla.ProductService.broker.KafkaBroker;
-import com.senla.ProductService.dto.SubscriptionMessage;
 import com.senla.ProductService.dto.UpdateProductPriceMessage;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.price.ComparePrice;
@@ -24,6 +23,7 @@ import com.senla.ProductService.model.PriceHistory;
 import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.model.ShopBranch;
+import com.senla.ProductService.model.Subscription;
 import com.senla.ProductService.model.enums.PriceStatus;
 import com.senla.ProductService.model.enums.ProductPriceSortType;
 import com.senla.ProductService.repository.ProductPriceRepository;
@@ -34,6 +34,7 @@ import com.senla.ProductService.service.ProductCategoryService;
 import com.senla.ProductService.service.ProductPriceService;
 import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.service.ShopBranchService;
+import com.senla.ProductService.service.SubscriptionService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.http.InvalidParameterException;
@@ -54,7 +55,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -69,12 +71,17 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     private final BrandService brandService;
     private final ProductCategoryService productCategoryService;
     private final PriceHistoryService priceHistoryService;
+    private final SubscriptionService subscriptionService;
     private final KafkaBroker kafkaBroker;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger logger = LoggerFactory.getLogger(ProductPriceServiceImpl.class);
 
     @Autowired
-    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper, ProductService productService, ShopBranchService shopBranchService, AIService aiService, BrandService brandService, ProductCategoryService productCategoryService, PriceHistoryService priceHistoryService, KafkaBroker kafkaBroker) {
+    public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper,
+                                   ShopBranchService shopBranchService, AIService aiService,
+                                   BrandService brandService, ProductCategoryService productCategoryService,
+                                   PriceHistoryService priceHistoryService, SubscriptionService subscriptionService,
+                                   KafkaBroker kafkaBroker, ProductService productService) {
         this.productPriceRepository = productPriceRepository;
         this.productPriceMapper = productPriceMapper;
         this.productService = productService;
@@ -83,6 +90,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         this.brandService = brandService;
         this.productCategoryService = productCategoryService;
         this.priceHistoryService = priceHistoryService;
+        this.subscriptionService = subscriptionService;
         this.kafkaBroker = kafkaBroker;
     }
 
@@ -91,7 +99,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     public ProductPriceDTO save(CreateUpdateProductPriceDTO createProductPriceDTO) {
         logger.info("Saving product price {}", createProductPriceDTO);
         if (findByProductIdAndShopBranchId(createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId()) != null) {
-            logger.warn("Product price with product id {} and shop branch id {} already exists", createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId());
+            logger.warn("Product price with product id {} and shop branch id {} already exists",
+                    createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId());
             throw new EntityExistsException("Price with product id " + createProductPriceDTO.getProductId() +
                     " in shop branch id " + createProductPriceDTO.getShopBranchId() + " already exists");
         }
@@ -146,7 +155,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
             throw new EntityNotFoundException("No prices found in shops with id - " + productId);
         }
 
-        ComparePrice comparePrice = new ComparePrice();
         String address = String.format("%s %s %s %s", productPrices.get(0).getShopBranch().getCity().getName(),
                 productPrices.get(0).getShopBranch().getStreet(), productPrices.get(0).getShopBranch().getHouse(),
                 productPrices.get(0).getShopBranch().getRoom());
@@ -162,15 +170,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 ))
                 .toList();
 
-        //todo:  аналогично методу buildPriceHistory вынеси ниже в приватный метод
-        comparePrice.setProductId(productId);
-        comparePrice.setProductName(productPrices.get(0).getProduct().getName());
-        comparePrice.setProductImageUrl(productPrices.get(0).getProduct().getImageUrl());
-        comparePrice.setMinPrice(productPrices.get(0).getPrice());
-        comparePrice.setShopNameMin(productPrices.get(0).getShopBranch().getShop().getName());
-        comparePrice.setShopLogoImageUrl(productPrices.get(0).getShopBranch().getShop().getLogoImageUrl());
-        comparePrice.setShopAddressMin(address);
-        comparePrice.setOtherPrices(otherPrices);
+        ComparePrice comparePrice = buildComparePrice(productId, address, productPrices, otherPrices);
         logger.info("Compare price {}", comparePrice);
         return comparePrice;
     }
@@ -179,76 +179,61 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Transactional
     public void importFromCsv(MultipartFile file) {
         logger.info("Importing product price from csv file {}", file.getOriginalFilename());
-        if (!file.getOriginalFilename().endsWith("csv")) {
-            logger.warn("Invalid file extension {}", file.getOriginalFilename());
-            throw new InvalidParameterException("Only .csv files supported!");
-        }
-        if (file.isEmpty()) {
-            logger.warn("Empty product price file");
-            throw new InvalidParameterException("Empty file!");
-        }
+        validateFile(file);
 
         try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
-            List<CreateUpdateProductPriceDTO> rows = parseCsv(reader);
             List<PriceHistory> priceHistoryList = new ArrayList<>();
             List<ProductPrice> updateList = new ArrayList<>();
             List<ProductPrice> saveList = new ArrayList<>();
 
-            rows.stream()
-                    .map(row -> {
-                        if (row.getProductId() == null || row.getShopBranchId() == null) {
-                            return null;
-                        }
-                        //todo: очень плохой подход ты делаешь цикл в цикле и как минимум n количество запросов а нужно всё уместить в 2 под каждую сущность
-                        Product product = productService.findByIdIfExists(row.getProductId());
-                        if (product == null) {
-                            return null;
-                        }
+            List<CreateUpdateProductPriceDTO> rows = parseCsv(reader);
+            Set<UUID> listProductId = rows.stream()
+                    .map(CreateUpdateProductPriceDTO::getProductId).collect(Collectors.toSet());
+            Set<UUID> listShopBranchId = rows.stream()
+                    .map(CreateUpdateProductPriceDTO::getShopBranchId).collect(Collectors.toSet());
+            Set<UUID> listProductPriceId = rows.stream()
+                    .map(CreateUpdateProductPriceDTO::getId).collect(Collectors.toSet());
+            Map<UUID, Product> productMap = productService.findAllById(listProductId);
+            Map<UUID, ShopBranch> shopBranchMap = shopBranchService.findAllById(listShopBranchId);
+            Map<UUID, ProductPrice> productPriceMap = getProductPriceMap(listProductPriceId);
 
-                        ShopBranch shopBranch = shopBranchService.findByIdIfExists(row.getShopBranchId());
-                        if (shopBranch == null) {
-                            return null;
-                        }
+            for (CreateUpdateProductPriceDTO row : rows) {
+                Product product = productMap.get(row.getProductId());
+                if (product == null) {
+                    continue;
+                }
 
-                        ProductPrice productPrice = productPriceMapper.createProductPriceDTOToProductPrice(row);
-                        productPrice.setProduct(product);
-                        productPrice.setShopBranch(shopBranch);
-                        productPrice.setStartDate(LocalDate.now());
-                        productPrice.setStatus(PriceStatus.ACTUAL);
-                        return productPrice;
-                    })
-                    .filter(Objects::nonNull)
-                    .forEach(productPrice -> {
-                        ProductPrice presentProductPrice = findByProductIdAndShopBranchId(productPrice.getProduct().getId(),
-                                productPrice.getShopBranch().getId());
-                        if (presentProductPrice != null) {
-                            if (!productPrice.getPrice().equals(presentProductPrice.getPrice())) {
-                                productPrice.setId(presentProductPrice.getId());
+                ShopBranch shopBranch = shopBranchMap.get(row.getShopBranchId());
+                if (shopBranch == null) {
+                    continue;
+                }
 
-                                if (productPrice.getDiscountPercent() > presentProductPrice.getDiscountPercent()) {
-                                    UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(productPrice.getId(),
-                                            productPrice.getPrice(), productPrice.getDiscountPercent());
-                                    String json = objectMapper.writeValueAsString(updateProductPriceMessage);
-                                    logger.info("Build message for notification service {}", updateProductPriceMessage);
-                                    kafkaBroker.sendUpdateProductPriceMessage(productPrice.getId(), json);
-                                }
+                ProductPrice existingProductPrice = productPriceMap.get(row.getProductId());
 
-                                PriceHistory priceHistory = buildPriceHistory(presentProductPrice, productPrice.getPrice());
-                                priceHistoryList.add(priceHistory);
-                                updateList.add(productPrice);
-                            }
-                        } else {
-                            saveList.add(productPrice);
-                        }
-                    });
+                if (existingProductPrice == null) {
+                    ProductPrice productPrice = buildProductPrice(row, product, shopBranch);
+                    saveList.add(productPrice);
+                } else {
+                    PriceHistory priceHistory = buildPriceHistory(existingProductPrice, row.getPrice());
+                    priceHistoryList.add(priceHistory);
 
+                    if (row.getDiscountPercent() > existingProductPrice.getDiscountPercent()) {
+                        sendUpdatePriceMessage(existingProductPrice.getId(), row, existingProductPrice);
+                    }
+
+                    existingProductPrice.setPrice(row.getPrice());
+                    existingProductPrice.setDiscountPercent(row.getDiscountPercent());
+                    existingProductPrice.setStartDate(LocalDate.now());
+                    updateList.add(existingProductPrice);
+                }
+            }
             logger.info("Import from file end");
             productPriceRepository.saveList(saveList);
             productPriceRepository.updateList(updateList);
             priceHistoryService.saveList(priceHistoryList);
         } catch (IOException e) {
             logger.error("Error while reading file {}", file.getOriginalFilename(), e);
-            throw new RuntimeException(e);
+            throw new CsvImportException("Error while reading file " + file.getOriginalFilename(), e);
         }
     }
 
@@ -328,11 +313,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         logger.info("Update price by id {}", id);
         ProductPrice productPrice = findByIdIfExists(id);
 
-        if (productPrice.getDiscountPercent() < createProductPriceDTO.getDiscountPercent()) {
-            UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(id, createProductPriceDTO.getPrice(), createProductPriceDTO.getDiscountPercent());
-            String json = objectMapper.writeValueAsString(updateProductPriceMessage);
-            logger.info("Build message for notification service {}", updateProductPriceMessage);
-            kafkaBroker.sendUpdateProductPriceMessage(id, json);
+        if (productPrice.getPrice() > createProductPriceDTO.getPrice()) {
+            sendUpdatePriceMessage(id, createProductPriceDTO, productPrice);
         }
 
         PriceHistory priceHistory = buildPriceHistory(productPrice, createProductPriceDTO.getPrice());
@@ -346,8 +328,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void sendSubscribeMessage(UUID id) {
+    @Transactional
+    public void subscribe(UUID id) {
         ProductPrice productPrice = productPriceRepository.findByIdWithFetch(id).orElseThrow(() -> {
             logger.warn("Product price with id {} not found", id);
             return new EntityNotFoundException("Product price with id - " + id + " not found!");
@@ -355,11 +337,48 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID userId = (UUID) authentication.getDetails();
 
-        SubscriptionMessage subscriptionMessage = new SubscriptionMessage(productPrice.getId(), productPrice.getProduct().getId(), productPrice.getProduct().getName(),
-                productPrice.getShopBranch().getId(), productPrice.getShopBranch().getShop().getName(), userId);
-        String json = objectMapper.writeValueAsString(subscriptionMessage);
+        Subscription subscription = buildSubscription(productPrice, userId);
+        subscriptionService.save(subscription);
+    }
 
-        kafkaBroker.sendSubscriptionMessage(userId, json);
+    @Transactional(readOnly = true)
+    protected Map<UUID, ProductPrice> getProductPriceMap(Set<UUID> listProductPriceId) {
+        return productPriceRepository.findAllById(listProductPriceId);
+    }
+
+    private ComparePrice buildComparePrice(UUID productId, String address,
+                                           List<ProductPrice> productPrices, List<PriceDTO> otherPrices) {
+        ComparePrice comparePrice = new ComparePrice();
+        comparePrice.setProductId(productId);
+        comparePrice.setProductName(productPrices.get(0).getProduct().getName());
+        comparePrice.setProductImageUrl(productPrices.get(0).getProduct().getImageUrl());
+        comparePrice.setMinPrice(productPrices.get(0).getPrice());
+        comparePrice.setShopNameMin(productPrices.get(0).getShopBranch().getShop().getName());
+        comparePrice.setShopLogoImageUrl(productPrices.get(0).getShopBranch().getShop().getLogoImageUrl());
+        comparePrice.setShopAddressMin(address);
+        comparePrice.setOtherPrices(otherPrices);
+        return comparePrice;
+    }
+
+    private void sendUpdatePriceMessage(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO, ProductPrice productPrice) {
+        List<Subscription> subscriptions = subscriptionService.findByProductPriceId(id);
+        subscriptions.forEach(subscription -> {
+            UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(id, productPrice.getProduct().getName(),
+                    createProductPriceDTO.getPrice(), createProductPriceDTO.getDiscountPercent(), subscription.getUserId());
+            String json = objectMapper.writeValueAsString(updateProductPriceMessage);
+            logger.info("Sending update price message {} to kafka for user with id {}", json, subscription.getUserId());
+            kafkaBroker.sendUpdateProductPriceMessage(id, json);
+        });
+    }
+
+    private ProductPrice buildProductPrice(CreateUpdateProductPriceDTO row, Product product, ShopBranch shopBranch) {
+        ProductPrice productPrice = productPriceMapper.createProductPriceDTOToProductPrice(row);
+        productPrice.setId(null);
+        productPrice.setProduct(product);
+        productPrice.setShopBranch(shopBranch);
+        productPrice.setStartDate(LocalDate.now());
+        productPrice.setStatus(PriceStatus.ACTUAL);
+        return productPrice;
     }
 
     private PriceHistory buildPriceHistory(ProductPrice productPrice, Double newPrice) {
@@ -372,4 +391,22 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return priceHistory;
     }
 
+    private Subscription buildSubscription(ProductPrice productPrice, UUID userId) {
+        Subscription subscription = new Subscription();
+        subscription.setId(UUID.randomUUID());
+        subscription.setUserId(userId);
+        subscription.setProductPrice(productPrice);
+        return subscription;
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (!file.getOriginalFilename().endsWith("csv")) {
+            logger.warn("Invalid file extension {}", file.getOriginalFilename());
+            throw new InvalidParameterException("Only .csv files supported!");
+        }
+        if (file.isEmpty()) {
+            logger.warn("Empty product price file");
+            throw new InvalidParameterException("Empty file!");
+        }
+    }
 }

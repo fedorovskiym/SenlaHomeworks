@@ -6,8 +6,12 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product, UUID> implements ProductRepository {
@@ -32,6 +36,11 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
     private static final String HQL_FIND_BY_NAME = """
             SELECT p FROM Product p
             WHERE p.name = :name
+            """;
+
+    private static final String HQL_FIND_BY_ID = """
+            SELECT p FROM Product p
+            WHERE p.id IN (:listProductId)
             """;
 
     public ProductRepositoryImpl() {
@@ -74,6 +83,17 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
     public void updateList(List<Product> updateList) {
         EntityManager entityManager = getEntityManager();
         updateList.forEach(entityManager::merge);
+    }
+
+    @Override
+    public Map<UUID, Product> findAllById(Set<UUID> listProductId) {
+        EntityManager entityManager = getEntityManager();
+
+        List<Product> productList = entityManager.createQuery(HQL_FIND_BY_ID, Product.class)
+                .setParameter("listProductId", listProductId)
+                .getResultList();
+
+        return productList.stream().collect(Collectors.toMap(Product::getId, Function.identity()));
     }
 
 }

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -76,5 +78,11 @@ public class ShopBranchServiceImpl implements ShopBranchService {
             logger.warn("Shop branch not found with id {}", id);
             return new EntityNotFoundException("Shop branch with id - " + id + " not found!");
         });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<UUID, ShopBranch> findAllById(Set<UUID> listShopBranchId) {
+        return shopBranchRepository.findAllById(listShopBranchId);
     }
 }

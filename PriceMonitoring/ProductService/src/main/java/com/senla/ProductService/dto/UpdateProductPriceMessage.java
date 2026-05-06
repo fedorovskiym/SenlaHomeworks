@@ -4,7 +4,9 @@ import java.util.UUID;
 
 public record UpdateProductPriceMessage(
         UUID id,
+        String productName,
         Double price,
-        Integer discountPercent
+        Integer discountPercent,
+        UUID userId
 ) {
 }
