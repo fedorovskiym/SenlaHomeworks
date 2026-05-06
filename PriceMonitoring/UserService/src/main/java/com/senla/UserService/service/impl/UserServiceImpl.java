@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -84,20 +86,14 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserDTO getUserById(UUID id) {
         logger.info("Getting user with id {}", id);
-        return userMapper.userToUserDTO(userRepository.findById(id).orElseThrow(() -> {
-            logger.warn("User not found with id {}", id);
-            return new EntityNotFoundException("User with id - " + id + " not found!");
-        }));
+        return userMapper.userToUserDTO(findByIdIfExists(id));
     }
 
     @Override
     @Transactional
     public void update(UUID userId, UserDTO userDTO) {
         logger.info("Updating user with id {}", userId);
-        User user = userRepository.findById(userId).orElseThrow(() -> {
-            logger.warn("User not found with id {}", userId);
-            return new EntityNotFoundException("User with id - " + userId + " not found!");
-        });
+        User user = findByIdIfExists(userId);
 
         if (!user.getPhoneNumber().equals(userDTO.phoneNumber())) {
             KafkaMessageWithUser message = new KafkaMessageWithUser(userId, userDTO.phoneNumber());
@@ -109,5 +105,31 @@ public class UserServiceImpl implements UserService {
         user = userMapper.updateUserFromUserDTO(userDTO, user);
         userRepository.update(user);
         logger.info("Successfully updated user with id {}", userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> findAll() {
+        logger.info("Finding all users");
+        return userRepository.findAll().stream().map(userMapper::userToUserDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        logger.info("Deleting user with id {}", id);
+        User user = findByIdIfExists(id);
+        userRepository.delete(user);
+        logger.info("Successfully deleted user with id {}", id);
+        kafkaBroker.sendMessageWithDeleteUser(id, id.toString());
+    }
+
+    @Override
+    @Transactional
+    public User findByIdIfExists(UUID id) {
+        return userRepository.findById(id).orElseThrow(() -> {
+           logger.warn("User not found with id {}", id);
+           return new EntityNotFoundException("User with id - " + id + " not found!");
+        });
     }
 }

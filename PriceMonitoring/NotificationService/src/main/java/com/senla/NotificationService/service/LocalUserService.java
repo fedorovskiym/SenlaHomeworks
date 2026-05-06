@@ -14,4 +14,6 @@ public interface LocalUserService {
     LocalUser findByIdIfExists(UUID id);
 
     LocalUser findByIdOptional(UUID id);
+
+    void delete(UUID id);
 }

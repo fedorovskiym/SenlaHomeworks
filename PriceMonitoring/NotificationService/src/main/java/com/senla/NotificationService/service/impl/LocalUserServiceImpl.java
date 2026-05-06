@@ -56,4 +56,13 @@ public class LocalUserServiceImpl implements LocalUserService {
     public LocalUser findByIdOptional(UUID id) {
         return localUserRepository.findById(id).orElse(null);
     }
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        logger.info("Deleting local user with id {}", id);
+        LocalUser localUser = findByIdIfExists(id);
+        localUserRepository.delete(localUser);
+        logger.info("Succesfully delete local user with id {}", id);
+    }
 }

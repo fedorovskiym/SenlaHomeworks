@@ -30,8 +30,24 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Subscription> findByProductPriceId(UUID id) {
         logger.info("Find all subscriptions by productPriceId {}", id);
         return subscriptionRepository.findByProductPriceId(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByUserId(UUID id) {
+        logger.info("Delete subscriptions by user id {}", id);
+        List<Subscription> subscriptions = findByUserId(id);
+        subscriptions.forEach(subscriptionRepository::delete);
+        logger.info("{} subscriptions deleted by user id {}", subscriptions.size(), id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Subscription> findByUserId(UUID id) {
+        return subscriptionRepository.findByUserId(id);
     }
 }

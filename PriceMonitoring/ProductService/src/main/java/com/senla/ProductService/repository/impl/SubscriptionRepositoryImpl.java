@@ -17,6 +17,11 @@ public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Su
             WHERE p.id = :id
             """;
 
+    private static final String HQL_FIND_BY_USER_ID = """
+            SELECT s FROM Subscription s
+            WHERE s.userId = :userId
+            """;
+
     public SubscriptionRepositoryImpl() {
         super(Subscription.class);
     }
@@ -27,6 +32,15 @@ public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Su
 
         return entityManager.createQuery(HQL_FIND_BY_PRODUCT_PRICE_ID, Subscription.class)
                 .setParameter("id", id)
+                .getResultList();
+    }
+
+    @Override
+    public List<Subscription> findByUserId(UUID id) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_USER_ID, Subscription.class)
+                .setParameter("userId", id)
                 .getResultList();
     }
 }

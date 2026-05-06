@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class KafkaBroker {
@@ -29,7 +30,7 @@ public class KafkaBroker {
         this.notificationService = notificationService;
     }
 
-    @KafkaListener(topics = "new-user", groupId = "group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "new-user", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory")
     public void consumeNewUser(String json) {
         try {
             LocalUser localUser = objectMapper.readValue(json, LocalUser.class);
@@ -40,7 +41,7 @@ public class KafkaBroker {
         }
     }
 
-    @KafkaListener(topics = "update-user", groupId = "group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "update-user", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory")
     public void consumeUpdateUser(String json) {
         try {
             LocalUser localUser = objectMapper.readValue(json, LocalUser.class);
@@ -50,9 +51,9 @@ public class KafkaBroker {
             logger.error("Error while parsing message {} from kafka", json, e);
         }
     }
-    
+
     //Добавь в readme информацию зачем нужны конкретные топики, чуть подробнее распиши про брокер и его надстройки
-    @KafkaListener(topics = "update-product-price", groupId = "group", containerFactory = "kafkaListenerContainerFactory", batch = "true")
+    @KafkaListener(topics = "update-product-price", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory", batch = "true")
     public void consumeUpdatePrice(List<String> jsons) {
         jsons.forEach(json -> {
             try {
@@ -63,5 +64,16 @@ public class KafkaBroker {
                 logger.error("Error while parsing message {} from kafka", json, e);
             }
         });
+    }
+
+    @KafkaListener(topics = "delete-user", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory")
+    public void consumeDeleteUser(String json) {
+        try {
+            UUID id = UUID.fromString(json);
+            logger.info("Recieved delete message from kafka with user id {}", id);
+            localUserService.delete(id);
+        } catch (JsonParseException e) {
+            logger.error("Error while parsing message {} from kafka", json, e);
+        }
     }
 }

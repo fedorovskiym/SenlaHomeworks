@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface SubscriptionRepository extends GenericRepository<Subscription, UUID> {
     List<Subscription> findByProductPriceId(UUID id);
+
+    List<Subscription> findByUserId(UUID id);
 }

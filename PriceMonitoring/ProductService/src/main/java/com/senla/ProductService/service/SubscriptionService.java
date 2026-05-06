@@ -10,4 +10,8 @@ public interface SubscriptionService {
     void save(Subscription subscription);
 
     List<Subscription> findByProductPriceId(UUID id);
+
+    void deleteByUserId(UUID id);
+
+    List<Subscription> findByUserId(UUID id);
 }

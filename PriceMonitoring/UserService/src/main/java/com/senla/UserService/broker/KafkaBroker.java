@@ -35,7 +35,17 @@ public class KafkaBroker {
         kafkaTemplate.executeInTransaction(t -> {
             t.send("update-user", String.valueOf(id), json);
             t.flush();
-            logger.info("Update user with id {} and data {} send to topic {}", id, json, "update-user");
+            logger.info("Update message user with id {} and data {} send to topic {}", id, json, "update-user");
+            return null;
+        });
+    }
+
+    @Transactional
+    public void sendMessageWithDeleteUser(UUID id, String json) {
+        kafkaTemplate.executeInTransaction(t -> {
+            t.send("delete-user", String.valueOf(id), json);
+            t.flush();
+            logger.info("Delete message with user id {} send to topic {}", id, "delete-user");
             return null;
         });
     }
