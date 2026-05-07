@@ -23,3 +23,10 @@ CREATE TABLE users
 -- changeset fedor:1777048897650-3
 ALTER TABLE users
     ADD CONSTRAINT FK_USERS_ON_ROLE FOREIGN KEY (role_id) REFERENCES roles (id);
+
+-- changeset fedor:1777048897650-4
+INSERT INTO roles(id, name)
+VALUES (gen_random_uuid(), 'ROLE_ADMIN'),
+       (gen_random_uuid(), 'ROLE_USER')
+
+

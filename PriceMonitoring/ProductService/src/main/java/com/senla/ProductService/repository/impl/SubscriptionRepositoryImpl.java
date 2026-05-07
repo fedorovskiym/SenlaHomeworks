@@ -22,6 +22,22 @@ public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Su
             WHERE s.userId = :userId
             """;
 
+    private static final String HQL_ALL_BY_USER_ID_WITH_FETCH = """
+            SELECT s FROM Subscription s
+            JOIN FETCH s.productPrice p
+            JOIN FETCH p.product
+            JOIN FETCH p.shopBranch sb
+            JOIN FETCH sb.shop
+            WHERE s.userId = :userId
+            """;
+
+    private static final String HQL_FIND_BY_USER_ID_AND_PRODUCT_PRICE_ID = """
+            SELECT s FROM Subscription s
+            JOIN s.productPrice p
+            WHERE p.id = :productPriceId AND s.userId = :userId
+            """;
+
+
     public SubscriptionRepositoryImpl() {
         super(Subscription.class);
     }
@@ -42,5 +58,24 @@ public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Su
         return entityManager.createQuery(HQL_FIND_BY_USER_ID, Subscription.class)
                 .setParameter("userId", id)
                 .getResultList();
+    }
+
+    @Override
+    public List<Subscription> findAllByUserId(UUID id) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_ALL_BY_USER_ID_WITH_FETCH, Subscription.class)
+                .setParameter("userId", id)
+                .getResultList();
+    }
+
+    @Override
+    public boolean findByUserIdAndProductPriceId(UUID userId, UUID productPriceid) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_USER_ID_AND_PRODUCT_PRICE_ID, Subscription.class)
+                .setParameter("productPriceId", productPriceid)
+                .setParameter("userId", userId)
+                .getResultList().isEmpty();
     }
 }

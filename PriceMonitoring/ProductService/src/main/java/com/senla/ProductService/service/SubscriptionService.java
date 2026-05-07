@@ -1,5 +1,6 @@
 package com.senla.ProductService.service;
 
+import com.senla.ProductService.dto.SubscriptionDTO;
 import com.senla.ProductService.model.Subscription;
 
 import java.util.List;
@@ -14,4 +15,10 @@ public interface SubscriptionService {
     void deleteByUserId(UUID id);
 
     List<Subscription> findByUserId(UUID id);
+
+    List<SubscriptionDTO> findAll();
+
+    Subscription findByIdIfExists(UUID id);
+
+    void deleteById(UUID id);
 }
