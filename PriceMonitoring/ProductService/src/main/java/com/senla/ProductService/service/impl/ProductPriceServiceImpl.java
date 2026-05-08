@@ -108,7 +108,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         ShopBranch shopBranch = shopBranchService.findByIdIfExists(createProductPriceDTO.getShopBranchId());
 
         ProductPrice productPrice = productPriceMapper.createProductPriceDTOToProductPrice(createProductPriceDTO);
-
         productPrice.setProduct(product);
         productPrice.setShopBranch(shopBranch);
         productPrice.setStartDate(LocalDate.now());
@@ -155,9 +154,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
             throw new EntityNotFoundException("No prices found in shops with id - " + productId);
         }
 
-        String address = String.format("%s %s %s %s", productPrices.get(0).getShopBranch().getCity().getName(),
-                productPrices.get(0).getShopBranch().getStreet(), productPrices.get(0).getShopBranch().getHouse(),
-                productPrices.get(0).getShopBranch().getRoom());
+        String address = buildAddress(productPrices);
 
         List<PriceDTO> otherPrices = buildOtherPrices(productPrices);
 
@@ -165,6 +162,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         logger.info("Compare price build");
         return comparePrice;
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -359,6 +357,13 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     protected Map<UUID, ProductPrice> getProductPriceMap(Set<UUID> listProductPriceId) {
         return productPriceRepository.findAllById(listProductPriceId);
     }
+
+    private String buildAddress(List<ProductPrice> productPrices) {
+        return String.format("%s %s %s %s", productPrices.get(0).getShopBranch().getCity().getName(),
+                productPrices.get(0).getShopBranch().getStreet(), productPrices.get(0).getShopBranch().getHouse(),
+                productPrices.get(0).getShopBranch().getRoom());
+    }
+
 
     private ComparePrice buildComparePrice(UUID productId, String address,
                                            List<ProductPrice> productPrices, List<PriceDTO> otherPrices) {

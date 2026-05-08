@@ -62,11 +62,8 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
                 ))
                 .toList();
 
-        PriceHistoryDTO priceHistoryDTO = new PriceHistoryDTO(priceHistoryList.get(0).getId(), priceHistoryList.get(0).getProduct().getId(),
-                priceHistoryList.get(0).getProduct().getName(), priceHistoryList.get(0).getShopBranch().getId(),
-                priceHistoryList.get(0).getShopBranch().getShop().getName(), priceHistoryDataDTOList);
         logger.info("Successfully retrieve price history by shopBranchId {}", shopBranchId);
-        return priceHistoryDTO;
+        return buildPriceHistoryDTO(priceHistoryList, priceHistoryDataDTOList);
     }
 
     @Override
@@ -74,7 +71,7 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
     public String generateCsv(PriceHistoryOverPeriodOfTimeDTO periodOfTimeDTO) {
         logger.info("Generate csv with price history over period of time {}", periodOfTimeDTO);
         if (periodOfTimeDTO.endDate().isBefore(periodOfTimeDTO.startDate())) {
-            logger.warn("End date {} is before start date {}",  periodOfTimeDTO.endDate(), periodOfTimeDTO.startDate());
+            logger.warn("End date {} is before start date {}", periodOfTimeDTO.endDate(), periodOfTimeDTO.startDate());
             throw new InvalidParameterException("End date should be before start date!");
         }
 
@@ -86,6 +83,11 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
             return "";
         }
 
+        return buildCsv(priceHistoryList, periodOfTimeDTO);
+    }
+
+    private String buildCsv(List<PriceHistory> priceHistoryList,
+                            PriceHistoryOverPeriodOfTimeDTO periodOfTimeDTO) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("id;oldPrice;newPrice;changeDate;").append(System.lineSeparator());
@@ -100,4 +102,10 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
         return stringBuilder.toString();
     }
 
+    private PriceHistoryDTO buildPriceHistoryDTO(List<PriceHistory> priceHistoryList,
+                                                 List<PriceHistoryDataDTO> priceHistoryDataDTOList) {
+        return new PriceHistoryDTO(priceHistoryList.get(0).getId(), priceHistoryList.get(0).getProduct().getId(),
+                priceHistoryList.get(0).getProduct().getName(), priceHistoryList.get(0).getShopBranch().getId(),
+                priceHistoryList.get(0).getShopBranch().getShop().getName(), priceHistoryDataDTOList);
+    }
 }
