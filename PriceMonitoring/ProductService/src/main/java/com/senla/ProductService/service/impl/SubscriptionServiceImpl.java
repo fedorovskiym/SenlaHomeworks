@@ -1,9 +1,13 @@
 package com.senla.ProductService.service.impl;
 
-import com.senla.ProductService.dto.SubscriptionDTO;
+import com.senla.ProductService.dto.price.PriceDTO;
+import com.senla.ProductService.dto.subscription.SubscriptionDTO;
+import com.senla.ProductService.dto.subscription.SubscriptionDetailsDTO;
 import com.senla.ProductService.mapper.SubscriptionMapper;
+import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.model.Subscription;
 import com.senla.ProductService.repository.SubscriptionRepository;
+import com.senla.ProductService.service.ProductPriceService;
 import com.senla.ProductService.service.SubscriptionService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,11 +26,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionMapper subscriptionMapper;
+    private final ProductPriceService productPriceService;
     private static final Logger logger = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, SubscriptionMapper subscriptionMapper) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, SubscriptionMapper subscriptionMapper, ProductPriceService productPriceService) {
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionMapper = subscriptionMapper;
+        this.productPriceService = productPriceService;
     }
 
     @Override
@@ -87,5 +93,47 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = findByIdIfExists(id);
         subscriptionRepository.delete(subscription);
         logger.info("Subscription with id {} deleted", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SubscriptionDetailsDTO findByIdWithDetails(UUID id) {
+        Subscription subscription = subscriptionRepository.findByIdWithFetch(id).orElseThrow(() -> {
+            logger.warn("Subscription with id {} not found", id);
+            return new EntityNotFoundException("Subscription with id " + id + " not found");
+        });
+
+        List<ProductPrice> productPrices = productPriceService.findProductInShops(
+                subscription.getProductPrice().getProduct().getId(),
+                subscription.getProductPrice().getShopBranch().getCity().getId()
+        );
+
+        List<PriceDTO> otherPrices = productPriceService.buildOtherPrices(productPrices);
+
+        SubscriptionDetailsDTO subscriptionDetailsDTO = buildSubscriptionDetailsDTO(subscription, otherPrices);
+        logger.info("Subscription details build");
+        return subscriptionDetailsDTO;
+    }
+
+    private SubscriptionDetailsDTO buildSubscriptionDetailsDTO(Subscription subscription,
+                                                               List<PriceDTO> otherPrices) {
+        String address = String.format("%s %s %s %s", subscription.getProductPrice().getShopBranch().getCity().getName(),
+                subscription.getProductPrice().getShopBranch().getStreet(),
+                subscription.getProductPrice().getShopBranch().getHouse(),
+                subscription.getProductPrice().getShopBranch().getRoom()
+        );
+
+        SubscriptionDetailsDTO subscriptionDetailsDTO = new SubscriptionDetailsDTO();
+        subscriptionDetailsDTO.setId(subscription.getId());
+        subscriptionDetailsDTO.setProductId(subscription.getProductPrice().getProduct().getId());
+        subscriptionDetailsDTO.setProductName(subscription.getProductPrice().getProduct().getName());
+        subscriptionDetailsDTO.setShopBranchId(subscription.getProductPrice().getShopBranch().getId());
+        subscriptionDetailsDTO.setShopName(subscription.getProductPrice().getShopBranch().getShop().getName());
+        subscriptionDetailsDTO.setShopAddress(address);
+        subscriptionDetailsDTO.setPrice(subscription.getProductPrice().getPrice());
+        subscriptionDetailsDTO.setDiscountPercent(subscription.getProductPrice().getDiscountPercent());
+        subscriptionDetailsDTO.setStartDate(subscription.getProductPrice().getStartDate());
+        subscriptionDetailsDTO.setOtherPrices(otherPrices);
+        return subscriptionDetailsDTO;
     }
 }

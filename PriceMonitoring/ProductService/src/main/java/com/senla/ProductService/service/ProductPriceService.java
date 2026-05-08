@@ -1,8 +1,8 @@
 package com.senla.ProductService.service;
 
-import com.senla.ProductService.dto.SubscriptionMessage;
 import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
+import com.senla.ProductService.dto.price.PriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.model.ProductPrice;
@@ -20,6 +20,10 @@ public interface ProductPriceService {
     List<ProductPriceDTO> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO);
 
     ComparePrice comparePricesInShops(UUID productId, UUID cityId);
+
+    List<PriceDTO> buildOtherPrices(List<ProductPrice> productPrices);
+
+    List<ProductPrice> findProductInShops(UUID productId, UUID cityId);
 
     void importFromCsv(MultipartFile file);
 

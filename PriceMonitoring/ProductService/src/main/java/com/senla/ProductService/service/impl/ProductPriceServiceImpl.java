@@ -8,7 +8,7 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.senla.ProductService.broker.KafkaBroker;
-import com.senla.ProductService.dto.UpdateProductPriceMessage;
+import com.senla.ProductService.dto.price.UpdateProductPriceMessage;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
@@ -148,8 +148,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Transactional(readOnly = true)
     public ComparePrice comparePricesInShops(UUID productId, UUID cityId) {
         logger.info("Compare price on product with id {} in city with id {}", productId, cityId);
-        List<ProductPrice> productPrices = productPriceRepository.findProductInShops(productId, cityId);
 
+        List<ProductPrice> productPrices = findProductInShops(productId, cityId);
         if (productPrices.isEmpty()) {
             logger.warn("Product with id {} has no products in shops", productId);
             throw new EntityNotFoundException("No prices found in shops with id - " + productId);
@@ -159,6 +159,16 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 productPrices.get(0).getShopBranch().getStreet(), productPrices.get(0).getShopBranch().getHouse(),
                 productPrices.get(0).getShopBranch().getRoom());
 
+        List<PriceDTO> otherPrices = buildOtherPrices(productPrices);
+
+        ComparePrice comparePrice = buildComparePrice(productId, address, productPrices, otherPrices);
+        logger.info("Compare price build");
+        return comparePrice;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PriceDTO> buildOtherPrices(List<ProductPrice> productPrices) {
         List<PriceDTO> otherPrices = productPrices.stream()
                 .skip(1)
                 .map(productPrice -> new PriceDTO(
@@ -170,9 +180,13 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 ))
                 .toList();
 
-        ComparePrice comparePrice = buildComparePrice(productId, address, productPrices, otherPrices);
-        logger.info("Compare price {}", comparePrice);
-        return comparePrice;
+        return otherPrices;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductPrice> findProductInShops(UUID productId, UUID cityId) {
+        return productPriceRepository.findProductInShops(productId, cityId);
     }
 
     @Override

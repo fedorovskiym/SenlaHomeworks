@@ -1,7 +1,7 @@
 package com.senla.ProductService.controller;
 
-import com.senla.ProductService.dto.SubscriptionDTO;
-import com.senla.ProductService.model.Subscription;
+import com.senla.ProductService.dto.subscription.SubscriptionDTO;
+import com.senla.ProductService.dto.subscription.SubscriptionDetailsDTO;
 import com.senla.ProductService.service.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,14 +31,20 @@ public class SubscriptionController {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<SubscriptionDTO>> findAllSubscriptions() {
-        logger.info("Received request to find all subscriptions /api/subscription/");
+        logger.info("Received request to find all subscriptions /api/product-service/subscription/");
         return ResponseEntity.status(HttpStatus.OK).body(subscriptionService.findAll());
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> deleteSubscription(@PathVariable UUID id) {
-        logger.info("Received request to delete subscription /api/subscription/{}", id);
+        logger.info("Received request to delete subscription /api/product-service/subscription/{}", id);
         subscriptionService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<SubscriptionDetailsDTO> findSubscriptionById(@PathVariable UUID id) {
+        logger.info("Received request to find subscription /api/product-service/subscription/{}", id);
+        return ResponseEntity.status(HttpStatus.OK).body(subscriptionService.findByIdWithDetails(id));
     }
 }

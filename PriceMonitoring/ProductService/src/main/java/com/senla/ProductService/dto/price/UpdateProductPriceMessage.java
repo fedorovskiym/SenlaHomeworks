@@ -1,4 +1,4 @@
-package com.senla.ProductService.dto;
+package com.senla.ProductService.dto.price;
 
 import java.util.UUID;
 

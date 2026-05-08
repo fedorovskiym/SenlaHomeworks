@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -35,6 +36,15 @@ public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Su
             SELECT s FROM Subscription s
             JOIN s.productPrice p
             WHERE p.id = :productPriceId AND s.userId = :userId
+            """;
+
+    private static final String HQL_FIND_BY_ID_WITH_FETCH = """
+            SELECT s FROM Subscription s
+            JOIN FETCH s.productPrice p
+            JOIN FETCH p.product
+            JOIN FETCH p.shopBranch sb
+            JOIN FETCH sb.shop
+            WHERE s.id = :id
             """;
 
 
@@ -77,5 +87,15 @@ public class SubscriptionRepositoryImpl extends AbstractGenericRepositoryImpl<Su
                 .setParameter("productPriceId", productPriceid)
                 .setParameter("userId", userId)
                 .getResultList().isEmpty();
+    }
+
+    @Override
+    public Optional<Subscription> findByIdWithFetch(UUID id) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_ID_WITH_FETCH, Subscription.class)
+                .setParameter("id", id)
+                .getResultStream()
+                .findFirst();
     }
 }

@@ -1,6 +1,6 @@
 package com.senla.ProductService.mapper;
 
-import com.senla.ProductService.dto.SubscriptionDTO;
+import com.senla.ProductService.dto.subscription.SubscriptionDTO;
 import com.senla.ProductService.model.ShopBranch;
 import com.senla.ProductService.model.Subscription;
 import org.mapstruct.Mapper;

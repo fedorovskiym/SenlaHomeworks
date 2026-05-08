@@ -1,4 +1,4 @@
-package com.senla.ProductService.dto;
+package com.senla.ProductService.dto.subscription;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -11,7 +11,7 @@ public record SubscriptionDTO(
         String shopName,
         String shopAddress,
         Double price,
-        LocalDate startDate,
-        Integer discountPercent
+        Integer discountPercent,
+        LocalDate startDate
 ) {
 }
