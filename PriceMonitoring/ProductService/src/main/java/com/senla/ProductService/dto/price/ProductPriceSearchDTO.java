@@ -1,5 +1,6 @@
 package com.senla.ProductService.dto.price;
 
+import com.senla.ProductService.model.enums.PriceStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,11 +13,13 @@ public record ProductPriceSearchDTO(
         String sortBy,
         Boolean asc,
         @NotNull(message = "Brand's id must be not null") UUID brandId,
-        @NotNull(message = "Category id must be not null") UUID categoryId
+        @NotNull(message = "Category id must be not null") UUID categoryId,
+        String status
 ) {
 
     public ProductPriceSearchDTO {
         if(sortBy == null) sortBy = "id";
         if(asc == null) asc = true;
+        if(status == null) status = PriceStatus.ACTUAL.toString();
     }
 }

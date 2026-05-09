@@ -5,7 +5,9 @@ import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.price.PriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
+import com.senla.ProductService.dto.price.UpdateProductPrice;
 import com.senla.ProductService.model.ProductPrice;
+import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -16,6 +18,8 @@ public interface ProductPriceService {
     ProductPriceDTO save(CreateUpdateProductPriceDTO createProductPriceDTO);
 
     ProductPriceDTO findById(UUID id);
+
+    void delete(UUID id);
 
     List<ProductPriceDTO> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO);
 
@@ -36,4 +40,8 @@ public interface ProductPriceService {
     ProductPriceDTO update(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO);
 
     void subscribe(UUID id);
+
+    void createRequest(UUID id, UpdateProductPrice updateProductPrice);
+
+    ProductPriceDTO acceptRequest(UUID id, String status);
 }

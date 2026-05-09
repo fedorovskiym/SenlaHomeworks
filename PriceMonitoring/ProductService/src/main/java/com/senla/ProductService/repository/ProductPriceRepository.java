@@ -1,6 +1,7 @@
 package com.senla.ProductService.repository;
 
 import com.senla.ProductService.model.ProductPrice;
+import com.senla.ProductService.model.enums.PriceStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 public interface ProductPriceRepository extends GenericRepository<ProductPrice, UUID> {
 
-    List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId);
+    List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId, String status);
 
     List<ProductPrice> findProductInShops(UUID productId, UUID cityId);
 
@@ -25,4 +26,6 @@ public interface ProductPriceRepository extends GenericRepository<ProductPrice, 
     Optional<ProductPrice> findByIdWithFetch(UUID id);
 
     Map<UUID, ProductPrice> findAllById(Set<UUID> listProductPriceId);
+
+    ProductPrice findByProductIdAndShopBranchIdAndStatus(UUID productId, UUID shopBranchId);
 }

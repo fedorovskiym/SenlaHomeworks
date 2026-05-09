@@ -4,6 +4,7 @@ import com.senla.ProductService.dto.price.ComparePrice;
 import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
+import com.senla.ProductService.dto.price.UpdateProductPrice;
 import com.senla.ProductService.service.ProductPriceService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +52,7 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProductPriceDTO> findById(@PathVariable UUID id) {
         logger.info("Received request to find product price /api/product-service/price/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findById(id));
@@ -61,9 +64,17 @@ public class ProductPriceController {
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findAllWithPagination(productPriceSearchDTO));
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<HttpStatus> deleteProductPrice(@PathVariable UUID id) {
+        logger.info("Received request to delete product price /api/product-service/price/{}", id);
+        productPriceService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductPriceDTO> updateProductPrice(@PathVariable UUID id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
+    public ResponseEntity<ProductPriceDTO> updateProductPrice(
+            @PathVariable UUID id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
         logger.info("Received request to update product price by id /api/product-service/price/{}", id);
         ProductPriceDTO updatedProductPrice = productPriceService.update(id, createUpdateProductPriceDTO);
         logger.info("Succesfull update product price by id /api/product-service/price/{}", id);
@@ -71,7 +82,8 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/compare")
-    public ResponseEntity<ComparePrice> comparePricesInShop(@RequestParam("productId") UUID productId, @RequestParam("cityId") UUID cityId) {
+    public ResponseEntity<ComparePrice> comparePricesInShop(
+            @RequestParam("productId") UUID productId, @RequestParam("cityId") UUID cityId) {
         logger.info("Recieved request to compare prices in shops by productId {} and cityId {} /api/product-service/price/compare", productId, cityId);
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.comparePricesInShops(productId, cityId));
     }
@@ -86,15 +98,32 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<List<ProductPriceDTO>> searchProducts(@RequestParam("cityId") UUID cityId, @RequestParam("searchQuery") String searchQuery) {
+    public ResponseEntity<List<ProductPriceDTO>> searchProducts(
+            @RequestParam("cityId") UUID cityId, @RequestParam("searchQuery") String searchQuery) {
         logger.info("Received request to search prices /api/product-service/price/search");
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.search(cityId, searchQuery));
     }
 
     @PostMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> subscribe(@PathVariable UUID id) {
-        logger.info("Received request to subscribe /product-service/price/{}", id);
+        logger.info("Received request to subscribe /api/product-service/price/{}", id);
         productPriceService.subscribe(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/{id}/request")
+    public ResponseEntity<HttpStatus> createRequestToChangePrice(
+            @PathVariable UUID id, @Valid @RequestBody UpdateProductPrice updateProductPrice) {
+        logger.info("Received request to change price /api/product-service/price/{}", id);
+        productPriceService.createRequest(id, updateProductPrice);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/{id}/accept")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ProductPriceDTO> acceptRequestToChangePrice(@PathVariable UUID id, @RequestBody String status) {
+        logger.info("Received request to accept request /api/product-service/price/{}", id);
+        ProductPriceDTO priceDTO = productPriceService.acceptRequest(id, status);
+        return ResponseEntity.status(HttpStatus.OK).body(priceDTO);
     }
 }

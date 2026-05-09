@@ -1,6 +1,7 @@
 package com.senla.ProductService.repository.impl;
 
 import com.senla.ProductService.model.ProductPrice;
+import com.senla.ProductService.model.enums.PriceStatus;
 import com.senla.ProductService.repository.ProductPriceRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -24,7 +25,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             JOIN FETCH pp.shopBranch pb
             JOIN FETCH pb.shop s
             JOIN FETCH pb.city c
-            WHERE pp.shopBranch.id = :shopBranchId AND pp.status = 'ACTUAL'
+            WHERE pp.shopBranch.id = :shopBranchId
             """;
 
     private static final String HQL_FIND_PRODUCT_IN_SHOPS = """
@@ -70,21 +71,29 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             WHERE pp.id IN (:listProductPriceId)
             """;
 
+    private static final String HQL_FIND_BY_PRODUCT_ID_AND_SHOP_BRANCH_ID_AND_STATUS = """
+            SELECT pp FROM ProductPrice pp
+            WHERE pp.product.id = :productId AND pp.shopBranch.id = :shopBranchId AND pp.status = 'ACTUAL'
+            """;
+
     public ProductPriceRepositoryImpl() {
         super(ProductPrice.class);
     }
 
     @Override
-    public List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId) {
+    public List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId, String status) {
         EntityManager entityManager = getEntityManager();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HQL_FIND_ALL);
 
         if (brandId != null) {
-            stringBuilder.append("AND pp.brand.id = ").append(brandId);
+            stringBuilder.append(" AND pp.brand.id = ").append(brandId);
         }
         if (categoryId != null) {
-            stringBuilder.append("AND pp.category.id = ").append(categoryId);
+            stringBuilder.append(" AND pp.category.id = ").append(categoryId);
+        }
+        if (status != null) {
+            stringBuilder.append(" AND pp.status = ").append(status);
         }
         if (sortBy != null) {
             stringBuilder.append("ORDER BY ").append(sortBy).append(" ");
@@ -92,7 +101,6 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             stringBuilder.append("ORDER BY pp.price ");
         }
         stringBuilder.append((asc ? "ASC" : "DESC"));
-        ;
 
         return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setFirstResult((page - 1) * size)
@@ -159,7 +167,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
         if (description != null) {
             stringBuilder.append(" AND LOWER(p.description) LIKE '%").append(description.toLowerCase()).append("%'");
         }
-        System.out.println(stringBuilder.toString());
+
         return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setParameter("cityId", cityId)
                 .getResultList();
@@ -184,5 +192,15 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
                 .getResultList();
 
         return productPriceList.stream().collect(Collectors.toMap(ProductPrice::getId, Function.identity()));
+    }
+
+    @Override
+    public ProductPrice findByProductIdAndShopBranchIdAndStatus(UUID productId, UUID shopBranchId) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_BY_PRODUCT_ID_AND_SHOP_BRANCH_ID_AND_STATUS, ProductPrice.class)
+                .setParameter("productId", productId)
+                .setParameter("shopBranchId", shopBranchId)
+                .getSingleResult();
     }
 }

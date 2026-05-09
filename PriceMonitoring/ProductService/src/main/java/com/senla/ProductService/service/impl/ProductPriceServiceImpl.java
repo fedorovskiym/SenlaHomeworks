@@ -8,6 +8,7 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.senla.ProductService.broker.KafkaBroker;
+import com.senla.ProductService.dto.price.UpdateProductPrice;
 import com.senla.ProductService.dto.price.UpdateProductPriceMessage;
 import com.senla.ProductService.dto.brand.BrandDTO;
 import com.senla.ProductService.dto.price.ComparePrice;
@@ -126,6 +127,14 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     }
 
     @Override
+    @Transactional
+    public void delete(UUID id) {
+        ProductPrice productPrice = findByIdIfExists(id);
+        productPriceRepository.delete(productPrice);
+        logger.info("Deleted product price by id {}", id);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<ProductPriceDTO> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO) {
         logger.info("Finding product price with pagination and filters {}", productPriceSearchDTO);
@@ -136,10 +145,16 @@ public class ProductPriceServiceImpl implements ProductPriceService {
             throw new InvalidParameterException("Sort only by price, discountPercent or id");
         }
 
+        if (!productPriceSearchDTO.status().equals(PriceStatus.ACTUAL.toString()) ||
+                !productPriceSearchDTO.status().equals(PriceStatus.ON_REVIEW.toString())) {
+            logger.warn("Wrong status parameters for filters {}", productPriceSearchDTO);
+            throw new InvalidParameterException("Status onlu 'ACTUAL' or 'ON_REVIEW'");
+        }
+
         logger.info("Find product price with pagination and filters {}", productPriceSearchDTO);
         return productPriceRepository.findAllWithPagination(productPriceSearchDTO.page(), productPriceSearchDTO.size(),
                         productPriceSearchDTO.shopBranchId(), productPriceSearchDTO.sortBy(), productPriceSearchDTO.asc(),
-                        productPriceSearchDTO.brandId(), productPriceSearchDTO.categoryId())
+                        productPriceSearchDTO.brandId(), productPriceSearchDTO.categoryId(), productPriceSearchDTO.status())
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
     }
 
@@ -351,6 +366,44 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
         Subscription subscription = buildSubscription(productPrice, userId);
         subscriptionService.save(subscription);
+    }
+
+    @Override
+    @Transactional
+    public void createRequest(UUID id, UpdateProductPrice updateProductPrice) {
+        logger.info("Creating request for product with id {}", id);
+        ProductPrice productPrice = buildProductPriceFromRequest(id, updateProductPrice);
+        productPriceRepository.save(productPrice);
+        logger.info("Successfully created request to change product price with id {}", id);
+    }
+
+    @Override
+    @Transactional
+    public ProductPriceDTO acceptRequest(UUID id, String status) {
+        ProductPrice productPrice = productPriceRepository.findByIdWithFetch(id).orElseThrow(() -> {
+            logger.warn("Product price with id {} not found", id);
+            return new EntityNotFoundException("Product price with id - " + id + " not found!");
+        });
+
+        ProductPrice existingProductPrice = productPriceRepository.findByProductIdAndShopBranchIdAndStatus(
+                productPrice.getProduct().getId(), productPrice.getShopBranch().getId()
+        );
+        productPriceRepository.delete(existingProductPrice);
+        productPrice.setStatus(PriceStatus.ACTUAL);
+        productPriceRepository.update(productPrice);
+        logger.info("Successfully accepted request to change product price with id {}", id);
+        return productPriceMapper.productPriceToProductPriceDTO(productPrice);
+    }
+
+    @Transactional(readOnly = true)
+    protected ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice) {
+        ProductPrice productPrice = findByIdIfExists(id);
+        productPrice.setId(null);
+        productPrice.setStartDate(LocalDate.now());
+        productPrice.setDiscountPercent(updateProductPrice.discountPercent());
+        productPrice.setPrice(updateProductPrice.price());
+        productPrice.setStatus(PriceStatus.ON_REVIEW);
+        return productPrice;
     }
 
     @Transactional(readOnly = true)
