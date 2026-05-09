@@ -78,6 +78,14 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(KafkaException.class)
+    public ResponseEntity<ErrorMessage> handleKafkaException(KafkaException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.INTERNAL_SERVER_ERROR, e),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
 
     private ErrorMessage buildError(HttpStatus status, Exception e) {
         Map<String, String> errors = new HashMap<>();

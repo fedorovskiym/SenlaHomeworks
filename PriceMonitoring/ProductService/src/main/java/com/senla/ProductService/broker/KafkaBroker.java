@@ -1,10 +1,14 @@
 package com.senla.ProductService.broker;
 
+import com.senla.ProductService.exception.KafkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -19,22 +23,19 @@ public class KafkaBroker {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-//    public void sendSubscriptionMessage(UUID id, String json) {
-//        kafkaTemplate.executeInTransaction(t -> {
-//            t.send("subscription", String.valueOf(id), json);
-//            t.flush();
-//            logger.info("Subscription message sent to kafka {} to topic {}", json, "subscription");
-//            return null;
-//        });
-//    }
-
     //todo: делать не обязательно, но прочитай про варианты если запрос не успел уйти в брокер, как сделать повтроный запрос через время и нужны сообщения обошибках, просто логов мало
     public void sendUpdateProductPriceMessage(UUID id, String json) {
-        kafkaTemplate.executeInTransaction(t -> {
-            t.send("update-product-price", String.valueOf(id), json);
-            t.flush();
-            logger.info("Update product price message sent to kafka {} to topic {}", json, "update_product_price");
-            return null;
-        });
+        try {
+            kafkaTemplate.executeInTransaction(t -> {
+                t.send("update-product-price", String.valueOf(id), json);
+                t.flush();
+                logger.info("Update product price message sent to kafka {} to topic {}", json, "update-product-price");
+                return null;
+            });
+        } catch (Exception e) {
+            logger.error("Error while sending update product price message {} to topic {}",
+                    json, "update-product-rice", e);
+            throw new KafkaException("Error while update product price!");
+        }
     }
 }
