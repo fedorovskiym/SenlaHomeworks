@@ -7,6 +7,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
+import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.product.CreateProductDTO;
 import com.senla.ProductService.dto.product.ProductDTO;
 import com.senla.ProductService.dto.product.ProductUpdateDTO;
@@ -163,50 +164,44 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void importFromCsv(MultipartFile file) {
         logger.info("Import product from csv file");
-        if (!file.getOriginalFilename().endsWith("csv")) {
-            logger.warn("Invalid file extension {}", file.getOriginalFilename());
-            throw new InvalidParameterException("Only .csv files supported!");
-        }
-        if (file.isEmpty()) {
-            logger.warn("Empty file");
-            throw new InvalidParameterException("Empty file!");
-        }
+        validateFile(file);
 
         try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
             List<CreateProductDTO> rows = parseCsv(reader);
             List<Product> updateList = new ArrayList<>();
             List<Product> saveList = new ArrayList<>();
-            rows.stream()
-                    .map(row -> {
-                        if (row.getBrandId() == null || row.getCategoryId() == null) {
-                            return null;
-                        }
 
-                        Brand brand = brandService.findByIdOptional(row.getBrandId()).orElse(null);
-                        if (brand == null) {
-                            return null;
-                        }
+            Set<UUID> setBrandId = rows.stream().map(CreateProductDTO::getBrandId)
+                    .collect(Collectors.toSet());
+            Set<UUID> setProductCategoryId = rows.stream().map(CreateProductDTO::getCategoryId)
+                    .collect(Collectors.toSet());
+            Map<UUID, Brand> brandMap = brandService.findAllById(setBrandId);
+            Map<UUID, ProductCategory> categoryMap = productCategoryService.findAllById(setProductCategoryId);
+            for (CreateProductDTO row : rows) {
+                Brand brand = brandMap.get(row.getBrandId());
+                if (brand == null) {
+                    continue;
+                }
 
-                        ProductCategory category = productCategoryService.findByIdOptional(row.getCategoryId()).orElse(null);
-                        if (category == null) {
-                            return null;
-                        }
+                ProductCategory productCategory = categoryMap.get(row.getCategoryId());
+                if (productCategory == null) {
+                    continue;
+                }
+                System.out.println(row.getProductId());
+                if (row.getProductId() == null) {
+                    Product product = buildProduct(row, brand, productCategory);
+                    saveList.add(product);
+                    continue;
+                }
 
-                        Product product = productMapper.createProductDTOToProduct(row);
-                        product.setBrand(brand);
-                        product.setProductCategory(category);
-                        return product;
-                    })
-                    .filter(Objects::nonNull)
-                    .forEach(product -> {
-                        Product presentProduct = findByName(product.getName());
-                        if (presentProduct != null) {
-                            product.setId(presentProduct.getId());
-                            updateList.add(product);
-                        } else {
-                            saveList.add(product);
-                        }
-                    });
+                Product existingProduct = findByIdOrNull(row.getProductId());
+                if(existingProduct == null) {
+                    continue;
+                }
+                buildUpdateProdict(existingProduct, row, brand, productCategory);
+                updateList.add(existingProduct);
+            }
+
             logger.info("Import from file end");
             productRepository.updateList(updateList);
             productRepository.saveList(saveList);
@@ -214,6 +209,24 @@ public class ProductServiceImpl implements ProductService {
             logger.error("Error while reading file {}", file.getOriginalFilename(), e);
             throw new RuntimeException(e);
         }
+
+    }
+
+    private void buildUpdateProdict(Product product, CreateProductDTO createProductDTO,
+                                    Brand brand, ProductCategory productCategory) {
+        product.setBrand(brand);
+        product.setProductCategory(productCategory);
+        product.setDescription(createProductDTO.getDescription());
+        product.setAmount(createProductDTO.getAmount());
+        product.setUnit(createProductDTO.getUnit());
+    }
+
+    private Product buildProduct(CreateProductDTO createProductDTO, Brand brand, ProductCategory productCategory) {
+        Product product = productMapper.createProductDTOToProduct(createProductDTO);
+        product.setBrand(brand);
+        product.setProductCategory(productCategory);
+        product.setId(null);
+        return product;
     }
 
     @Override
@@ -258,4 +271,21 @@ public class ProductServiceImpl implements ProductService {
         }
         return rows;
     }
+
+    private void validateFile(MultipartFile file) {
+        if (!file.getOriginalFilename().endsWith("csv")) {
+            logger.warn("Invalid file extension {}", file.getOriginalFilename());
+            throw new InvalidParameterException("Only .csv files supported!");
+        }
+        if (file.isEmpty()) {
+            logger.warn("Empty product price file");
+            throw new InvalidParameterException("Empty file!");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    protected Product findByIdOrNull(UUID id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
 }

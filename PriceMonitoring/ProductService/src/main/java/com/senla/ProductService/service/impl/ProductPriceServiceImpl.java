@@ -18,6 +18,7 @@ import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.dto.product.ProductSearchRequest;
 import com.senla.ProductService.dto.productCategory.ProductCategoryDTO;
+import com.senla.ProductService.dto.subscription.SubscriptionDetailsDTO;
 import com.senla.ProductService.exception.CsvImportException;
 import com.senla.ProductService.mapper.ProductPriceMapper;
 import com.senla.ProductService.model.PriceHistory;
@@ -144,8 +145,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
             logger.warn("Wrong sort parameters for filters {}", productPriceSearchDTO);
             throw new InvalidParameterException("Sort only by price, discountPercent or id");
         }
-
-        if (!productPriceSearchDTO.status().equals(PriceStatus.ACTUAL.toString()) ||
+        System.out.println(productPriceSearchDTO.status());
+        if (!productPriceSearchDTO.status().equals(PriceStatus.ACTUAL.toString()) &&
                 !productPriceSearchDTO.status().equals(PriceStatus.ON_REVIEW.toString())) {
             logger.warn("Wrong status parameters for filters {}", productPriceSearchDTO);
             throw new InvalidParameterException("Status onlu 'ACTUAL' or 'ON_REVIEW'");
@@ -214,15 +215,12 @@ public class ProductPriceServiceImpl implements ProductPriceService {
             List<ProductPrice> saveList = new ArrayList<>();
 
             List<CreateUpdateProductPriceDTO> rows = parseCsv(reader);
-            Set<UUID> listProductId = rows.stream()
+            Set<UUID> setProductId = rows.stream()
                     .map(CreateUpdateProductPriceDTO::getProductId).collect(Collectors.toSet());
-            Set<UUID> listShopBranchId = rows.stream()
+            Set<UUID> setShopBranchId = rows.stream()
                     .map(CreateUpdateProductPriceDTO::getShopBranchId).collect(Collectors.toSet());
-            Set<UUID> listProductPriceId = rows.stream()
-                    .map(CreateUpdateProductPriceDTO::getId).collect(Collectors.toSet());
-            Map<UUID, Product> productMap = productService.findAllById(listProductId);
-            Map<UUID, ShopBranch> shopBranchMap = shopBranchService.findAllById(listShopBranchId);
-            Map<UUID, ProductPrice> productPriceMap = getProductPriceMap(listProductPriceId);
+            Map<UUID, Product> productMap = productService.findAllById(setProductId);
+            Map<UUID, ShopBranch> shopBranchMap = shopBranchService.findAllById(setShopBranchId);
 
             for (CreateUpdateProductPriceDTO row : rows) {
                 Product product = productMap.get(row.getProductId());
@@ -235,30 +233,34 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                     continue;
                 }
 
-                ProductPrice existingProductPrice = productPriceMap.get(row.getProductId());
-
-                if (existingProductPrice == null) {
+                if (row.getId() == null) {
                     ProductPrice productPrice = buildProductPrice(row, product, shopBranch);
                     saveList.add(productPrice);
-                } else {
-                    PriceHistory priceHistory = buildPriceHistory(existingProductPrice, row.getPrice());
-                    priceHistoryList.add(priceHistory);
-
-                    if (row.getDiscountPercent() > existingProductPrice.getDiscountPercent()) {
-                        sendUpdatePriceMessage(existingProductPrice.getId(), row, existingProductPrice);
-                    }
-
-                    existingProductPrice.setPrice(row.getPrice());
-                    existingProductPrice.setDiscountPercent(row.getDiscountPercent());
-                    existingProductPrice.setStartDate(LocalDate.now());
-                    updateList.add(existingProductPrice);
+                    continue;
                 }
+
+                ProductPrice existingProductPrice = findByIdOrNull(row.getId());
+                if (existingProductPrice == null) {
+                    continue;
+                }
+                PriceHistory priceHistory = buildPriceHistory(existingProductPrice, row.getPrice());
+                priceHistoryList.add(priceHistory);
+
+                if (row.getDiscountPercent() > existingProductPrice.getDiscountPercent()) {
+                    sendUpdatePriceMessage(existingProductPrice.getId(), row, existingProductPrice);
+                }
+
+                existingProductPrice.setPrice(row.getPrice());
+                existingProductPrice.setDiscountPercent(row.getDiscountPercent());
+                existingProductPrice.setStartDate(LocalDate.now());
+                updateList.add(existingProductPrice);
             }
             logger.info("Import from file end");
             productPriceRepository.saveList(saveList);
             productPriceRepository.updateList(updateList);
             priceHistoryService.saveList(priceHistoryList);
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             logger.error("Error while reading file {}", file.getOriginalFilename(), e);
             throw new CsvImportException("Error while reading file " + file.getOriginalFilename(), e);
         }
@@ -395,6 +397,50 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return productPriceMapper.productPriceToProductPriceDTO(productPrice);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public SubscriptionDetailsDTO findSubscriptionByIdWithDetails(UUID id) {
+        Subscription subscription = subscriptionService.findByIdWithFetch(id);
+
+        List<ProductPrice> productPrices = findProductInShops(
+                subscription.getProductPrice().getProduct().getId(),
+                subscription.getProductPrice().getShopBranch().getCity().getId()
+        );
+
+        List<PriceDTO> otherPrices = buildOtherPrices(productPrices);
+
+        SubscriptionDetailsDTO subscriptionDetailsDTO = buildSubscriptionDetailsDTO(subscription, otherPrices);
+        logger.info("Subscription details build");
+        return subscriptionDetailsDTO;
+    }
+
+    private SubscriptionDetailsDTO buildSubscriptionDetailsDTO(Subscription subscription,
+                                                               List<PriceDTO> otherPrices) {
+        String address = String.format("%s %s %s %s", subscription.getProductPrice().getShopBranch().getCity().getName(),
+                subscription.getProductPrice().getShopBranch().getStreet(),
+                subscription.getProductPrice().getShopBranch().getHouse(),
+                subscription.getProductPrice().getShopBranch().getRoom()
+        );
+
+        SubscriptionDetailsDTO subscriptionDetailsDTO = new SubscriptionDetailsDTO();
+        subscriptionDetailsDTO.setId(subscription.getId());
+        subscriptionDetailsDTO.setProductId(subscription.getProductPrice().getProduct().getId());
+        subscriptionDetailsDTO.setProductName(subscription.getProductPrice().getProduct().getName());
+        subscriptionDetailsDTO.setShopBranchId(subscription.getProductPrice().getShopBranch().getId());
+        subscriptionDetailsDTO.setShopName(subscription.getProductPrice().getShopBranch().getShop().getName());
+        subscriptionDetailsDTO.setShopAddress(address);
+        subscriptionDetailsDTO.setPrice(subscription.getProductPrice().getPrice());
+        subscriptionDetailsDTO.setDiscountPercent(subscription.getProductPrice().getDiscountPercent());
+        subscriptionDetailsDTO.setStartDate(subscription.getProductPrice().getStartDate());
+        subscriptionDetailsDTO.setOtherPrices(otherPrices);
+        return subscriptionDetailsDTO;
+    }
+
+    @Transactional(readOnly = true)
+    protected ProductPrice findByIdOrNull(UUID id) {
+        return productPriceRepository.findById(id).orElse(null);
+    }
+
     @Transactional(readOnly = true)
     protected ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice) {
         ProductPrice productPrice = findByIdIfExists(id);
@@ -404,11 +450,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         productPrice.setPrice(updateProductPrice.price());
         productPrice.setStatus(PriceStatus.ON_REVIEW);
         return productPrice;
-    }
-
-    @Transactional(readOnly = true)
-    protected Map<UUID, ProductPrice> getProductPriceMap(Set<UUID> listProductPriceId) {
-        return productPriceRepository.findAllById(listProductPriceId);
     }
 
     private String buildAddress(List<ProductPrice> productPrices) {
@@ -434,6 +475,9 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     private void sendUpdatePriceMessage(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO, ProductPrice productPrice) {
         List<Subscription> subscriptions = subscriptionService.findByProductPriceId(id);
+        if(subscriptions.isEmpty()) {
+            return;
+        }
         subscriptions.forEach(subscription -> {
             UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(id, productPrice.getProduct().getName(),
                     createProductPriceDTO.getPrice(), createProductPriceDTO.getDiscountPercent(), subscription.getUserId());

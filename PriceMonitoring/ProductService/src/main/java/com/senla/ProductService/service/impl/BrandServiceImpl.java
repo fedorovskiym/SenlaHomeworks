@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -139,5 +141,10 @@ public class BrandServiceImpl implements BrandService {
     public Optional<Brand> findByIdOptional(UUID id) {
         logger.info("Find brand with id {}", id);
         return brandRepository.findById(id);
+    }
+
+    @Override
+    public Map<UUID, Brand> findAllById(Set<UUID> setBrandId) {
+        return brandRepository.findAllById(setBrandId);
     }
 }

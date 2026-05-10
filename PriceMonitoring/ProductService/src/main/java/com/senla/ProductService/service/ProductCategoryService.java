@@ -6,7 +6,9 @@ import com.senla.ProductService.model.ProductCategory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ProductCategoryService {
@@ -28,4 +30,6 @@ public interface ProductCategoryService {
     ProductCategoryDTO updateImage(UUID id, MultipartFile photo);
 
     Optional<ProductCategory> findByIdOptional(UUID id);
+
+    Map<UUID, ProductCategory> findAllById(Set<UUID> setProductCategoryId);
 }

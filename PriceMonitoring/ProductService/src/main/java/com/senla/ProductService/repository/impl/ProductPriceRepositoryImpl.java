@@ -87,21 +87,21 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
         stringBuilder.append(HQL_FIND_ALL);
 
         if (brandId != null) {
-            stringBuilder.append(" AND pp.brand.id = ").append(brandId);
+            stringBuilder.append("AND pp.brand.id = ").append(brandId);
         }
         if (categoryId != null) {
-            stringBuilder.append(" AND pp.category.id = ").append(categoryId);
+            stringBuilder.append("AND pp.category.id = ").append(categoryId);
         }
         if (status != null) {
-            stringBuilder.append(" AND pp.status = ").append(status);
+            stringBuilder.append("AND pp.status = ").append(status);
         }
         if (sortBy != null) {
-            stringBuilder.append("ORDER BY ").append(sortBy).append(" ");
+            stringBuilder.append("\nORDER BY pp.").append(sortBy).append(" ");
         } else {
-            stringBuilder.append("ORDER BY pp.price ");
+            stringBuilder.append("\nORDER BY pp.price ");
         }
         stringBuilder.append((asc ? "ASC" : "DESC"));
-
+        System.out.println(stringBuilder.toString());
         return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
                 .setFirstResult((page - 1) * size)
                 .setMaxResults(size)

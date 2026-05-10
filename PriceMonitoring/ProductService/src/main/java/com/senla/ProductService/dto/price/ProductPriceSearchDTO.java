@@ -12,9 +12,9 @@ public record ProductPriceSearchDTO(
         @NotNull(message = "Shop branch's id must be not null") UUID shopBranchId,
         String sortBy,
         Boolean asc,
-        @NotNull(message = "Brand's id must be not null") UUID brandId,
-        @NotNull(message = "Category id must be not null") UUID categoryId,
-        String status
+        UUID brandId,
+        UUID categoryId,
+        String  status
 ) {
 
     public ProductPriceSearchDTO {

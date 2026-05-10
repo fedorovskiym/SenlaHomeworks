@@ -17,6 +17,7 @@ public abstract class SubscriptionMapper {
     @Mapping(target = "shopAddress", source = "productPrice.shopBranch", qualifiedByName = "getShopAddress")
     @Mapping(target = "price", source = "productPrice.price")
     @Mapping(target = "startDate", source = "productPrice.startDate", dateFormat = "yyyy-MM-dd")
+    @Mapping(target = "discountPercent", source = "productPrice.discountPercent")
     public abstract SubscriptionDTO subscriptionToSubscriptionDTO(Subscription subscription);
 
     public abstract Subscription subscriptionDTOToSubscription(SubscriptionDTO subscriptionDTO);

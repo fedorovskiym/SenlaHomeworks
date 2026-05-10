@@ -6,6 +6,7 @@ import com.senla.ProductService.dto.price.PriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.dto.price.UpdateProductPrice;
+import com.senla.ProductService.dto.subscription.SubscriptionDetailsDTO;
 import com.senla.ProductService.model.ProductPrice;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,4 +45,6 @@ public interface ProductPriceService {
     void createRequest(UUID id, UpdateProductPrice updateProductPrice);
 
     ProductPriceDTO acceptRequest(UUID id, String status);
+
+    SubscriptionDetailsDTO findSubscriptionByIdWithDetails(UUID id);
 }

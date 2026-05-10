@@ -2,6 +2,8 @@ package com.senla.ProductService.controller;
 
 import com.senla.ProductService.dto.subscription.SubscriptionDTO;
 import com.senla.ProductService.dto.subscription.SubscriptionDetailsDTO;
+import com.senla.ProductService.service.ProductPriceService;
+import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.service.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +25,12 @@ public class SubscriptionController {
 
     private static final Logger logger = LoggerFactory.getLogger(SubscriptionController.class);
     private final SubscriptionService subscriptionService;
+    private final ProductPriceService productPriceService;
 
     @Autowired
-    public SubscriptionController(SubscriptionService subscriptionService) {
+    public SubscriptionController(SubscriptionService subscriptionService, ProductPriceService productPriceService) {
         this.subscriptionService = subscriptionService;
+        this.productPriceService = productPriceService;
     }
 
     @GetMapping(value = "/")
@@ -45,6 +49,6 @@ public class SubscriptionController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<SubscriptionDetailsDTO> findSubscriptionById(@PathVariable UUID id) {
         logger.info("Received request to find subscription /api/product-service/subscription/{}", id);
-        return ResponseEntity.status(HttpStatus.OK).body(subscriptionService.findByIdWithDetails(id));
+        return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findSubscriptionByIdWithDetails(id));
     }
 }

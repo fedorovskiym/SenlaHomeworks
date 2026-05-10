@@ -6,7 +6,9 @@ import com.senla.ProductService.model.Brand;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface BrandService {
@@ -28,4 +30,6 @@ public interface BrandService {
     BrandDTO updateLogo(UUID id, MultipartFile photo);
 
     Optional<Brand> findByIdOptional(UUID id);
+
+    Map<UUID, Brand> findAllById(Set<UUID> setBrandId);
 }

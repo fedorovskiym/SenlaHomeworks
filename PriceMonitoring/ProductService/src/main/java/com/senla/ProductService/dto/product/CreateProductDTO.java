@@ -5,7 +5,8 @@ import com.opencsv.bean.CsvBindByName;
 import java.util.UUID;
 
 public class CreateProductDTO {
-
+    @CsvBindByName(column = "id")
+    private UUID productId;
     @CsvBindByName(column = "name")
     private String name;
     @CsvBindByName(column = "description")
@@ -20,11 +21,22 @@ public class CreateProductDTO {
     private UUID categoryId;
     public CreateProductDTO() {}
 
-    public CreateProductDTO(String name, String description, Double amount, String unit) {
+    public CreateProductDTO(UUID productId, String name, String description, Double amount, String unit, UUID brandId, UUID categoryId) {
+        this.productId = productId;
         this.name = name;
         this.description = description;
         this.amount = amount;
         this.unit = unit;
+        this.brandId = brandId;
+        this.categoryId = categoryId;
+    }
+
+    public UUID getProductId() {
+        return productId;
+    }
+
+    public void setProductId(UUID productId) {
+        this.productId = productId;
     }
 
     public String getName() {
@@ -78,7 +90,8 @@ public class CreateProductDTO {
     @Override
     public String toString() {
         return "CreateProductDTO{" +
-                "name='" + name + '\'' +
+                "productId=" + productId +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", amount=" + amount +
                 ", unit='" + unit + '\'' +

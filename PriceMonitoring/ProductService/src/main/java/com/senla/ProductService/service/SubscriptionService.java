@@ -21,7 +21,7 @@ public interface SubscriptionService {
 
     Subscription findByIdIfExists(UUID id);
 
-    void deleteById(UUID id);
+    Subscription findByIdWithFetch(UUID id);
 
-    SubscriptionDetailsDTO findByIdWithDetails(UUID id);
+    void deleteById(UUID id);
 }
