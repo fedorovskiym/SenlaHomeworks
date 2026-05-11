@@ -1,9 +1,11 @@
 package com.senla.ProductService.repository.impl;
 
+import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.model.enums.PriceStatus;
 import com.senla.ProductService.repository.ProductPriceRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -81,33 +83,38 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId,
-                                                    String sortBy, Boolean asc, UUID brandId,
-                                                    UUID categoryId, String status) {
+    public List<ProductPrice> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO) {
         EntityManager entityManager = getEntityManager();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HQL_FIND_ALL);
 
-        if (brandId != null) {
-            stringBuilder.append("AND pp.brand.id = ").append(brandId);
+        if (productPriceSearchDTO.brandId() != null) {
+            stringBuilder.append("AND p.brand.id = :brandId\n");
         }
-        if (categoryId != null) {
-            stringBuilder.append("AND pp.category.id = ").append(categoryId);
+        if (productPriceSearchDTO.categoryId() != null) {
+            stringBuilder.append("AND p.category.id = :categoryId\n");
         }
-        if (status != null) {
-            stringBuilder.append("AND pp.status = ").append(status);
+        if (productPriceSearchDTO.status() != null) {
+            stringBuilder.append("AND pp.status = :status\n");
         }
-        if (sortBy != null) {
-            stringBuilder.append("\nORDER BY pp.").append(sortBy).append(" ");
-        } else {
-            stringBuilder.append("\nORDER BY pp.price ");
+        stringBuilder.append("ORDER BY pp.").append(productPriceSearchDTO.sortBy()).append(" ");
+        stringBuilder.append((productPriceSearchDTO.asc() ? "ASC" : "DESC"));
+
+        TypedQuery<ProductPrice> query = entityManager.createQuery(stringBuilder.toString(), ProductPrice.class);
+        if (productPriceSearchDTO.brandId() != null) {
+            query.setParameter("brandId", productPriceSearchDTO.brandId());
         }
-        stringBuilder.append((asc ? "ASC" : "DESC"));
-        System.out.println(stringBuilder.toString());
-        return entityManager.createQuery(stringBuilder.toString(), ProductPrice.class)
-                .setFirstResult((page - 1) * size)
-                .setMaxResults(size)
-                .setParameter("shopBranchId", shopBranchId)
+        if (productPriceSearchDTO.categoryId() != null) {
+            query.setParameter("categoryId", productPriceSearchDTO.categoryId());
+        }
+        if (productPriceSearchDTO.status() != null) {
+            query.setParameter("status", productPriceSearchDTO.status());
+        }
+
+        return query
+                .setFirstResult((productPriceSearchDTO.page() - 1) * productPriceSearchDTO.size())
+                .setMaxResults(productPriceSearchDTO.size())
+                .setParameter("shopBranchId", productPriceSearchDTO.shopBranchId())
                 .getResultList();
     }
 

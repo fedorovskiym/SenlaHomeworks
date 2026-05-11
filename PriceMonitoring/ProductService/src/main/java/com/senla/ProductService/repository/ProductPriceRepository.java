@@ -1,5 +1,6 @@
 package com.senla.ProductService.repository;
 
+import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.model.ProductPrice;
 import com.senla.ProductService.model.enums.PriceStatus;
 
@@ -11,9 +12,7 @@ import java.util.UUID;
 
 public interface ProductPriceRepository extends GenericRepository<ProductPrice, UUID> {
 
-    List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId,
-                                             String sortBy, Boolean asc, UUID brandId,
-                                             UUID categoryId, String status);
+    List<ProductPrice> findAllWithPagination(ProductPriceSearchDTO productPriceSearchDTO);
 
     List<ProductPrice> findProductInShops(UUID productId, UUID cityId);
 

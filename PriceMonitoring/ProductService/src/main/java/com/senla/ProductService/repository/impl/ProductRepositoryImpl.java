@@ -1,8 +1,10 @@
 package com.senla.ProductService.repository.impl;
 
+import com.senla.ProductService.dto.product.ProductSearchDTO;
 import com.senla.ProductService.model.Product;
 import com.senla.ProductService.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
             SELECT p FROM Product p
             JOIN FETCH p.brand b
             JOIN FETCH p.productCategory pc
+            WHERE 1 = 1
             """;
 
     private static final String HQL_FIND_PRODUCT_PRICES_WITH_FETCH = """
@@ -94,6 +97,42 @@ public class ProductRepositoryImpl extends AbstractGenericRepositoryImpl<Product
                 .getResultList();
 
         return productList.stream().collect(Collectors.toMap(Product::getId, Function.identity()));
+    }
+
+    @Override
+    public List<Product> findAllWithPagination(ProductSearchDTO productSearchDTO) {
+        EntityManager entityManager = getEntityManager();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(HQL_FIND_ALL_WITH_FETCH);
+
+        if (productSearchDTO.brandId() != null) {
+            stringBuilder.append("AND p.brand.id = :brandId\n");
+        }
+        if (productSearchDTO.productCategoryId() != null) {
+            stringBuilder.append("AND p.productCategory.id = :productCategoryId\n");
+        }
+        if (productSearchDTO.unit() != null) {
+            stringBuilder.append("AND p.unit = :unit\n");
+        }
+        stringBuilder.append("ORDER BY p.").append(productSearchDTO.sortBy()).append(" ");
+        stringBuilder.append((productSearchDTO.asc() ? "ASC" : "DESC"));
+
+        TypedQuery<Product> query = entityManager.createQuery(stringBuilder.toString(), Product.class);
+        if (productSearchDTO.brandId() != null) {
+            query.setParameter("brandId", productSearchDTO.brandId());
+        }
+        if (productSearchDTO.productCategoryId() != null) {
+            query.setParameter("productCategoryId", productSearchDTO.productCategoryId());
+        }
+        if (productSearchDTO.unit() != null) {
+            query.setParameter("unit", productSearchDTO.unit());
+        }
+
+        return query
+                .setFirstResult((productSearchDTO.page() - 1) * productSearchDTO.size())
+                .setMaxResults(productSearchDTO.size())
+                .getResultList();
     }
 
 }

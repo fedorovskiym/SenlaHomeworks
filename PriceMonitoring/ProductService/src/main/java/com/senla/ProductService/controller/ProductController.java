@@ -1,11 +1,10 @@
 package com.senla.ProductService.controller;
 
 import com.senla.ProductService.dto.product.ProductDTO;
+import com.senla.ProductService.dto.product.ProductSearchDTO;
 import com.senla.ProductService.dto.product.ProductUpdateDTO;
 import com.senla.ProductService.service.ProductService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,10 +52,9 @@ public class ProductController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ProductDTO>> findAll() {
+    public ResponseEntity<List<ProductDTO>> findAll(@RequestBody ProductSearchDTO productSearchDTO) {
         logger.info("Recieved request to find all /api/product-service/product/");
-        //TODO: очень ббудет здорово если добавишь пагинацию через спецификацию, всё тянуть из бд будет не очень правильно
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(productSearchDTO));
     }
 
     @GetMapping(value = "/{id}")

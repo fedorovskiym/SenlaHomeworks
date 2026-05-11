@@ -146,18 +146,15 @@ public class ProductPriceServiceImpl implements ProductPriceService {
             logger.warn("Wrong sort parameters for filters {}", productPriceSearchDTO);
             throw new InvalidParameterException("Sort only by price, discountPercent or id");
         }
-        System.out.println(productPriceSearchDTO.status());
-        if (!productPriceSearchDTO.status().equals(PriceStatus.ACTUAL.toString()) &&
-                !productPriceSearchDTO.status().equals(PriceStatus.ON_REVIEW.toString())) {
+
+        if (!productPriceSearchDTO.status().equals(PriceStatus.ACTUAL) &&
+                !productPriceSearchDTO.status().equals(PriceStatus.ON_REVIEW)) {
             logger.warn("Wrong status parameters for filters {}", productPriceSearchDTO);
-            throw new InvalidParameterException("Status onlu 'ACTUAL' or 'ON_REVIEW'");
+            throw new InvalidParameterException("Status only 'ACTUAL' or 'ON_REVIEW'");
         }
 
         logger.info("Find product price with pagination and filters {}", productPriceSearchDTO);
-        return productPriceRepository.findAllWithPagination(productPriceSearchDTO.page(), productPriceSearchDTO.size(),
-                        productPriceSearchDTO.shopBranchId(), productPriceSearchDTO.sortBy(),
-                        productPriceSearchDTO.asc(), productPriceSearchDTO.brandId(),
-                        productPriceSearchDTO.categoryId(), productPriceSearchDTO.status())
+        return productPriceRepository.findAllWithPagination(productPriceSearchDTO)
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
     }
 

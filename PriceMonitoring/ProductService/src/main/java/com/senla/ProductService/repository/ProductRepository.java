@@ -1,5 +1,6 @@
 package com.senla.ProductService.repository;
 
+import com.senla.ProductService.dto.product.ProductSearchDTO;
 import com.senla.ProductService.model.Product;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface ProductRepository extends GenericRepository<Product, UUID> {
     void updateList(List<Product> updateList);
 
     Map<UUID, Product> findAllById(Set<UUID> listProductId);
+
+    List<Product> findAllWithPagination(ProductSearchDTO productSearchDTO);
 }

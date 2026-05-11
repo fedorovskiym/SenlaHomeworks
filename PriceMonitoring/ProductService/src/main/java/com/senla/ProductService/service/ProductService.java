@@ -1,6 +1,7 @@
 package com.senla.ProductService.service;
 
 import com.senla.ProductService.dto.product.ProductDTO;
+import com.senla.ProductService.dto.product.ProductSearchDTO;
 import com.senla.ProductService.dto.product.ProductUpdateDTO;
 import com.senla.ProductService.model.Product;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +15,7 @@ public interface ProductService {
 
     ProductDTO save(ProductDTO productDTO, MultipartFile photo);
 
-    List<ProductDTO> findAll();
+    List<ProductDTO> findAll(ProductSearchDTO productSearchDTO);
 
     ProductDTO findById(UUID id);
 

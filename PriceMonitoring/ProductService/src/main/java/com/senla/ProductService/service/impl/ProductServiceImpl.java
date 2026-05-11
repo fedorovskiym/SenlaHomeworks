@@ -10,12 +10,14 @@ import com.opencsv.exceptions.CsvException;
 import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.product.CreateProductDTO;
 import com.senla.ProductService.dto.product.ProductDTO;
+import com.senla.ProductService.dto.product.ProductSearchDTO;
 import com.senla.ProductService.dto.product.ProductUpdateDTO;
 import com.senla.ProductService.exception.CsvImportException;
 import com.senla.ProductService.mapper.ProductMapper;
 import com.senla.ProductService.model.Brand;
 import com.senla.ProductService.model.Product;
 import com.senla.ProductService.model.ProductCategory;
+import com.senla.ProductService.model.enums.ProductSortType;
 import com.senla.ProductService.repository.ProductRepository;
 import com.senla.ProductService.service.BrandService;
 import com.senla.ProductService.service.ProductCategoryService;
@@ -87,9 +89,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductDTO> findAll() {
+    public List<ProductDTO> findAll(ProductSearchDTO productSearchDTO) {
         logger.info("Finding all products");
-        return productRepository.findAll().stream().map(productMapper::productToProductDTO).collect(Collectors.toList());
+
+        if(!productSearchDTO.sortBy().equals(ProductSortType.ID.getDisplayName()) &&
+                !productSearchDTO.sortBy().equals(ProductSortType.AMOUNT.getDisplayName()) &&
+                !productSearchDTO.sortBy().equals(ProductSortType.NAME.getDisplayName())) {
+            logger.warn("Wrong sort parameters for filters {}", productSearchDTO);
+            throw new InvalidParameterException("Sort only by id, amount or name");
+        }
+
+        return productRepository.findAllWithPagination(productSearchDTO).stream()
+                .map(productMapper::productToProductDTO).collect(Collectors.toList());
     }
 
     @Override
