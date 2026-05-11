@@ -225,6 +225,19 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Product findByName(String name) {
+        logger.info("Finding product by name {} or null", name);
+        return productRepository.findByName(name).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<UUID, Product> findAllById(Set<UUID> setProductId) {
+        return productRepository.findAllById(setProductId);
+    }
+
     private void buildUpdateProdict(Product product, CreateProductDTO createProductDTO,
                                     Brand brand, ProductCategory productCategory) {
         product.setBrand(brand);
@@ -241,19 +254,6 @@ public class ProductServiceImpl implements ProductService {
         product.setProductCategory(productCategory);
         product.setId(null);
         return product;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Product findByName(String name) {
-        logger.info("Finding product by name {} or null", name);
-        return productRepository.findByName(name).orElse(null);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Map<UUID, Product> findAllById(Set<UUID> listProductId) {
-        return productRepository.findAllById(listProductId);
     }
 
     private List<CreateProductDTO> parseCsv(Reader reader) throws IOException {

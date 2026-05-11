@@ -124,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public JwtResponse register(RegisterRequest registerRequest) {
         logger.info("Register request {}", registerRequest);
-        if (userService.findByUsernameIfExists(registerRequest.username()) != null) {
+        if (userService.findByUsername(registerRequest.username()) != null) {
             logger.warn("Trying to register with username {} that already exists", registerRequest.username());
             throw new EntityExistsException("User with username " + registerRequest.username() + " already exists");
         }

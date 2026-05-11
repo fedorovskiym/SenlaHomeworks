@@ -6,8 +6,7 @@ import com.senla.NotificationService.model.Notification;
 import com.senla.NotificationService.repository.NotificationRepository;
 import com.senla.NotificationService.service.LocalUserService;
 import com.senla.NotificationService.service.NotificationService;
-import com.senla.NotificationService.service.SmsSenderService;
-import org.aspectj.weaver.ast.Not;
+import com.senla.NotificationService.util.SmsSenderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +20,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
     private final NotificationRepository notificationRepository;
-    private final SmsSenderService smsSenderService;
+    private final SmsSenderUtil smsSenderUtil;
     private final LocalUserService localUserService;
 
-    @Autowired
-    public NotificationServiceImpl(NotificationRepository notificationRepository, SmsSenderService smsSenderService,
+    public NotificationServiceImpl(NotificationRepository notificationRepository, SmsSenderUtil smsSenderUtil,
                                    LocalUserService localUserService) {
         this.notificationRepository = notificationRepository;
-        this.smsSenderService = smsSenderService;
+        this.smsSenderUtil = smsSenderUtil;
         this.localUserService = localUserService;
     }
 
@@ -54,7 +52,7 @@ public class NotificationServiceImpl implements NotificationService {
         logger.info("Sending notification {} to user with id {}", message, user.getId());
         Notification notification = buildNotification(message, user);
         save(notification);
-        smsSenderService.sendSms(user.getPhoneNumber(), message);
+        smsSenderUtil.sendSms(user.getPhoneNumber(), message);
     }
 
     private Notification buildNotification(String message, LocalUser user) {

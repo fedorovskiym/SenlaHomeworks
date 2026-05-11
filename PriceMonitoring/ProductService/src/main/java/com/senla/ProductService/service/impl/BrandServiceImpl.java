@@ -137,13 +137,6 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<Brand> findByIdOptional(UUID id) {
-        logger.info("Find brand with id {}", id);
-        return brandRepository.findById(id);
-    }
-
-    @Override
     public Map<UUID, Brand> findAllById(Set<UUID> setBrandId) {
         return brandRepository.findAllById(setBrandId);
     }

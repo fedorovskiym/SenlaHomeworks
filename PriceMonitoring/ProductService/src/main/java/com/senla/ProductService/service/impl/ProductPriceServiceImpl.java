@@ -178,31 +178,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return comparePrice;
     }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PriceDTO> buildOtherPrices(List<ProductPrice> productPrices) {
-        List<PriceDTO> otherPrices = productPrices.stream()
-                .skip(1)
-                .map(productPrice -> new PriceDTO(
-                        productPrice.getPrice(),
-                        productPrice.getShopBranch().getShop().getName(),
-                        String.format("%s %s %s", productPrice.getShopBranch().getStreet(),
-                                productPrice.getShopBranch().getHouse(),
-                                productPrice.getShopBranch().getRoom()),
-                        productPrice.getShopBranch().getShop().getLogoImageUrl()
-                ))
-                .toList();
-
-        return otherPrices;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductPrice> findProductInShops(UUID productId, UUID cityId) {
-        return productPriceRepository.findProductInShops(productId, cityId);
-    }
-
     @Override
     @Transactional
     public void importFromCsv(MultipartFile file) {
@@ -267,7 +242,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         }
     }
 
-    @Override
     @Transactional(readOnly = true)
     public ProductPrice findByProductIdAndShopBranchId(UUID productId, UUID shopBranchId) {
         logger.info("Find price by product id {} and shop branch id {} or null", productId, shopBranchId);
@@ -426,6 +400,27 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return subscriptionDetailsDTO;
     }
 
+    @Transactional(readOnly = true)
+    public List<ProductPrice> findProductInShops(UUID productId, UUID cityId) {
+        return productPriceRepository.findProductInShops(productId, cityId);
+    }
+
+    private List<PriceDTO> buildOtherPrices(List<ProductPrice> productPrices) {
+        List<PriceDTO> otherPrices = productPrices.stream()
+                .skip(1)
+                .map(productPrice -> new PriceDTO(
+                        productPrice.getPrice(),
+                        productPrice.getShopBranch().getShop().getName(),
+                        String.format("%s %s %s", productPrice.getShopBranch().getStreet(),
+                                productPrice.getShopBranch().getHouse(),
+                                productPrice.getShopBranch().getRoom()),
+                        productPrice.getShopBranch().getShop().getLogoImageUrl()
+                ))
+                .toList();
+
+        return otherPrices;
+    }
+
     private void sendUpdatePriceMessage(UUID id, Double price, Integer discountPercent,
                                         ProductPrice productPrice) {
         List<Subscription> subscriptions = subscriptionService.findByProductPriceId(id);
@@ -466,12 +461,12 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     }
 
     @Transactional(readOnly = true)
-    protected ProductPrice findByIdOrNull(UUID id) {
+    public ProductPrice findByIdOrNull(UUID id) {
         return productPriceRepository.findById(id).orElse(null);
     }
 
     @Transactional(readOnly = true)
-    protected ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice) {
+    public ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice) {
         ProductPrice productPrice = findByIdIfExists(id);
         ProductPrice newProductPrice = new ProductPrice();
         newProductPrice.setProduct(productPrice.getProduct());

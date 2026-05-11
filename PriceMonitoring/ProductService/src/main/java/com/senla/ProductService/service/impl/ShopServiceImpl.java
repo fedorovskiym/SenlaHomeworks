@@ -66,10 +66,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     public void delete(UUID id) {
         logger.info("Delete shop with id {}", id);
-        Shop shop = shopRepository.findById(id).orElseThrow(() -> {
-            logger.warn("Shop with id {} not found", id);
-            return new EntityNotFoundException("Shop with id - " + id + " not found!");
-        });
+        Shop shop = findByIdIfExists(id);
         logger.info("Delete shop logo image from Yandex Cloud Storage");
         yandexCloudUtil.deleteImage(shop.getLogoImageUrl());
         logger.info("Succesfull delete shop logo image from Yandex Cloud Storage");

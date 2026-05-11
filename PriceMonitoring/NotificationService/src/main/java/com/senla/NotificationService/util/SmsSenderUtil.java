@@ -1,19 +1,18 @@
-package com.senla.NotificationService.service.impl;
+package com.senla.NotificationService.util;
 
-import com.senla.NotificationService.service.SmsSenderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 
-@Service
-public class SmsSenderServiceImpl implements SmsSenderService {
+@Component
+public class SmsSenderUtil {
 
     private final RestTemplate restTemplate = new RestTemplate();
 

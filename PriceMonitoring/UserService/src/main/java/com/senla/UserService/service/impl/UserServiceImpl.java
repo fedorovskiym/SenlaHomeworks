@@ -50,13 +50,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findByUsernameIfExists(String username) {
-        logger.info("Finding user by username if exists {}", username);
-        return userRepository.findByUsername(username).orElse(null);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public User findByPhoneNumberIfExists(String phoneNumber) {
         logger.info("Finding user by phone number if exists {}", phoneNumber);
         return userRepository.findByPhoneNumber(phoneNumber).orElse(null);

@@ -144,12 +144,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         return productCategoryMapper.productCategoryToProductCategoryDTO(productCategory);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<ProductCategory> findByIdOptional(UUID id) {
-        logger.info("Finding product category by id {}", id);
-        return productCategoryRepository.findById(id);
-    }
 
     @Override
     @Transactional(readOnly = true)
