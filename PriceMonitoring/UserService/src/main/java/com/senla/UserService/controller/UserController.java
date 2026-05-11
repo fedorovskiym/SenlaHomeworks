@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping(value = "/profile")
     public ResponseEntity<UserDTO> getUserProfile() {
-        logger.info("Recieved get user profile request /api/user-service/profile");
+        logger.info("Recieved get user profile request /api/user-service/user/profile");
         UUID userId = userService.getPrincipalId();
         logger.info("Return user with id {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(userId));
@@ -42,7 +42,7 @@ public class UserController {
 
     @PatchMapping(value = "/profile")
     public ResponseEntity<UserDTO> updateUserProfile(@Valid @RequestBody UserDTO userDTO) {
-        logger.info("Recieved update user profile request /api/user-service/profile");
+        logger.info("Recieved update user profile request /api/user-service/user/profile");
         UUID userId = userService.getPrincipalId();
         userService.update(userId, userDTO);
         logger.info("Update user with id {}", userId);
@@ -52,16 +52,15 @@ public class UserController {
     @GetMapping(value = "/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        logger.info("Recieved get all users request /api/user-service/users/");
+        logger.info("Recieved get all users request /api/user-service/user/");
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAll());
     }
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable UUID id) {
-        logger.info("Recieved delete user request /api/user-service/users/{}", id);
+        logger.info("Recieved delete user request /api/user-service/user/{}", id);
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    //удаление юзера нужно будет добавть, важно
 }
