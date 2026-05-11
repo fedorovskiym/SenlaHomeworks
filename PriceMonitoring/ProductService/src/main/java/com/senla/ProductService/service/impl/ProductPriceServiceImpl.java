@@ -247,7 +247,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 priceHistoryList.add(priceHistory);
 
                 if (row.getDiscountPercent() > existingProductPrice.getDiscountPercent()) {
-                    sendUpdatePriceMessage(existingProductPrice.getId(), row, existingProductPrice);
+                    sendUpdatePriceMessage(existingProductPrice.getId(), row.getPrice(),
+                            row.getDiscountPercent(), existingProductPrice);
                 }
 
                 existingProductPrice.setPrice(row.getPrice());
@@ -346,7 +347,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         ProductPrice productPrice = findByIdIfExists(id);
 
         if (productPrice.getPrice() > createProductPriceDTO.getPrice()) {
-            sendUpdatePriceMessage(id, createProductPriceDTO, productPrice);
+            sendUpdatePriceMessage(id, createProductPriceDTO.getPrice(),
+                    createProductPriceDTO.getDiscountPercent(), productPrice);
         }
 
         PriceHistory priceHistory = buildPriceHistory(productPrice, createProductPriceDTO.getPrice());
@@ -377,8 +379,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Transactional
     public void createRequest(UUID id, UpdateProductPrice updateProductPrice) {
         logger.info("Creating request for product with id {}", id);
-        ProductPrice productPrice = buildProductPriceFromRequest(id, updateProductPrice);
-        productPriceRepository.save(productPrice);
+        ProductPrice newProductPrice = buildProductPriceFromRequest(id, updateProductPrice);
+        productPriceRepository.save(newProductPrice);
         logger.info("Successfully created request to change product price with id {}", id);
     }
 
@@ -393,9 +395,16 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         ProductPrice existingProductPrice = productPriceRepository.findByProductIdAndShopBranchIdAndStatus(
                 productPrice.getProduct().getId(), productPrice.getShopBranch().getId()
         );
-        productPriceRepository.delete(existingProductPrice);
-        productPrice.setStatus(PriceStatus.ACTUAL);
-        productPriceRepository.update(productPrice);
+
+        if(existingProductPrice.getDiscountPercent() < productPrice.getDiscountPercent()) {
+            sendUpdatePriceMessage(id, productPrice.getPrice(), productPrice.getDiscountPercent(), existingProductPrice);
+        }
+
+        existingProductPrice.setPrice(productPrice.getPrice());
+        existingProductPrice.setDiscountPercent(productPrice.getDiscountPercent());
+        existingProductPrice.setStatus(PriceStatus.ACTUAL);
+        productPriceRepository.delete(productPrice);
+        productPriceRepository.update(existingProductPrice);
         logger.info("Successfully accepted request to change product price with id {}", id);
         return productPriceMapper.productPriceToProductPriceDTO(productPrice);
     }
@@ -415,6 +424,23 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         SubscriptionDetailsDTO subscriptionDetailsDTO = buildSubscriptionDetailsDTO(subscription, otherPrices);
         logger.info("Subscription details build");
         return subscriptionDetailsDTO;
+    }
+
+    private void sendUpdatePriceMessage(UUID id, Double price, Integer discountPercent,
+                                        ProductPrice productPrice) {
+        List<Subscription> subscriptions = subscriptionService.findByProductPriceId(id);
+        if (subscriptions.isEmpty()) {
+            return;
+        }
+        subscriptions.forEach(subscription -> {
+            UpdateProductPriceMessage updateProductPriceMessage =
+                    new UpdateProductPriceMessage(id, productPrice.getProduct().getName(),
+                            price, discountPercent,
+                            subscription.getUserId());
+            String json = objectMapper.writeValueAsString(updateProductPriceMessage);
+            logger.info("Sending update price message {} to kafka for user with id {}", json, subscription.getUserId());
+            kafkaBroker.sendUpdateProductPriceMessage(id, json);
+        });
     }
 
     private SubscriptionDetailsDTO buildSubscriptionDetailsDTO(Subscription subscription,
@@ -447,12 +473,14 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Transactional(readOnly = true)
     protected ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice) {
         ProductPrice productPrice = findByIdIfExists(id);
-        productPrice.setId(null);
-        productPrice.setStartDate(LocalDate.now());
-        productPrice.setDiscountPercent(updateProductPrice.discountPercent());
-        productPrice.setPrice(updateProductPrice.price());
-        productPrice.setStatus(PriceStatus.ON_REVIEW);
-        return productPrice;
+        ProductPrice newProductPrice = new ProductPrice();
+        newProductPrice.setProduct(productPrice.getProduct());
+        newProductPrice.setShopBranch(productPrice.getShopBranch());
+        newProductPrice.setStatus(PriceStatus.ON_REVIEW);
+        newProductPrice.setDiscountPercent(updateProductPrice.discountPercent());
+        newProductPrice.setStartDate(LocalDate.now());
+        newProductPrice.setPrice(updateProductPrice.price());
+        return newProductPrice;
     }
 
     private String buildAddress(List<ProductPrice> productPrices) {
@@ -474,23 +502,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         comparePrice.setShopAddressMin(address);
         comparePrice.setOtherPrices(otherPrices);
         return comparePrice;
-    }
-
-    private void sendUpdatePriceMessage(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO,
-                                        ProductPrice productPrice) {
-        List<Subscription> subscriptions = subscriptionService.findByProductPriceId(id);
-        if (subscriptions.isEmpty()) {
-            return;
-        }
-        subscriptions.forEach(subscription -> {
-            UpdateProductPriceMessage updateProductPriceMessage =
-                    new UpdateProductPriceMessage(id, productPrice.getProduct().getName(),
-                            createProductPriceDTO.getPrice(), createProductPriceDTO.getDiscountPercent(),
-                            subscription.getUserId());
-            String json = objectMapper.writeValueAsString(updateProductPriceMessage);
-            logger.info("Sending update price message {} to kafka for user with id {}", json, subscription.getUserId());
-            kafkaBroker.sendUpdateProductPriceMessage(id, json);
-        });
     }
 
     private ProductPrice buildProductPrice(CreateUpdateProductPriceDTO row, Product product,

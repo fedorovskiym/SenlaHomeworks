@@ -65,6 +65,7 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
             JOIN FETCH pp.product p
             JOIN FETCH pp.shopBranch pb
             JOIN FETCH pb.shop
+            JOIN FETCH pb.city
             WHERE pp.id = :productPriceId
             """;
 
