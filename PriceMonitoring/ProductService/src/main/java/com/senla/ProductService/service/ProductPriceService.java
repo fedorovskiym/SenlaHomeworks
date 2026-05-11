@@ -73,6 +73,15 @@ public interface ProductPriceService {
     void importFromCsv(MultipartFile file);
 
     /**
+     * method for finding product price by product id and shop branch id or null
+     *
+     * @param productId contains product is to find product price
+     * @param shopBranchId contains shop branch id to find product price
+     * @return product price with product id and shop branch id
+     */
+    ProductPrice findByProductIdAndShopBranchId(UUID productId, UUID shopBranchId);
+
+    /**
      * method for finding product prices from user search request
      *
      * @param cityId contains city id for finding product price in city
@@ -131,4 +140,30 @@ public interface ProductPriceService {
      * @return subscriptionDetailsDTO with subscription data
      */
     SubscriptionDetailsDTO findSubscriptionByIdWithDetails(UUID id);
+
+    /**
+     * method for finding product in different shops in city
+     *
+     * @param productId contains product id
+     * @param cityId contains city id
+     * @return list product price with product id and city id from request
+     */
+    List<ProductPrice> findProductInShops(UUID productId, UUID cityId);
+
+    /**
+     * method for finding product price by id or null
+     *
+     * @param id contains product price id
+     * @return product price with id or null
+     */
+    ProductPrice findByIdOrNull(UUID id);
+
+    /**
+     * method for building product price from request
+     *
+     * @param id product price id
+     * @param updateProductPrice contains data for building product price
+     * @return built product price from updateProductPrice with id
+     */
+    ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice);
 }

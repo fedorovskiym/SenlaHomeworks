@@ -242,6 +242,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public ProductPrice findByProductIdAndShopBranchId(UUID productId, UUID shopBranchId) {
         logger.info("Find price by product id {} and shop branch id {} or null", productId, shopBranchId);
@@ -400,9 +401,30 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return subscriptionDetailsDTO;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<ProductPrice> findProductInShops(UUID productId, UUID cityId) {
         return productPriceRepository.findProductInShops(productId, cityId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductPrice findByIdOrNull(UUID id) {
+        return productPriceRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice) {
+        ProductPrice productPrice = findByIdIfExists(id);
+        ProductPrice newProductPrice = new ProductPrice();
+        newProductPrice.setProduct(productPrice.getProduct());
+        newProductPrice.setShopBranch(productPrice.getShopBranch());
+        newProductPrice.setStatus(PriceStatus.ON_REVIEW);
+        newProductPrice.setDiscountPercent(updateProductPrice.discountPercent());
+        newProductPrice.setStartDate(LocalDate.now());
+        newProductPrice.setPrice(updateProductPrice.price());
+        return newProductPrice;
     }
 
     private List<PriceDTO> buildOtherPrices(List<ProductPrice> productPrices) {
@@ -458,24 +480,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         subscriptionDetailsDTO.setStartDate(subscription.getProductPrice().getStartDate());
         subscriptionDetailsDTO.setOtherPrices(otherPrices);
         return subscriptionDetailsDTO;
-    }
-
-    @Transactional(readOnly = true)
-    public ProductPrice findByIdOrNull(UUID id) {
-        return productPriceRepository.findById(id).orElse(null);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductPrice buildProductPriceFromRequest(UUID id, UpdateProductPrice updateProductPrice) {
-        ProductPrice productPrice = findByIdIfExists(id);
-        ProductPrice newProductPrice = new ProductPrice();
-        newProductPrice.setProduct(productPrice.getProduct());
-        newProductPrice.setShopBranch(productPrice.getShopBranch());
-        newProductPrice.setStatus(PriceStatus.ON_REVIEW);
-        newProductPrice.setDiscountPercent(updateProductPrice.discountPercent());
-        newProductPrice.setStartDate(LocalDate.now());
-        newProductPrice.setPrice(updateProductPrice.price());
-        return newProductPrice;
     }
 
     private String buildAddress(List<ProductPrice> productPrices) {
