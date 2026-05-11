@@ -11,7 +11,9 @@ import java.util.UUID;
 
 public interface ProductPriceRepository extends GenericRepository<ProductPrice, UUID> {
 
-    List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId, String status);
+    List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId,
+                                             String sortBy, Boolean asc, UUID brandId,
+                                             UUID categoryId, String status);
 
     List<ProductPrice> findProductInShops(UUID productId, UUID cityId);
 
@@ -21,7 +23,8 @@ public interface ProductPriceRepository extends GenericRepository<ProductPrice, 
 
     void updateList(List<ProductPrice> updateList);
 
-    List<ProductPrice> findByUserQuery(UUID cityId, String productName, String categoryName, String brandName, String description);
+    List<ProductPrice> findByUserQuery(UUID cityId, String productName, String categoryName,
+                                       String brandName, String description);
 
     Optional<ProductPrice> findByIdWithFetch(UUID id);
 

@@ -40,7 +40,8 @@ public class CityController {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<CityDTO>> findAll(
-            @Min(1) @RequestParam Integer page, @Min(1) @RequestParam Integer size) {
+            @Min(1) @RequestParam Integer page,
+            @Min(1) @RequestParam Integer size) {
         logger.info("Recieved request to get all cities /api/product-service/city/");
         return ResponseEntity.status(HttpStatus.OK).body(cityService.findAllWithPagination(page, size));
     }
@@ -62,7 +63,9 @@ public class CityController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CityDTO> updateCity(@PathVariable UUID id, @Valid @RequestBody CityDTO cityDTO) {
+    public ResponseEntity<CityDTO> updateCity(
+            @PathVariable UUID id,
+            @Valid @RequestBody CityDTO cityDTO) {
         logger.info("Recieved request to update city by id /api/product-service/city/id/{}", id);
         CityDTO updatedCity = cityService.update(id, cityDTO);
         logger.info("Succesfull update city by id /api/product-service/city/id/{}", id);

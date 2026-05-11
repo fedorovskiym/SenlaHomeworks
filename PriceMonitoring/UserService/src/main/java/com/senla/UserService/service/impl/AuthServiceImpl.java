@@ -41,7 +41,9 @@ public class AuthServiceImpl implements AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Autowired
-    public AuthServiceImpl(UserService userService, JwtUtil jwtUtil, UserMapper userMapper, RoleService roleService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthServiceImpl(UserService userService, JwtUtil jwtUtil,
+                           UserMapper userMapper, RoleService roleService,
+                           PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.userMapper = userMapper;
@@ -123,11 +125,11 @@ public class AuthServiceImpl implements AuthService {
     public JwtResponse register(RegisterRequest registerRequest) {
         logger.info("Register request {}", registerRequest);
         if (userService.findByUsernameIfExists(registerRequest.username()) != null) {
-            logger.warn("Trying to register with username {} that already exists",  registerRequest.username());
+            logger.warn("Trying to register with username {} that already exists", registerRequest.username());
             throw new EntityExistsException("User with username " + registerRequest.username() + " already exists");
         }
         if (userService.findByPhoneNumberIfExists(registerRequest.phoneNumber()) != null) {
-            logger.warn("Trying to register with phone number {} that already exists",  registerRequest.phoneNumber());
+            logger.warn("Trying to register with phone number {} that already exists", registerRequest.phoneNumber());
             throw new EntityExistsException("Phone number " + registerRequest.phoneNumber() + " already exists");
         }
 

@@ -54,7 +54,7 @@ public class AIServiceImpl implements AIService {
             categoryName: Молочные продукты
             brandName: null
             productName: Молоко 2.5%
-           
+            
             Запрос: "куриная грудка"
             Ответ:
             categoryName: Мясо
@@ -77,7 +77,8 @@ public class AIServiceImpl implements AIService {
     }
 
     @Override
-    public ProductSearchRequest getProductSearchRequest(String searchQuery, List<String> brandNames, List<String> categoryNames) {
+    public ProductSearchRequest getProductSearchRequest(String searchQuery, List<String> brandNames,
+                                                        List<String> categoryNames) {
         String query = PROMPT.replace("{CATEGORIES}", String.join("\n", categoryNames))
                 .replace("{BRANDS}", String.join("\n", brandNames)).concat(searchQuery);
         return chatClient.prompt()

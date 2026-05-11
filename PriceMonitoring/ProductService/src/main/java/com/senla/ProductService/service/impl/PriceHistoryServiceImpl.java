@@ -48,7 +48,8 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
     @Transactional(readOnly = true)
     public PriceHistoryDTO getCoordsForChart(UUID productId, UUID shopBranchId) {
         logger.info("Get coords for chart by shopBranchId {}", shopBranchId);
-        List<PriceHistory> priceHistoryList = priceHistoryRepository.findAllByProductIdAndShopBranchId(productId, shopBranchId);
+        List<PriceHistory> priceHistoryList =
+                priceHistoryRepository.findAllByProductIdAndShopBranchId(productId, shopBranchId);
         if (priceHistoryList.isEmpty()) {
             logger.info("Price history list by shopBranchId {} is empty", shopBranchId);
             return new PriceHistoryDTO(null, productId, null, shopBranchId, null, List.of());

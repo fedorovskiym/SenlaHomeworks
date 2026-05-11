@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,5 +52,19 @@ public class ShopBranchController {
     public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@RequestParam UUID shopId) {
         logger.info("Recieved request to get shop branch by id product-service/shop_branch/{}", shopId);
         return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByShopId(shopId));
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<ShopBranchDTO> getShopBranchById(@PathVariable UUID id) {
+        logger.info("Recieved request to get shop branch by id product-service/shop_branch/{}", id);
+        return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findById(id));
+    }
+
+    @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<HttpStatus> deleteShopBranch(@PathVariable UUID id) {
+        logger.info("Recieved request to delete shop branch /api/product-service/shop_branch/{}", id);
+        shopBranchService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

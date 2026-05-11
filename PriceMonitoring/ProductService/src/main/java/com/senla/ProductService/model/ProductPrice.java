@@ -44,7 +44,8 @@ public class ProductPrice {
     private PriceStatus status;
 
 
-    public ProductPrice(UUID id, Product product, ShopBranch shopBranch, Double price, LocalDate startDate, Integer discountPercent, PriceStatus status) {
+    public ProductPrice(UUID id, Product product, ShopBranch shopBranch,
+                        Double price, LocalDate startDate, Integer discountPercent, PriceStatus status) {
         this.id = id;
         this.product = product;
         this.shopBranch = shopBranch;

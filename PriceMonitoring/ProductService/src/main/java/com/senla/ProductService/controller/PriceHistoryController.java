@@ -36,20 +36,37 @@ public class PriceHistoryController {
     }
 
     @GetMapping(value = "/chart")
-    public ResponseEntity<PriceHistoryDTO> getPriceHistory(@RequestParam UUID productId, @RequestParam UUID shopBranchId) {
-        logger.info("Recieved request to get price history by product id {} and shop branch {} id /api/product-service/history", productId, shopBranchId);
+    public ResponseEntity<PriceHistoryDTO> getPriceHistory(
+            @RequestParam UUID productId,
+            @RequestParam UUID shopBranchId) {
+        logger.info(
+                """
+                        Recieved request to get price history
+                        by product id {} and shop branch id {}
+                        /api/product-service/history
+                        """,
+                productId,
+                shopBranchId
+        );
         return ResponseEntity.status(HttpStatus.OK).body(priceHistoryService.getCoordsForChart(productId, shopBranchId));
     }
 
     @PostMapping(value = "/export")
-    public ResponseEntity<?> exportPriceHistoryInTable(@Valid @RequestBody PriceHistoryOverPeriodOfTimeDTO periodOfTimeDTO) {
-        logger.info("Recieved request to export price history over period of time information /api/product-service/history/export");
+    public ResponseEntity<?> exportPriceHistoryInTable(
+            @Valid @RequestBody PriceHistoryOverPeriodOfTimeDTO periodOfTimeDTO) {
+        logger.info("""
+                Recieved request to export price history over period of time information
+                 /api/product-service/history/export
+                """);
         String csv = priceHistoryService.generateCsv(periodOfTimeDTO);
         if (csv.isEmpty()) {
             logger.warn("Csv is empty, return NO_CONTENT /api/product-service/history/export");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No data found");
         }
-        logger.info("Succesfull export price history over period of time information /api/product-service/history/export");
+        logger.info("""
+                Succesfull export price history over period of time information
+                /api/product-service/history/export
+                """);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"price_history.csv\"")
                 .contentType(MediaType.MULTIPART_FORM_DATA)

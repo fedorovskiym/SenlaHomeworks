@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface AIService {
 
-    ProductSearchRequest getProductSearchRequest(String searchQuery, List<String> brandNames, List<String> categoryNames);
+    ProductSearchRequest getProductSearchRequest(String searchQuery, List<String> brandNames,
+                                                 List<String> categoryNames);
 }

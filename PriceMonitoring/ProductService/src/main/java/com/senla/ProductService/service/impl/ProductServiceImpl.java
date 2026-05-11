@@ -54,7 +54,9 @@ public class ProductServiceImpl implements ProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, BrandService brandService, ProductCategoryService productCategoryService, YandexCloudUtil yandexCloudUtil) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
+                              BrandService brandService, ProductCategoryService productCategoryService,
+                              YandexCloudUtil yandexCloudUtil) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.brandService = brandService;
@@ -195,7 +197,7 @@ public class ProductServiceImpl implements ProductService {
                 }
 
                 Product existingProduct = findByIdOrNull(row.getProductId());
-                if(existingProduct == null) {
+                if (existingProduct == null) {
                     continue;
                 }
                 buildUpdateProdict(existingProduct, row, brand, productCategory);
@@ -221,7 +223,8 @@ public class ProductServiceImpl implements ProductService {
         product.setUnit(createProductDTO.getUnit());
     }
 
-    private Product buildProduct(CreateProductDTO createProductDTO, Brand brand, ProductCategory productCategory) {
+    private Product buildProduct(CreateProductDTO createProductDTO, Brand brand,
+                                 ProductCategory productCategory) {
         Product product = productMapper.createProductDTOToProduct(createProductDTO);
         product.setBrand(brand);
         product.setProductCategory(productCategory);

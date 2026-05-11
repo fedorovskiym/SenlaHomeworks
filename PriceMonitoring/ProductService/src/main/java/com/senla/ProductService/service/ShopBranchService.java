@@ -19,4 +19,6 @@ public interface ShopBranchService {
     ShopBranch findByIdIfExists(UUID id);
 
     Map<UUID, ShopBranch> findAllById(Set<UUID> listShopBranchId);
+
+    void delete(UUID id);
 }

@@ -32,7 +32,9 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService,
+                          CustomAccessDeniedHandler customAccessDeniedHandler,
+                          CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.jwtFilter = jwtFilter;
         this.customUserDetailsService = customUserDetailsService;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
@@ -43,7 +45,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(manager ->
+                        manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated()

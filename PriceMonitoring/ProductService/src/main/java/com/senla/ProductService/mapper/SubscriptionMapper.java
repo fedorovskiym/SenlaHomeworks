@@ -24,7 +24,7 @@ public abstract class SubscriptionMapper {
 
     @Named("getShopAddress")
     protected String getShopAddress(ShopBranch shopBranch) {
-        if(shopBranch == null) {
+        if (shopBranch == null) {
             return null;
         }
 

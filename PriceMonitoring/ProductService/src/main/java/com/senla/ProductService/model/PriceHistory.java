@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "price_history")
-public class  PriceHistory {
+public class PriceHistory {
 
     @Id
     @GeneratedValue
@@ -37,7 +37,8 @@ public class  PriceHistory {
     @Column(name = "change_date")
     private LocalDate changeDate;
 
-    public PriceHistory(UUID id, Product product, ShopBranch shopBranch, Double oldPrice, Double newPrice, LocalDate changeDate) {
+    public PriceHistory(UUID id, Product product, ShopBranch shopBranch,
+                        Double oldPrice, Double newPrice, LocalDate changeDate) {
         this.id = id;
         this.product = product;
         this.shopBranch = shopBranch;

@@ -32,7 +32,9 @@ public class ShopBranchServiceImpl implements ShopBranchService {
     private static final Logger logger = LoggerFactory.getLogger(ShopBranchServiceImpl.class);
 
     @Autowired
-    public ShopBranchServiceImpl(ShopBranchRepository shopBranchRepository, ShopBranchMapper shopBranchMapper, CityService cityService, ShopService shopService) {
+    public ShopBranchServiceImpl(ShopBranchRepository shopBranchRepository,
+                                 ShopBranchMapper shopBranchMapper, CityService cityService,
+                                 ShopService shopService) {
         this.shopBranchRepository = shopBranchRepository;
         this.shopBranchMapper = shopBranchMapper;
         this.cityService = cityService;
@@ -84,5 +86,14 @@ public class ShopBranchServiceImpl implements ShopBranchService {
     @Transactional(readOnly = true)
     public Map<UUID, ShopBranch> findAllById(Set<UUID> listShopBranchId) {
         return shopBranchRepository.findAllById(listShopBranchId);
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        logger.info("Delete shop branch {}", id);
+        ShopBranch shopBranch = findByIdIfExists(id);
+        shopBranchRepository.delete(shopBranch);
+        logger.info("Successfully delete shop branch {}", id);
     }
 }

@@ -40,7 +40,9 @@ public class ShopController {
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ShopDTO> createShop(@Valid @RequestPart("shopDTO") ShopDTO shopDTO, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<ShopDTO> createShop(
+            @Valid @RequestPart("shopDTO") ShopDTO shopDTO,
+            @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to create shop /api/product-service/shop/");
         ShopDTO createdShop = shopService.save(shopDTO, photo);
         logger.info("Succesfully uploaded shop /api/product-service/shop/");

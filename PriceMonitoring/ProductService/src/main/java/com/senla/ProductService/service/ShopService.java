@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface ShopService {
 
-    ShopDTO save (ShopDTO shopDTO, MultipartFile photo);
+    ShopDTO save(ShopDTO shopDTO, MultipartFile photo);
 
     List<ShopDTO> findAllByCityId(UUID cityId);
 

@@ -4,7 +4,7 @@ public enum RoleEnum {
     ROLE_USER("ROLE_USER"),
     ROLE_ADMIN("ROLE_ADMIN");
 
-    private String displayName;
+    private final String displayName;
 
     RoleEnum(String displayName) {
         this.displayName = displayName;

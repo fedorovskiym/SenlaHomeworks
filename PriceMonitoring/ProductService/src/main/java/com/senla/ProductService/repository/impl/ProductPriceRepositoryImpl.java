@@ -81,7 +81,9 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId, String sortBy, Boolean asc, UUID brandId, UUID categoryId, String status) {
+    public List<ProductPrice> findAllWithPagination(Integer page, Integer size, UUID shopBranchId,
+                                                    String sortBy, Boolean asc, UUID brandId,
+                                                    UUID categoryId, String status) {
         EntityManager entityManager = getEntityManager();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HQL_FIND_ALL);
@@ -150,7 +152,8 @@ public class ProductPriceRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
 
 
     @Override
-    public List<ProductPrice> findByUserQuery(UUID cityId, String productName, String categoryName, String brandName, String description) {
+    public List<ProductPrice> findByUserQuery(UUID cityId, String productName, String categoryName,
+                                              String brandName, String description) {
         EntityManager entityManager = getEntityManager();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(HQL_FIND_PRODUCT_PRICES_BY_USER_REQUEST);

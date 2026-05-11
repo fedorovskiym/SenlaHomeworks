@@ -100,7 +100,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Transactional
     public ProductPriceDTO save(CreateUpdateProductPriceDTO createProductPriceDTO) {
         logger.info("Saving product price {}", createProductPriceDTO);
-        if (findByProductIdAndShopBranchId(createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId()) != null) {
+        if (findByProductIdAndShopBranchId(createProductPriceDTO.getProductId(),
+                createProductPriceDTO.getShopBranchId()) != null) {
             logger.warn("Product price with product id {} and shop branch id {} already exists",
                     createProductPriceDTO.getProductId(), createProductPriceDTO.getShopBranchId());
             throw new EntityExistsException("Price with product id " + createProductPriceDTO.getProductId() +
@@ -154,8 +155,9 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
         logger.info("Find product price with pagination and filters {}", productPriceSearchDTO);
         return productPriceRepository.findAllWithPagination(productPriceSearchDTO.page(), productPriceSearchDTO.size(),
-                        productPriceSearchDTO.shopBranchId(), productPriceSearchDTO.sortBy(), productPriceSearchDTO.asc(),
-                        productPriceSearchDTO.brandId(), productPriceSearchDTO.categoryId(), productPriceSearchDTO.status())
+                        productPriceSearchDTO.shopBranchId(), productPriceSearchDTO.sortBy(),
+                        productPriceSearchDTO.asc(), productPriceSearchDTO.brandId(),
+                        productPriceSearchDTO.categoryId(), productPriceSearchDTO.status())
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
     }
 
@@ -188,7 +190,8 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 .map(productPrice -> new PriceDTO(
                         productPrice.getPrice(),
                         productPrice.getShopBranch().getShop().getName(),
-                        String.format("%s %s %s", productPrice.getShopBranch().getStreet(), productPrice.getShopBranch().getHouse(),
+                        String.format("%s %s %s", productPrice.getShopBranch().getStreet(),
+                                productPrice.getShopBranch().getHouse(),
                                 productPrice.getShopBranch().getRoom()),
                         productPrice.getShopBranch().getShop().getLogoImageUrl()
                 ))
@@ -311,16 +314,19 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         List<String> brandsNames = brandService.findAll().stream().map(BrandDTO::name).toList();
         List<String> categoryNames = productCategoryService.findAll().stream().map(ProductCategoryDTO::name).toList();
 
-        ProductSearchRequest productSearchRequest = aiService.getProductSearchRequest(searchQuery, brandsNames, categoryNames);
+        ProductSearchRequest productSearchRequest =
+                aiService.getProductSearchRequest(searchQuery, brandsNames, categoryNames);
 
         System.out.println(productSearchRequest.toString());
-        if (productSearchRequest.productName() == null && productSearchRequest.brandName() == null && productSearchRequest.categoryName() == null) {
+        if (productSearchRequest.productName() == null && productSearchRequest.brandName() == null
+                && productSearchRequest.categoryName() == null) {
             logger.info("Search types are null");
             return List.of();
         }
 
-        List<ProductPriceDTO> productPrices = productPriceRepository.findByUserQuery(cityId, productSearchRequest.productName(),
-                        productSearchRequest.categoryName(), productSearchRequest.brandName(), productSearchRequest.description())
+        List<ProductPriceDTO> productPrices = productPriceRepository.findByUserQuery(cityId,
+                        productSearchRequest.productName(), productSearchRequest.categoryName(),
+                        productSearchRequest.brandName(), productSearchRequest.description())
                 .stream().map(productPriceMapper::productPriceToProductPriceDTO).collect(Collectors.toList());
         logger.info("Succesfull search price by city id {} with query {}", cityId, searchQuery);
         return productPrices;
@@ -473,21 +479,25 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return comparePrice;
     }
 
-    private void sendUpdatePriceMessage(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO, ProductPrice productPrice) {
+    private void sendUpdatePriceMessage(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO,
+                                        ProductPrice productPrice) {
         List<Subscription> subscriptions = subscriptionService.findByProductPriceId(id);
-        if(subscriptions.isEmpty()) {
+        if (subscriptions.isEmpty()) {
             return;
         }
         subscriptions.forEach(subscription -> {
-            UpdateProductPriceMessage updateProductPriceMessage = new UpdateProductPriceMessage(id, productPrice.getProduct().getName(),
-                    createProductPriceDTO.getPrice(), createProductPriceDTO.getDiscountPercent(), subscription.getUserId());
+            UpdateProductPriceMessage updateProductPriceMessage =
+                    new UpdateProductPriceMessage(id, productPrice.getProduct().getName(),
+                            createProductPriceDTO.getPrice(), createProductPriceDTO.getDiscountPercent(),
+                            subscription.getUserId());
             String json = objectMapper.writeValueAsString(updateProductPriceMessage);
             logger.info("Sending update price message {} to kafka for user with id {}", json, subscription.getUserId());
             kafkaBroker.sendUpdateProductPriceMessage(id, json);
         });
     }
 
-    private ProductPrice buildProductPrice(CreateUpdateProductPriceDTO row, Product product, ShopBranch shopBranch) {
+    private ProductPrice buildProductPrice(CreateUpdateProductPriceDTO row, Product product,
+                                           ShopBranch shopBranch) {
         ProductPrice productPrice = productPriceMapper.createProductPriceDTOToProductPrice(row);
         productPrice.setId(null);
         productPrice.setProduct(product);

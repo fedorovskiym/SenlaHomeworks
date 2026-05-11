@@ -11,7 +11,7 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public abstract class ProductPriceMapper {
 
-    public abstract ProductPrice createProductPriceDTOToProductPrice(CreateUpdateProductPriceDTO  createProductPriceDTO);
+    public abstract ProductPrice createProductPriceDTOToProductPrice(CreateUpdateProductPriceDTO createProductPriceDTO);
 
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")
@@ -31,7 +31,7 @@ public abstract class ProductPriceMapper {
 
     @Named("getShopAddress")
     protected String getShopAddress(ShopBranch shopBranch) {
-        if(shopBranch == null) {
+        if (shopBranch == null) {
             return null;
         }
 

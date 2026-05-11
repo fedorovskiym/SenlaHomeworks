@@ -19,9 +19,13 @@ public class CreateProductDTO {
     private UUID brandId;
     @CsvBindByName(column = "categoryId")
     private UUID categoryId;
-    public CreateProductDTO() {}
 
-    public CreateProductDTO(UUID productId, String name, String description, Double amount, String unit, UUID brandId, UUID categoryId) {
+    public CreateProductDTO() {
+    }
+
+    public CreateProductDTO(UUID productId, String name, String description,
+                            Double amount, String unit,
+                            UUID brandId, UUID categoryId) {
         this.productId = productId;
         this.name = name;
         this.description = description;

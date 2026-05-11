@@ -44,7 +44,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void sendNotification(PriceDTO priceDTO) {
         LocalUser user = localUserService.findByIdOptional(priceDTO.userId());
-        if(user == null){
+        if (user == null) {
             logger.info("User with id {} not found", priceDTO.userId());
             return;
         }
@@ -54,7 +54,7 @@ public class NotificationServiceImpl implements NotificationService {
         logger.info("Sending notification {} to user with id {}", message, user.getId());
         Notification notification = buildNotification(message, user);
         save(notification);
-//        smsSenderService.sendSms(user.getPhoneNumber(), message);
+        smsSenderService.sendSms(user.getPhoneNumber(), message);
     }
 
     private Notification buildNotification(String message, LocalUser user) {

@@ -128,8 +128,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User findByIdIfExists(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {
-           logger.warn("User not found with id {}", id);
-           return new EntityNotFoundException("User with id - " + id + " not found!");
+            logger.warn("User not found with id {}", id);
+            return new EntityNotFoundException("User with id - " + id + " not found!");
         });
     }
 }

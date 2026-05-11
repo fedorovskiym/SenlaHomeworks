@@ -58,7 +58,8 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(readOnly = true)
     public List<ShopDTO> findAllByCityId(UUID cityId) {
         logger.info("Find shops dto by city id {}", cityId);
-        return shopRepository.findAllByCityId(cityId).stream().map(shopMapper::shopToShopDTO).collect(Collectors.toList());
+        return shopRepository.findAllByCityId(cityId).stream()
+                .map(shopMapper::shopToShopDTO).collect(Collectors.toList());
     }
 
     @Override

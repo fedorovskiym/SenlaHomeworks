@@ -44,7 +44,8 @@ public class ProductPriceController {
 
     @PostMapping(value = "/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductPriceDTO> createProductPrice(@Valid @RequestBody CreateUpdateProductPriceDTO createProductPriceDTO) {
+    public ResponseEntity<ProductPriceDTO> createProductPrice(
+            @Valid @RequestBody CreateUpdateProductPriceDTO createProductPriceDTO) {
         logger.info("Received request to create product price /api/product-service/price/");
         ProductPriceDTO createdProductPrice = productPriceService.save(createProductPriceDTO);
         logger.info("Succesfull create product price /api/product-service/price/");
@@ -59,7 +60,8 @@ public class ProductPriceController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ProductPriceDTO>> findAllWithPagination(@Valid @RequestBody ProductPriceSearchDTO productPriceSearchDTO) {
+    public ResponseEntity<List<ProductPriceDTO>> findAllWithPagination(
+            @Valid @RequestBody ProductPriceSearchDTO productPriceSearchDTO) {
         logger.info("Received request to find all product price with pagination /api/product-service/price/");
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findAllWithPagination(productPriceSearchDTO));
     }
@@ -84,7 +86,10 @@ public class ProductPriceController {
     @GetMapping(value = "/compare")
     public ResponseEntity<ComparePrice> comparePricesInShop(
             @RequestParam("productId") UUID productId, @RequestParam("cityId") UUID cityId) {
-        logger.info("Recieved request to compare prices in shops by productId {} and cityId {} /api/product-service/price/compare", productId, cityId);
+        logger.info("""
+                Recieved request to compare prices in shops by productId {}
+                and cityId {} /api/product-service/price/compare
+                """, productId, cityId);
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.comparePricesInShops(productId, cityId));
     }
 
@@ -121,7 +126,9 @@ public class ProductPriceController {
 
     @PatchMapping(value = "/{id}/accept")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductPriceDTO> acceptRequestToChangePrice(@PathVariable UUID id, @RequestBody String status) {
+    public ResponseEntity<ProductPriceDTO> acceptRequestToChangePrice(
+            @PathVariable UUID id,
+            @RequestBody String status) {
         logger.info("Received request to accept request /api/product-service/price/{}", id);
         ProductPriceDTO priceDTO = productPriceService.acceptRequest(id, status);
         return ResponseEntity.status(HttpStatus.OK).body(priceDTO);

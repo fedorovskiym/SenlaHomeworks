@@ -44,7 +44,9 @@ public class ProductController {
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestPart ProductDTO productDTO, @RequestPart MultipartFile photo) {
+    public ResponseEntity<ProductDTO> createProduct(
+            @Valid @RequestPart ProductDTO productDTO,
+            @RequestPart MultipartFile photo) {
         logger.info("Recieved request to create product /api/product-service/product/");
         ProductDTO createdProduct = productService.save(productDTO, photo);
         logger.info("Succesfull create product /api/product-service/product/");
@@ -75,7 +77,9 @@ public class ProductController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable UUID id, @RequestBody ProductUpdateDTO productUpdateDTO) {
+    public ResponseEntity<ProductDTO> updateProduct(
+            @PathVariable UUID id,
+            @RequestBody ProductUpdateDTO productUpdateDTO) {
         logger.info("Recieved request to update product /api/product-service/product/{}", id);
         ProductDTO updatedProduct = productService.update(id, productUpdateDTO);
         logger.info("Succesfull update product /api/product-service/product/{}", id);
@@ -84,7 +88,9 @@ public class ProductController {
 
     @PatchMapping(value = "/{id}/logo")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductDTO> updateProductImage(@PathVariable UUID id, @RequestPart MultipartFile photo) {
+    public ResponseEntity<ProductDTO> updateProductImage(
+            @PathVariable UUID id,
+            @RequestPart MultipartFile photo) {
         logger.info("Recieved request to update product image by id /api/product-service/product/{}", id);
         ProductDTO updatedProduct = productService.updateImage(id, photo);
         logger.info("Succesfull update product image by id /api/product-service/product/{}", id);

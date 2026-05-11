@@ -42,7 +42,9 @@ public class BrandController {
 
     @PostMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BrandDTO> save(@Valid @RequestPart("brandDTO") BrandDTO brandDTO, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<BrandDTO> save(
+            @Valid @RequestPart("brandDTO") BrandDTO brandDTO,
+            @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to save brand /api/product-service/brand/");
         BrandDTO brand = brandService.save(brandDTO, photo);
         logger.info("Succesfull save brand /api/product-service/brand/");
@@ -72,7 +74,9 @@ public class BrandController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BrandDTO> updateBrand(@PathVariable UUID id, @Valid @RequestBody BrandUpdateDTO brandDTO) {//TODO: переносы
+    public ResponseEntity<BrandDTO> updateBrand(
+            @PathVariable UUID id,
+            @Valid @RequestBody BrandUpdateDTO brandDTO) {
         logger.info("Recieved request to update brand with id /api/product-service/brand/{}", id);
         BrandDTO updateBrand = brandService.update(id, brandDTO);
         logger.info("Succesfull update brand with id /api/product-service/brand/{}", id);
@@ -81,7 +85,9 @@ public class BrandController {
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BrandDTO> updateBrandLogo(@PathVariable UUID id, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<BrandDTO> updateBrandLogo(
+            @PathVariable UUID id,
+            @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to update brand logo with id /api/product-service/brand/{}", id);
         BrandDTO updateBrand = brandService.updateLogo(id, photo);
         logger.info("Succesfull update brand logo with id /api/product-service/brand/{}", id);

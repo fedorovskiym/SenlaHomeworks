@@ -76,7 +76,9 @@ public class ProductCategoryController {
 
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductCategoryDTO> updateCategory(@PathVariable UUID id, @RequestBody ProductCategoryUpdateDTO productCategoryUpdateDTO) {
+    public ResponseEntity<ProductCategoryDTO> updateCategory(
+            @PathVariable UUID id,
+            @RequestBody ProductCategoryUpdateDTO productCategoryUpdateDTO) {
         logger.info("Recieved request to update category by id /api/product-service/category/{}", id);
         ProductCategoryDTO updatedCategory = productCategoryService.update(id, productCategoryUpdateDTO);
         logger.info("Succesfull update category by id /api/product-service/category/{}", id);
@@ -85,7 +87,9 @@ public class ProductCategoryController {
 
     @PatchMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductCategoryDTO> updateCategoryImage(@PathVariable UUID id, @RequestPart("photo") MultipartFile photo) {
+    public ResponseEntity<ProductCategoryDTO> updateCategoryImage(
+            @PathVariable UUID id,
+            @RequestPart("photo") MultipartFile photo) {
         logger.info("Recieved request to update category image by id /api/product-service/category/{}", id);
         ProductCategoryDTO updatedCategory = productCategoryService.updateImage(id, photo);
         logger.info("Succesfull update category image by id /api/product-service/category/{}", id);

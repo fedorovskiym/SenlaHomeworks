@@ -20,7 +20,8 @@ public class KafkaConsumer {
         this.subscriptionService = subscriptionService;
     }
 
-    @KafkaListener(topics = "delete-user", groupId = "product-service-group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "delete-user", groupId = "product-service-group",
+            containerFactory = "kafkaListenerContainerFactory")
     public void consumeDeleteSubscriptionMessage(String json) {
         try {
             UUID id = UUID.fromString(json);

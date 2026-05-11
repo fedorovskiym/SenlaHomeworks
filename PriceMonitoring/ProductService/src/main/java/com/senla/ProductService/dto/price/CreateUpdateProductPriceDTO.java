@@ -28,7 +28,8 @@ public class CreateUpdateProductPriceDTO {
     public CreateUpdateProductPriceDTO() {
     }
 
-    public CreateUpdateProductPriceDTO(UUID id, UUID productId, UUID shopBranchId, Double price, Integer discountPercent) {
+    public CreateUpdateProductPriceDTO(UUID id, UUID productId, UUID shopBranchId,
+                                       Double price, Integer discountPercent) {
         this.id = id;
         this.productId = productId;
         this.shopBranchId = shopBranchId;

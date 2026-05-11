@@ -14,12 +14,12 @@ public record ProductPriceSearchDTO(
         Boolean asc,
         UUID brandId,
         UUID categoryId,
-        String  status
+        String status
 ) {
 
     public ProductPriceSearchDTO {
-        if(sortBy == null) sortBy = "id";
-        if(asc == null) asc = true;
-        if(status == null) status = PriceStatus.ACTUAL.toString();
+        if (sortBy == null) sortBy = "id";
+        if (asc == null) asc = true;
+        if (status == null) status = PriceStatus.ACTUAL.toString();
     }
 }

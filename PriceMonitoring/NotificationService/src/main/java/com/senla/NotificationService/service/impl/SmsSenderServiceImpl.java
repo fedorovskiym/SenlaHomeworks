@@ -34,7 +34,11 @@ public class SmsSenderServiceImpl implements SmsSenderService {
 
         //TODO: чуть подробнее распиши про данный функционал
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "x-www-form-urlencoded", StandardCharsets.UTF_8));
+        headers.setContentType(new MediaType(
+                "application",
+                "x-www-form-urlencoded",
+                StandardCharsets.UTF_8)
+        );
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 

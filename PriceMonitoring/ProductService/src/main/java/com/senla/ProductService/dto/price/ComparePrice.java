@@ -13,7 +13,9 @@ public class ComparePrice {
     private String shopAddressMin;
     private List<PriceDTO> otherPrices;
 
-    public ComparePrice(UUID productId, String productName, String productImageUrl, Double minPrice, String shopNameMin, String shopLogoImageUrl, String shopAddressMin, List<PriceDTO> otherPrices) {
+    public ComparePrice(UUID productId, String productName, String productImageUrl,
+                        Double minPrice, String shopNameMin, String shopLogoImageUrl,
+                        String shopAddressMin, List<PriceDTO> otherPrices) {
         this.productId = productId;
         this.productName = productName;
         this.productImageUrl = productImageUrl;

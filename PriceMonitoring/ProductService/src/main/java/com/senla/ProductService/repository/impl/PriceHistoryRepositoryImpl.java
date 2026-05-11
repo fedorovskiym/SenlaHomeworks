@@ -44,7 +44,8 @@ public class PriceHistoryRepositoryImpl extends AbstractGenericRepositoryImpl<Pr
     }
 
     @Override
-    public List<PriceHistory> findOverPeriodOfTime(UUID productId, UUID shopBranchId, LocalDate startDate, LocalDate endDate) {
+    public List<PriceHistory> findOverPeriodOfTime(UUID productId, UUID shopBranchId,
+                                                   LocalDate startDate, LocalDate endDate) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_OVER_PERIOD_OF_TIME, PriceHistory.class)

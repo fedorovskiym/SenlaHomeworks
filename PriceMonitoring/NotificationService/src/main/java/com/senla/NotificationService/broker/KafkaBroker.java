@@ -30,7 +30,8 @@ public class KafkaBroker {
         this.notificationService = notificationService;
     }
 
-    @KafkaListener(topics = "new-user", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "new-user", groupId = "notification-group"
+            , containerFactory = "kafkaListenerContainerFactory")
     public void consumeNewUser(String json) {
         try {
             LocalUser localUser = objectMapper.readValue(json, LocalUser.class);
@@ -41,7 +42,8 @@ public class KafkaBroker {
         }
     }
 
-    @KafkaListener(topics = "update-user", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "update-user", groupId = "notification-group",
+            containerFactory = "kafkaListenerContainerFactory")
     public void consumeUpdateUser(String json) {
         try {
             LocalUser localUser = objectMapper.readValue(json, LocalUser.class);
@@ -53,7 +55,8 @@ public class KafkaBroker {
     }
 
     //Добавь в readme информацию зачем нужны конкретные топики, чуть подробнее распиши про брокер и его надстройки
-    @KafkaListener(topics = "update-product-price", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory", batch = "true")
+    @KafkaListener(topics = "update-product-price", groupId = "notification-group",
+            containerFactory = "kafkaListenerContainerFactory", batch = "true")
     public void consumeUpdatePrice(List<String> jsons) {
         jsons.forEach(json -> {
             try {
@@ -66,7 +69,8 @@ public class KafkaBroker {
         });
     }
 
-    @KafkaListener(topics = "delete-user", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "delete-user", groupId = "notification-group",
+            containerFactory = "kafkaListenerContainerFactory")
     public void consumeDeleteUser(String json) {
         try {
             UUID id = UUID.fromString(json);

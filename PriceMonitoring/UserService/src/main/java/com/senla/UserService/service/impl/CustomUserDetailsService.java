@@ -20,6 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
+
     @Autowired
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;

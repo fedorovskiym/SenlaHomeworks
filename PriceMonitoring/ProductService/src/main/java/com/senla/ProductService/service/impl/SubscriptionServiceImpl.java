@@ -25,7 +25,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private static final Logger logger = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, SubscriptionMapper subscriptionMapper) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository,
+                                   SubscriptionMapper subscriptionMapper) {
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionMapper = subscriptionMapper;
     }
@@ -70,7 +71,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID userId = (UUID) authentication.getDetails();
         logger.info("Find all subscription with user id {}", userId);
-        return subscriptionRepository.findAllByUserId(userId).stream().map(subscriptionMapper::subscriptionToSubscriptionDTO).toList();
+        return subscriptionRepository.findAllByUserId(userId).stream()
+                .map(subscriptionMapper::subscriptionToSubscriptionDTO).toList();
     }
 
     @Override

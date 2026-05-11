@@ -33,7 +33,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private static final Logger logger = LoggerFactory.getLogger(ProductCategoryServiceImpl.class);
 
     @Autowired
-    public ProductCategoryServiceImpl(ProductCategoryRepository productCategoryRepository, ProductCategoryMapper productCategoryMapper, YandexCloudUtil yandexCloudUtil) {
+    public ProductCategoryServiceImpl(ProductCategoryRepository productCategoryRepository,
+                                      ProductCategoryMapper productCategoryMapper, YandexCloudUtil yandexCloudUtil) {
         this.productCategoryRepository = productCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
         this.yandexCloudUtil = yandexCloudUtil;
@@ -45,7 +46,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         logger.info("Saving product category from dto {}", productCategoryDTO);
         if (findByNameIfExists(productCategoryDTO.name()) != null) {
             logger.warn("Product category with name {} already exists", productCategoryDTO.name());
-            throw new EntityExistsException("Product category with name " + productCategoryDTO.name() + " already exists!");
+            throw new EntityExistsException("Product category with name " + productCategoryDTO.name()
+                    + " already exists!");
         }
         ProductCategory productCategory = productCategoryMapper.productCategoryDTOToProductCategory(productCategoryDTO);
         if (!photo.isEmpty()) {
@@ -110,9 +112,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         logger.info("Updating product category by id {}", id);
         ProductCategory productCategory = findByIdIfExists(id);
 
-        if (productCategory.getName().equals(productCategoryUpdateDTO.name()) || findByNameIfExists(productCategoryUpdateDTO.name()) != null) {
+        if (productCategory.getName().equals(productCategoryUpdateDTO.name()) ||
+                findByNameIfExists(productCategoryUpdateDTO.name()) != null) {
             logger.warn("Product category with name {} already exists", productCategoryUpdateDTO.name());
-            throw new EntityExistsException("Product category with name - " + productCategory.getName() + " already exists!");
+            throw new EntityExistsException("Product category with name - " + productCategory.getName() +
+                    " already exists!");
         }
 
         productCategory = productCategoryMapper.updateProductCategoryFromDTO(productCategoryUpdateDTO, productCategory);
