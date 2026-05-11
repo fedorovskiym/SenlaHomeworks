@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface CityRepository extends GenericRepository<City, UUID>{
 
     Optional<City> findByName(String name);
+
+    List<City> findAllWithPagination(Integer page, Integer size);
 }

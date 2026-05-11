@@ -18,6 +18,10 @@ public class CityRepositoryImpl extends AbstractGenericRepositoryImpl<City, UUID
             SELECT c FROM City c WHERE c.name = :name
             """;
 
+    private static final String HQL_FIND_ALL = """
+            SELECT c FROM City c
+            """;
+
     public CityRepositoryImpl() {
         super(City.class);
     }
@@ -33,5 +37,15 @@ public class CityRepositoryImpl extends AbstractGenericRepositoryImpl<City, UUID
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<City> findAllWithPagination(Integer page, Integer size) {
+        EntityManager entityManager = getEntityManager();
+
+        return entityManager.createQuery(HQL_FIND_ALL, City.class)
+                .setFirstResult((page - 1) * size)
+                .setMaxResults(size)
+                .getResultList();
     }
 }

@@ -10,7 +10,7 @@ public interface CityService {
 
     CityDTO saveCity(CityDTO cityDTO);
 
-    List<CityDTO> findAll();
+    List<CityDTO> findAllWithPagination(Integer page, Integer size);
 
     CityDTO getCityById(UUID id);
 
