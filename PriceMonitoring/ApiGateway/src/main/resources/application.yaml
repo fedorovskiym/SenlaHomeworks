@@ -10,12 +10,18 @@ spring:
       server:
         webmvc:
           routes:
-            - id: user-service
-              uri: http://localhost:8082
-              predicates:
-                - Path=/api/user-service/**
+          - id: user-service
+            uri: lb://USERSERVICE
+            predicates:
+              - Path=/api/user-service/**
+          - id: product-service
+            uri: lb://PRODUCTSERVICE
+            predicates:
+              - Path=/api/product-service/**
 
-            - id: product-service
-              uri: http://localhost:8081
-              predicates:
-                - Path=/api/product-service/**
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true

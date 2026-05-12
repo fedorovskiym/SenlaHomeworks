@@ -3,6 +3,7 @@ package com.senla.UserService.service;
 import com.senla.UserService.dto.UserDTO;
 import com.senla.UserService.model.User;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 import java.util.UUID;
@@ -81,4 +82,12 @@ public interface UserService {
      * @throws EntityNotFoundException if user with id from request not found
      */
     User findByIdIfExists(UUID id);
+
+    /**
+     * method for finding user by id or null
+     *
+     * @param username from request to find user by username
+     * @return user with username from request
+     */
+    User findByUsernameOrNull(String username);
 }
