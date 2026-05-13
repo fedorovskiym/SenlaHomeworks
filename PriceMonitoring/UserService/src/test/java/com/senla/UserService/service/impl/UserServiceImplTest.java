@@ -1,9 +1,6 @@
 package com.senla.UserService.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.senla.UserService.broker.KafkaBroker;
-import com.senla.UserService.config.TestConfiguration;
 import com.senla.UserService.dto.KafkaMessageWithUser;
 import com.senla.UserService.dto.UserDTO;
 import com.senla.UserService.mapper.UserMapper;
@@ -11,14 +8,12 @@ import com.senla.UserService.model.Role;
 import com.senla.UserService.model.User;
 import com.senla.UserService.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.jose4j.jwk.Use;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -35,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Import(TestConfiguration.class)
 class UserServiceImplTest {
 
     @Mock
