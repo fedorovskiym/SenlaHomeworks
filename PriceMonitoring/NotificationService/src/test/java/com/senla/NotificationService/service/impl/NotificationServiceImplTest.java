@@ -6,7 +6,6 @@ import com.senla.NotificationService.model.Notification;
 import com.senla.NotificationService.repository.NotificationRepository;
 import com.senla.NotificationService.service.LocalUserService;
 import com.senla.NotificationService.util.SmsSenderUtil;
-import org.apache.kafka.common.quota.ClientQuotaAlteration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;

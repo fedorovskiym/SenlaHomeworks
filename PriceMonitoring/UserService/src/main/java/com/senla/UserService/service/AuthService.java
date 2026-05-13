@@ -44,4 +44,6 @@ public interface AuthService {
      * @throws EntityExistsException if user with username or phone number from data already exists
      */
     JwtResponse register(RegisterRequest registerRequest);
+
+    void saveRefreshToken(String username, String refreshToken);
 }

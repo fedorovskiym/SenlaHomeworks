@@ -147,4 +147,9 @@ public class AuthServiceImpl implements AuthService {
         logger.info("Return refresh and access token for user {}", user.getUsername());
         return new JwtResponse(accessToken, refreshToken);
     }
+
+    @Override
+    public void saveRefreshToken(String username, String refreshToken) {
+        refreshStorage.put(username, refreshToken);
+    }
 }
