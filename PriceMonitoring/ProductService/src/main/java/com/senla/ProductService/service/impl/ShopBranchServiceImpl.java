@@ -1,6 +1,7 @@
 package com.senla.ProductService.service.impl;
 
 import com.senla.ProductService.dto.ShopBranchDTO;
+import com.senla.ProductService.dto.ShopBranchUpdateDTO;
 import com.senla.ProductService.mapper.ShopBranchMapper;
 import com.senla.ProductService.model.City;
 import com.senla.ProductService.model.Shop;
@@ -95,5 +96,15 @@ public class ShopBranchServiceImpl implements ShopBranchService {
         ShopBranch shopBranch = findByIdIfExists(id);
         shopBranchRepository.delete(shopBranch);
         logger.info("Successfully delete shop branch {}", id);
+    }
+
+    @Override
+    @Transactional
+    public ShopBranchDTO update(UUID id, ShopBranchUpdateDTO shopBranchUpdateDTO) {
+        ShopBranch shopBranch = findByIdIfExists(id);
+        shopBranch = shopBranchMapper.updateShopBranchFromUpdateShopBranchDTO(shopBranchUpdateDTO, shopBranch);
+        shopBranchRepository.update(shopBranch);
+        logger.info("Successfully update shop branch {}", id);
+        return shopBranchMapper.shopBranchToShopBranchDTO(shopBranch);
     }
 }

@@ -200,7 +200,7 @@ public class ProductServiceImpl implements ProductService {
                 if (productCategory == null) {
                     continue;
                 }
-                System.out.println(row.getProductId());
+
                 if (row.getProductId() == null) {
                     Product product = buildProduct(row, brand, productCategory);
                     saveList.add(product);
@@ -297,8 +297,9 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
-    protected Product findByIdOrNull(UUID id) {
+    public Product findByIdOrNull(UUID id) {
         return productRepository.findById(id).orElse(null);
     }
 

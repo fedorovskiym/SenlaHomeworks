@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -70,5 +71,12 @@ public class CityController {
         CityDTO updatedCity = cityService.update(id, cityDTO);
         logger.info("Succesfull update city by id /api/product-service/city/id/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(updatedCity);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<HttpStatus> deleteCityById(@PathVariable UUID id) {
+        logger.info("Recieved request to delete city by id /api/product-service/city/id/{}", id);
+        cityService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(HttpStatus.OK);
     }
 }

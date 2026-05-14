@@ -1,11 +1,9 @@
 package com.senla.ProductService.controller;
 
 import com.senla.ProductService.dto.ShopBranchDTO;
-import com.senla.ProductService.service.ProductService;
+import com.senla.ProductService.dto.ShopBranchUpdateDTO;
 import com.senla.ProductService.service.ShopBranchService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +36,6 @@ public class ShopBranchController {
     public ShopBranchController(ShopBranchService shopBranchService) {
         this.shopBranchService = shopBranchService;
     }
-
 
     @PostMapping(value = "/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -66,5 +64,15 @@ public class ShopBranchController {
         logger.info("Recieved request to delete shop branch /api/product-service/shop_branch/{}", id);
         shopBranchService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ShopBranchDTO> updateShopBranch(
+            @PathVariable UUID id,
+            @RequestBody ShopBranchUpdateDTO shopBranchUpdateDTO) {
+        logger.info("Recieved request to update shop branch /api/product-service/shop_branch/{}", id);
+        ShopBranchDTO shopBranchDTO = shopBranchService.update(id, shopBranchUpdateDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(shopBranchDTO);
     }
 }

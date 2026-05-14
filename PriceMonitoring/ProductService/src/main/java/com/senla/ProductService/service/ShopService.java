@@ -55,4 +55,22 @@ public interface ShopService {
      * @throws EntityNotFoundException if shop with id from request not found
      */
     Shop findByIdIfExists(UUID id);
+
+    /**
+     * method for updating shop
+     *
+     * @param id shop id to update
+     * @param shopName new shop name
+     * @return shopDTO mapped from updated shop
+     */
+    ShopDTO update(UUID id, String shopName);
+
+    /**
+     * method for updating shop logo
+     *
+     * @param id shop id to update
+     * @param photo contains new logo
+     * @return shopDTO mapped from updated shop
+     */
+    ShopDTO updateLogo(UUID id, MultipartFile photo);
 }

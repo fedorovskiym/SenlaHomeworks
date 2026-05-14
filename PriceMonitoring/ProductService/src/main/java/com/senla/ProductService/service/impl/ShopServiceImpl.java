@@ -8,6 +8,8 @@ import com.senla.ProductService.service.ShopService;
 import com.senla.ProductService.util.YandexCloudUtil;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.ws.rs.BadRequestException;
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +91,40 @@ public class ShopServiceImpl implements ShopService {
             logger.warn("Shop with id {} not found", id);
             return new EntityNotFoundException("Shop with id - " + id + " not found!");
         });
+    }
+
+    @Override
+    @Transactional
+    public ShopDTO update(UUID id, String shopName) {
+        if (shopName.isEmpty()) {
+            logger.warn("Shop name is empty");
+            throw new InvalidParameterException("Shop name is empty");
+        }
+        if (shopRepository.findByName(shopName).isPresent()) {
+            logger.warn("Shop with name {} already exists", shopName);
+            throw new EntityExistsException("Shop with name - " + shopName + " already exists!");
+        }
+
+        Shop shop = findByIdIfExists(id);
+        shop.setName(shopName);
+        shopRepository.update(shop);
+        logger.info("Successfull update shop {}", shop);
+        return shopMapper.shopToShopDTO(shop);
+    }
+
+    @Override
+    @Transactional
+    public ShopDTO updateLogo(UUID id, MultipartFile photo) {
+        Shop shop = findByIdIfExists(id);
+
+        if (shop.getLogoImageUrl() != null) {
+            yandexCloudUtil.deleteImage(shop.getLogoImageUrl());
+        }
+
+        shop.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        logger.info("Succesfull update logo image");
+        shopRepository.update(shop);
+        return shopMapper.shopToShopDTO(shop);
     }
 
 }

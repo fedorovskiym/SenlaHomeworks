@@ -29,7 +29,6 @@ import com.senla.ProductService.model.Subscription;
 import com.senla.ProductService.model.enums.PriceStatus;
 import com.senla.ProductService.model.enums.ProductPriceSortType;
 import com.senla.ProductService.repository.ProductPriceRepository;
-import com.senla.ProductService.service.AIService;
 import com.senla.ProductService.service.BrandService;
 import com.senla.ProductService.service.PriceHistoryService;
 import com.senla.ProductService.service.ProductCategoryService;
@@ -37,6 +36,7 @@ import com.senla.ProductService.service.ProductPriceService;
 import com.senla.ProductService.service.ProductService;
 import com.senla.ProductService.service.ShopBranchService;
 import com.senla.ProductService.service.SubscriptionService;
+import com.senla.ProductService.util.AIUtil;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.http.InvalidParameterException;
@@ -69,31 +69,31 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     private final ProductPriceMapper productPriceMapper;
     private final ProductService productService;
     private final ShopBranchService shopBranchService;
-    private final AIService aiService;
     private final BrandService brandService;
     private final ProductCategoryService productCategoryService;
     private final PriceHistoryService priceHistoryService;
     private final SubscriptionService subscriptionService;
     private final KafkaBroker kafkaBroker;
+    private final AIUtil aiUtil;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger logger = LoggerFactory.getLogger(ProductPriceServiceImpl.class);
 
     @Autowired
     public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository, ProductPriceMapper productPriceMapper,
-                                   ShopBranchService shopBranchService, AIService aiService,
-                                   BrandService brandService, ProductCategoryService productCategoryService,
+                                   ShopBranchService shopBranchService, BrandService brandService,
+                                   ProductCategoryService productCategoryService,
                                    PriceHistoryService priceHistoryService, SubscriptionService subscriptionService,
-                                   KafkaBroker kafkaBroker, ProductService productService) {
+                                   KafkaBroker kafkaBroker, ProductService productService, AIUtil aiUtil) {
         this.productPriceRepository = productPriceRepository;
         this.productPriceMapper = productPriceMapper;
         this.productService = productService;
         this.shopBranchService = shopBranchService;
-        this.aiService = aiService;
         this.brandService = brandService;
         this.productCategoryService = productCategoryService;
         this.priceHistoryService = priceHistoryService;
         this.subscriptionService = subscriptionService;
         this.kafkaBroker = kafkaBroker;
+        this.aiUtil = aiUtil;
     }
 
     @Override
@@ -249,37 +249,6 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         return productPriceRepository.findByProductIdAndShopBranchId(productId, shopBranchId).orElse(null);
     }
 
-    private List<CreateUpdateProductPriceDTO> parseCsv(Reader reader) {
-        logger.info("Parse csv file");
-        CSVParser csvParser = new CSVParserBuilder()
-                .withSeparator(';')
-                .withIgnoreQuotations(true)
-                .build();
-
-        CSVReader csvReader = new CSVReaderBuilder(reader)
-                .withCSVParser(csvParser)
-                .build();
-
-        CsvToBean<CreateUpdateProductPriceDTO> csvToBean =
-                new CsvToBeanBuilder<CreateUpdateProductPriceDTO>(csvReader)
-                        .withType(CreateUpdateProductPriceDTO.class)
-                        .withIgnoreEmptyLine(true)
-                        .withIgnoreLeadingWhiteSpace(true)
-                        .withOrderedResults(true)
-                        .withThrowExceptions(false)
-                        .build();
-
-        List<CreateUpdateProductPriceDTO> rows = csvToBean.parse();
-
-        List<CsvException> errors = csvToBean.getCapturedExceptions();
-        logger.info("Parse csv file end");
-        if (!errors.isEmpty()) {
-            logger.error("{} errors while parsing csv file", errors.size());
-            throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
-        }
-        return rows;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<ProductPriceDTO> search(UUID cityId, String searchQuery) {
@@ -288,7 +257,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         List<String> categoryNames = productCategoryService.findAll().stream().map(ProductCategoryDTO::name).toList();
 
         ProductSearchRequest productSearchRequest =
-                aiService.getProductSearchRequest(searchQuery, brandsNames, categoryNames);
+                aiUtil.getProductSearchRequest(searchQuery, brandsNames, categoryNames);
 
         System.out.println(productSearchRequest.toString());
         if (productSearchRequest.productName() == null && productSearchRequest.brandName() == null
@@ -362,6 +331,11 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     @Override
     @Transactional
     public ProductPriceDTO acceptRequest(UUID id, String status) {
+        if(!status.equals(PriceStatus.ACTUAL.toString())) {
+            logger.warn("Status of product with id {} is not equal to ACTUAL", id);
+            throw new InvalidParameterException("Status of product with id - " + id + " is not equal to ACTUAL");
+        }
+
         ProductPrice productPrice = productPriceRepository.findByIdWithFetch(id).orElseThrow(() -> {
             logger.warn("Product price with id {} not found", id);
             return new EntityNotFoundException("Product price with id - " + id + " not found!");
@@ -425,6 +399,37 @@ public class ProductPriceServiceImpl implements ProductPriceService {
         newProductPrice.setStartDate(LocalDate.now());
         newProductPrice.setPrice(updateProductPrice.price());
         return newProductPrice;
+    }
+
+    private List<CreateUpdateProductPriceDTO> parseCsv(Reader reader) {
+        logger.info("Parse csv file");
+        CSVParser csvParser = new CSVParserBuilder()
+                .withSeparator(';')
+                .withIgnoreQuotations(true)
+                .build();
+
+        CSVReader csvReader = new CSVReaderBuilder(reader)
+                .withCSVParser(csvParser)
+                .build();
+
+        CsvToBean<CreateUpdateProductPriceDTO> csvToBean =
+                new CsvToBeanBuilder<CreateUpdateProductPriceDTO>(csvReader)
+                        .withType(CreateUpdateProductPriceDTO.class)
+                        .withIgnoreEmptyLine(true)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .withOrderedResults(true)
+                        .withThrowExceptions(false)
+                        .build();
+
+        List<CreateUpdateProductPriceDTO> rows = csvToBean.parse();
+
+        List<CsvException> errors = csvToBean.getCapturedExceptions();
+        logger.info("Parse csv file end");
+        if (!errors.isEmpty()) {
+            logger.error("{} errors while parsing csv file", errors.size());
+            throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
+        }
+        return rows;
     }
 
     private List<PriceDTO> buildOtherPrices(List<ProductPrice> productPrices) {

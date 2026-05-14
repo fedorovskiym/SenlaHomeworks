@@ -135,6 +135,8 @@ class UserServiceImplTest {
         UUID result = userService.getPrincipalId();
 
         assertEquals(user.getId(), result);
+
+        SecurityContextHolder.clearContext();
     }
 
     @Test

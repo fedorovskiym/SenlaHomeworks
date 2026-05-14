@@ -1,6 +1,7 @@
 package com.senla.ProductService.service;
 
 import com.senla.ProductService.dto.ShopBranchDTO;
+import com.senla.ProductService.dto.ShopBranchUpdateDTO;
 import com.senla.ProductService.model.ShopBranch;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -61,4 +62,13 @@ public interface ShopBranchService {
      * @param id from request to delete shop branch
      */
     void delete(UUID id);
+
+    /**
+     * method for updating shop branch
+     *
+     * @param id shop branch id to update
+     * @param shopBranchUpdateDTO contains data
+     * @return shopBranchDTO mapped from updated shopBranch
+     */
+    ShopBranchDTO update(UUID id, ShopBranchUpdateDTO shopBranchUpdateDTO);
 }

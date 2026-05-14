@@ -98,4 +98,12 @@ public interface ProductService {
      * @return map with uuid and products
      */
     Map<UUID, Product> findAllById(Set<UUID> setProductId);
+
+    /**
+     * method for finding product by id or null
+     *
+     * @param id from request to find product
+     * @return entity if product with id exists or null if not
+     */
+    Product findByIdOrNull(UUID id);
 }

@@ -1,15 +1,14 @@
-package com.senla.ProductService.service.impl;
+package com.senla.ProductService.util;
 
 import com.senla.ProductService.dto.product.ProductSearchRequest;
-import com.senla.ProductService.service.AIService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
-public class AIServiceImpl implements AIService {
+@Component
+public class AIUtil {
     //todo: добавь в реадме чуть больше инфы про данный функционал. Чуть подробнее расккажи, будет очень круто
     private final ChatClient chatClient;
     private static final String PROMPT = """
@@ -72,11 +71,10 @@ public class AIServiceImpl implements AIService {
             """;
 
     @Autowired
-    public AIServiceImpl(ChatClient chatClient) {
+    public AIUtil(ChatClient chatClient) {
         this.chatClient = chatClient;
     }
 
-    @Override
     public ProductSearchRequest getProductSearchRequest(String searchQuery, List<String> brandNames,
                                                         List<String> categoryNames) {
         String query = PROMPT.replace("{CATEGORIES}", String.join("\n", categoryNames))

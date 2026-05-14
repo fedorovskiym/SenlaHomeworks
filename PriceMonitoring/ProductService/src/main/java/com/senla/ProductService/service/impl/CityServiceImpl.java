@@ -93,4 +93,12 @@ public class CityServiceImpl implements CityService {
         return cityMapper.cityToCityDTO(city);
     }
 
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        logger.info("Deleting city with id {}", id);
+        City city = getCityByIdIfExists(id);
+        cityRepository.delete(city);
+        logger.info("Succesfully deleted city {}", city);
+    }
 }

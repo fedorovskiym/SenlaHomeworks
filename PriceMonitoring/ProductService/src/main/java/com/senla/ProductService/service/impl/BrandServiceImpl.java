@@ -125,14 +125,12 @@ public class BrandServiceImpl implements BrandService {
         Brand brand = findByIdIfExists(id);
 
         if (brand.getLogoImageUrl() != null) {
-            logger.info("Update logo image to Yandex Cloud Storage");
             yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
-            logger.info("Succesfully updated logo image to Yandex Cloud Storage");
         }
 
-        brand.setLogoImageUrl(photo.getOriginalFilename());
+        brand.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
         brandRepository.update(brand);
-        logger.info("Succesfully updated brand {}", brand);
+        logger.info("Succesfully updated brand logo {}", brand);
         return brandMapper.brandToBrandDTO(brand);
     }
 

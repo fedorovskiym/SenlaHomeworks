@@ -34,7 +34,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     @Transactional
     public void save(Subscription subscription) {
-        if (!subscriptionRepository.findByUserIdAndProductPriceId(subscription.getUserId(),
+        if (subscriptionRepository.findByUserIdAndProductPriceId(subscription.getUserId(),
                 subscription.getProductPrice().getId())) {
             throw new EntityExistsException("Subscription already exists!");
         }

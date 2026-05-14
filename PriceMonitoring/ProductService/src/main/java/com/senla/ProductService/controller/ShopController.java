@@ -14,8 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -68,5 +70,21 @@ public class ShopController {
         shopService.delete(id);
         logger.info("Succesfully deleted shop by id /api/product-service/shop/{}", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ShopDTO> updateShop(@PathVariable UUID id, @RequestBody String shopName) {
+        logger.info("Recieved request to update shop by id /api/product-service/shop/{}", id);
+        ShopDTO updatedShop = shopService.update(id, shopName);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedShop);
+    }
+
+    @PatchMapping(value = "/{id}/logo")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ShopDTO> updateShopLogo(@PathVariable UUID id, @RequestPart("photo") MultipartFile photo) {
+        logger.info("Recieved request to update shop logo by id /api/product-service/shop/{}", id);
+        ShopDTO updatedShop = shopService.updateLogo(id, photo);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedShop);
     }
 }

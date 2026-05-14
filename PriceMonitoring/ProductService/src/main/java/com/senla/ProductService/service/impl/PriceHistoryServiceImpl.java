@@ -93,7 +93,7 @@ public class PriceHistoryServiceImpl implements PriceHistoryService {
 
         stringBuilder.append("id;oldPrice;newPrice;changeDate;").append(System.lineSeparator());
         priceHistoryList.forEach(priceHistory ->
-                stringBuilder.append(String.format("%d;%.2f;%.2f;%s",
+                stringBuilder.append(String.format("%s;%.2f;%.2f;%s",
                                 priceHistory.getId(),
                                 priceHistory.getOldPrice(),
                                 priceHistory.getNewPrice(),

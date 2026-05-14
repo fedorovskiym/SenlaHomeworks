@@ -65,4 +65,11 @@ public interface CityService {
      * @throws EntityExistsException if city with new name from cityDTO exists or name is null
      */
     CityDTO update(UUID id, CityDTO cityDTO);
+
+    /**
+     * method for deleting city by id
+     *
+     * @param id from request to delete city by id
+     */
+    void delete(UUID id);
 }
