@@ -23,7 +23,6 @@ public class KafkaBroker {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    //todo: делать не обязательно, но прочитай про варианты если запрос не успел уйти в брокер, как сделать повтроный запрос через время и нужны сообщения обошибках, просто логов мало
     public void sendUpdateProductPriceMessage(UUID id, String json) {
         try {
             kafkaTemplate.executeInTransaction(t -> {

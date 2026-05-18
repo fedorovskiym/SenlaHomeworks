@@ -31,7 +31,6 @@ public class SmsSenderUtil {
         map.add("message", message);
         map.add("apikey", apiKey);
 
-        //TODO: чуть подробнее распиши про данный функционал
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType(
                 "application",
@@ -41,7 +40,6 @@ public class SmsSenderUtil {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        String status = restTemplate.postForObject(url, request, String.class);
-        System.out.println(status);
+        restTemplate.postForObject(url, request, String.class);
     }
 }
