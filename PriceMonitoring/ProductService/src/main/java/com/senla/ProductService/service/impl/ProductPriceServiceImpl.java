@@ -286,18 +286,18 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional
-    public ProductPriceDTO update(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO) {
+    public ProductPriceDTO update(UUID id, UpdateProductPrice updateProductPrice) {
         logger.info("Update price by id {}", id);
         ProductPrice productPrice = findByIdIfExists(id);
 
-        if (productPrice.getPrice() > createProductPriceDTO.getPrice()) {
-            sendUpdatePriceMessage(id, createProductPriceDTO.getPrice(),
-                    createProductPriceDTO.getDiscountPercent(), productPrice);
+        if (productPrice.getPrice() > updateProductPrice.price()) {
+            sendUpdatePriceMessage(id, updateProductPrice.price(),
+                    updateProductPrice.discountPercent(), productPrice);
         }
 
-        PriceHistory priceHistory = buildPriceHistory(productPrice, createProductPriceDTO.getPrice());
-        productPrice.setDiscountPercent(createProductPriceDTO.getDiscountPercent());
-        productPrice.setPrice(createProductPriceDTO.getPrice());
+        PriceHistory priceHistory = buildPriceHistory(productPrice, updateProductPrice.price());
+        productPrice.setDiscountPercent(updateProductPrice.discountPercent());
+        productPrice.setPrice(updateProductPrice.price());
 
         priceHistoryService.save(priceHistory);
         productPriceRepository.update(productPrice);
@@ -330,9 +330,9 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     @Override
     @Transactional
-    public ProductPriceDTO acceptRequest(UUID id, String status) {
-        if(!status.equals(PriceStatus.ACTUAL.toString())) {
-            logger.warn("Status of product with id {} is not equal to ACTUAL", id);
+    public ProductPriceDTO acceptRequest(UUID id, PriceStatus status) {
+        if(!status.equals(PriceStatus.ACTUAL)) {
+            logger.warn("Status {} is not equal to ACTUAL", status);
             throw new InvalidParameterException("Status of product with id - " + id + " is not equal to ACTUAL");
         }
 

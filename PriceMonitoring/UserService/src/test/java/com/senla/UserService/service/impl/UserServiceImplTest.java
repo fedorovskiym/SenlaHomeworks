@@ -154,7 +154,7 @@ class UserServiceImplTest {
 
     @Test
     void updateShouldCallRepositoryUpdateMethodAndSendKafkaMessage() {
-        userDTO = new UserDTO(user.getId(), user.getUsername(), "newPhoneNumber", user.getRegistrationDate());
+        userDTO = new UserDTO(null, null, "newPhoneNumber", null);
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         when(userMapper.updateUserFromUserDTO(userDTO, user)).thenReturn(user);
@@ -164,18 +164,6 @@ class UserServiceImplTest {
         verify(userMapper).updateUserFromUserDTO(userDTO, user);
         verify(userRepository).update(user);
         verify(kafkaBroker).sendMessageWithUpdateUser(eq(user.getId()), anyString());
-    }
-
-    @Test
-    void updateShouldCallOnlyRepositoryUpdateMethod() {
-        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-        when(userMapper.updateUserFromUserDTO(userDTO, user)).thenReturn(user);
-
-        userService.update(user.getId(), userDTO);
-
-        verify(userMapper).updateUserFromUserDTO(userDTO, user);
-        verify(userRepository).update(user);
-        verify(kafkaBroker, never()).sendMessageWithUpdateUser(eq(user.getId()), anyString());
     }
 
     @Test

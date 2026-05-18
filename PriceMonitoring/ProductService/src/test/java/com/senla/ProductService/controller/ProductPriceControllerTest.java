@@ -155,7 +155,7 @@ class ProductPriceControllerTest {
                 "category", shopBranchId, "address",
                 "shop", cityId, "city", 2.00, LocalDate.now(), 0, null);
 
-        when(productPriceService.update(any(), any(CreateUpdateProductPriceDTO.class))).thenReturn(updatedPrice);
+        when(productPriceService.update(any(), any(UpdateProductPrice.class))).thenReturn(updatedPrice);
 
         mockMvc.perform(patch("/price/{id}", priceId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +168,7 @@ class ProductPriceControllerTest {
                     assertEquals(createUpdateProductPriceDTO.getDiscountPercent(), response.discountPercent());
                 });
 
-        verify(productPriceService).update(any(), any(CreateUpdateProductPriceDTO.class));
+        verify(productPriceService).update(any(), any(UpdateProductPrice.class));
     }
 
     @Test
@@ -241,11 +241,11 @@ class ProductPriceControllerTest {
 
     @Test
     void acceptRequestToChangePriceShouldReturnUpdatedPrice() throws Exception {
-        when(productPriceService.acceptRequest(priceId, "ACTUAL")).thenReturn(productPriceDTO);
+        when(productPriceService.acceptRequest(priceId, PriceStatus.ACTUAL)).thenReturn(productPriceDTO);
 
         mockMvc.perform(patch("/price/{id}/accept", priceId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("ACTUAL"))
+                        .content("\"ACTUAL\""))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String jsonResponse = result.getResponse().getContentAsString();
@@ -253,6 +253,6 @@ class ProductPriceControllerTest {
                     assertEquals(productPriceDTO.id(), response.id());
                 });
 
-        verify(productPriceService).acceptRequest(priceId, "ACTUAL");
+        verify(productPriceService).acceptRequest(priceId, PriceStatus.ACTUAL);
     }
 }

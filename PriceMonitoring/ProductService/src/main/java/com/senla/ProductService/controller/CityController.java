@@ -77,6 +77,6 @@ public class CityController {
     public ResponseEntity<HttpStatus> deleteCityById(@PathVariable UUID id) {
         logger.info("Recieved request to delete city by id /api/product-service/city/id/{}", id);
         cityService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

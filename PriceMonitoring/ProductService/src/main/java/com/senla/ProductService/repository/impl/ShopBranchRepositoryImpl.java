@@ -19,7 +19,7 @@ public class ShopBranchRepositoryImpl extends AbstractGenericRepositoryImpl<Shop
             SELECT sb FROM ShopBranch sb
             JOIN FETCH sb.city
             JOIN FETCH sb.shop s
-            WHERE s.id = :shopId
+            WHERE s.id = :shopId AND sb.city.id = :cityId
             ORDER BY sb.id
             """;
 
@@ -33,11 +33,12 @@ public class ShopBranchRepositoryImpl extends AbstractGenericRepositoryImpl<Shop
     }
 
     @Override
-    public List<ShopBranch> findAllByShopIdFetch(UUID shopId) {
+    public List<ShopBranch> findAllByCityIdAndShopIdFetch(UUID cityId, UUID shopId) {
         EntityManager entityManager = getEntityManager();
 
         return entityManager.createQuery(HQL_FIND_ALL_BY_CITY_ORDER_BY_ID, ShopBranch.class)
                 .setParameter("shopId", shopId)
+                .setParameter("cityId", cityId)
                 .getResultList();
     }
 

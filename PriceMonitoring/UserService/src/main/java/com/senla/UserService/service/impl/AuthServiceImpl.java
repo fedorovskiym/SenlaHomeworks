@@ -70,9 +70,11 @@ public class AuthServiceImpl implements AuthService {
         logger.info("Authenticated user {}", authRequest.username());
         User user = userService.findByUsername(authRequest.username());
         logger.info("Found user {}", user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+        refreshStorage.put(user.getUsername(), refreshToken);
         return new JwtResponse(
                 jwtUtil.generateAccessToken(user),
-                jwtUtil.generateRefreshToken(user)
+                refreshToken
         );
     }
 

@@ -70,6 +70,14 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> handleUsernameNotFound(IllegalArgumentException e) {
+        return new ResponseEntity<>(
+                buildError(HttpStatus.BAD_REQUEST, e),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<ErrorMessage> handleAuthException(AuthException e) {
         return new ResponseEntity<>(

@@ -85,6 +85,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(UUID userId, UserDTO userDTO) {
+        if(userDTO.username() != null || userDTO.id() != null || userDTO.registrationDate() != null) {
+            throw new IllegalArgumentException("You can update only phone number!");
+        }
         logger.info("Updating user with id {}", userId);
         User user = findByIdIfExists(userId);
 

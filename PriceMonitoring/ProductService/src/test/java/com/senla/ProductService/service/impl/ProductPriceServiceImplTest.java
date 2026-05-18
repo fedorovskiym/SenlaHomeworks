@@ -27,6 +27,7 @@ import com.senla.ProductService.util.AIUtil;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.http.InvalidParameterException;
+import org.hibernate.sql.Update;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -346,10 +347,11 @@ class ProductPriceServiceImplTest {
 
     @Test
     void updateShouldUpdatePriceAndCreateHistory() {
+        UpdateProductPrice update = new UpdateProductPrice(100.0, 0);
         when(productPriceRepository.findById(priceId)).thenReturn(Optional.of(productPrice));
         when(productPriceMapper.productPriceToProductPriceDTO(productPrice)).thenReturn(productPriceDTO);
 
-        ProductPriceDTO result = productPriceService.update(priceId, createDTO);
+        ProductPriceDTO result = productPriceService.update(priceId, update);
 
         assertNotNull(result);
         verify(priceHistoryService).save(any(PriceHistory.class));
@@ -407,7 +409,7 @@ class ProductPriceServiceImplTest {
                 .thenReturn(productPrice);
         when(productPriceMapper.productPriceToProductPriceDTO(requestPrice)).thenReturn(productPriceDTO);
 
-        ProductPriceDTO result = productPriceService.acceptRequest(priceId, "ACTUAL");
+        ProductPriceDTO result = productPriceService.acceptRequest(priceId, PriceStatus.ACTUAL);
 
         assertNotNull(result);
         verify(productPriceRepository).delete(requestPrice);
@@ -417,14 +419,14 @@ class ProductPriceServiceImplTest {
 
     @Test
     void acceptRequestShouldThrowInvalidParameterException() {
-        assertThrows(InvalidParameterException.class, () -> productPriceService.acceptRequest(priceId, "status"));
+        assertThrows(InvalidParameterException.class, () -> productPriceService.acceptRequest(priceId, PriceStatus.ON_REVIEW));
     }
 
     @Test
     void acceptRequestShouldThrowEntityNotFoundException() {
         when(productPriceRepository.findByIdWithFetch(priceId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> productPriceService.acceptRequest(priceId, "ACTUAL"));
+        assertThrows(EntityNotFoundException.class, () -> productPriceService.acceptRequest(priceId, PriceStatus.ACTUAL));
     }
 
     @Test
@@ -444,7 +446,7 @@ class ProductPriceServiceImplTest {
                 .thenReturn(productPrice);
         when(productPriceMapper.productPriceToProductPriceDTO(requestPrice)).thenReturn(productPriceDTO);
 
-        productPriceService.acceptRequest(priceId, "ACTUAL");
+        productPriceService.acceptRequest(priceId, PriceStatus.ACTUAL);
 
         verify(kafkaBroker).sendUpdateProductPriceMessage(any(), anyString());
     }

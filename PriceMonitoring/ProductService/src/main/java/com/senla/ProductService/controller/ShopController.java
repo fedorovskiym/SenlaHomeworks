@@ -52,9 +52,9 @@ public class ShopController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopDTO>> findAllByCityId(@RequestParam UUID cityId) {
-        logger.info("Recieved request to get all shops by cityId {} /api/product-service/shop/", cityId);
-        return ResponseEntity.status(HttpStatus.OK).body(shopService.findAllByCityId(cityId));
+    public ResponseEntity<List<ShopDTO>> findAll() {
+        logger.info("Recieved request to get all shops /api/product-service/shop/");
+        return ResponseEntity.status(HttpStatus.OK).body(shopService.findAll());
     }
 
     @GetMapping(value = "/{id}")

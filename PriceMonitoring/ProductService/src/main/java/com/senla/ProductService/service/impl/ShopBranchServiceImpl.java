@@ -60,9 +60,9 @@ public class ShopBranchServiceImpl implements ShopBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopBranchDTO> findAllByShopId(UUID shopId) {
+    public List<ShopBranchDTO> findAllByCityIdAndShopId(UUID cityId, UUID shopId) {
         logger.info("Find all shop branches dto by city id {}", shopId);
-        return shopBranchRepository.findAllByShopIdFetch(shopId)
+        return shopBranchRepository.findAllByCityIdAndShopIdFetch(cityId, shopId)
                 .stream().map(shopBranchMapper::shopBranchToShopBranchDTO).collect(Collectors.toList());
     }
 

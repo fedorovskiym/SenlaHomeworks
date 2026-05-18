@@ -25,12 +25,12 @@ public interface ShopService {
     ShopDTO save(ShopDTO shopDTO, MultipartFile photo);
 
     /**
-     * method for finding all shops in city
+     * method for finding all shops
      *
-     * @param cityId from request to find shop in city
-     * @return list shopDTO mapped from list shop in city
+     *
+     * @return list shopDTO mapped from list shop
      */
-    List<ShopDTO> findAllByCityId(UUID cityId);
+    List<ShopDTO> findAll();
 
     /**
      * method for deleting shop by id

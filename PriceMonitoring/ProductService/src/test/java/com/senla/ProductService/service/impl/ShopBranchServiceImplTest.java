@@ -89,11 +89,11 @@ class ShopBranchServiceImplTest {
     }
 
     @Test
-    void findAllByShopIdShouldReturnListOfShopBranchDTO() {
-        when(shopBranchRepository.findAllByShopIdFetch(shopId)).thenReturn(List.of(shopBranch));
+    void findAllByCityIdAndShopIdShouldReturnListOfShopBranchDTO() {
+        when(shopBranchRepository.findAllByCityIdAndShopIdFetch(cityId, shopId)).thenReturn(List.of(shopBranch));
         when(shopBranchMapper.shopBranchToShopBranchDTO(shopBranch)).thenReturn(shopBranchDTO);
 
-        List<ShopBranchDTO> result = shopBranchService.findAllByShopId(shopId);
+        List<ShopBranchDTO> result = shopBranchService.findAllByCityIdAndShopId(cityId, shopId);
 
         assertEquals(1, result.size());
         assertEquals(shopBranchDTO, result.get(0));

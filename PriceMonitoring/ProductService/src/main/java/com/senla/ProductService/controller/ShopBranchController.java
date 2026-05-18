@@ -47,9 +47,11 @@ public class ShopBranchController {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityId(@RequestParam UUID shopId) {
-        logger.info("Recieved request to get shop branch by id product-service/shop_branch/{}", shopId);
-        return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByShopId(shopId));
+    public ResponseEntity<List<ShopBranchDTO>> getShopBranchByCityIdAndShopId(
+            @RequestParam UUID cityId,
+            @RequestParam UUID shopId) {
+        logger.info("Recieved request to get shop branch by city id and shop id product-service/shop_branch/");
+        return ResponseEntity.status(HttpStatus.OK).body(shopBranchService.findAllByCityIdAndShopId(cityId ,shopId));
     }
 
     @GetMapping(value = "/{id}")

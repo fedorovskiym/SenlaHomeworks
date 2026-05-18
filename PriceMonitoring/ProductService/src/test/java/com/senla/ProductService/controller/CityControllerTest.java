@@ -121,10 +121,10 @@ class CityControllerTest {
     }
 
     @Test
-    void deleteCityShouldReturnOk() throws Exception {
+    void deleteCityShouldReturnNoContent() throws Exception {
         doNothing().when(cityService).delete(cityId);
 
-        mockMvc.perform(delete("/city/{id}", cityId)).andExpect(status().isOk());
+        mockMvc.perform(delete("/city/{id}", cityId)).andExpect(status().isNoContent());
 
         verify(cityService).delete(cityId);
     }

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface ShopBranchRepository extends GenericRepository<ShopBranch, UUID> {
 
-    List<ShopBranch> findAllByShopIdFetch(UUID shopId);
+    List<ShopBranch> findAllByCityIdAndShopIdFetch(UUID cityId, UUID shopId);
 
     Map<UUID, ShopBranch> findAllById(Set<UUID> listShopBranchId);
 }

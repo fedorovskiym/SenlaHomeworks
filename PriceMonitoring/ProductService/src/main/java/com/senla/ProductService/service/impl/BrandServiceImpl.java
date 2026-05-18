@@ -128,7 +128,9 @@ public class BrandServiceImpl implements BrandService {
             yandexCloudUtil.deleteImage(brand.getLogoImageUrl());
         }
 
-        brand.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        if (!photo.isEmpty()) {
+            brand.setLogoImageUrl(yandexCloudUtil.saveImageToStorage(photo, FOLDER));
+        }
         brandRepository.update(brand);
         logger.info("Succesfully updated brand logo {}", brand);
         return brandMapper.brandToBrandDTO(brand);

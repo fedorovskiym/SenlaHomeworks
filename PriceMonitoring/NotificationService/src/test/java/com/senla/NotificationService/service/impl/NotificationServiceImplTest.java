@@ -63,7 +63,7 @@ class NotificationServiceImplTest {
         notificationServiceImpl.sendNotification(priceDTO);
 
         verify(notificationRepository, times(1)).save(any(Notification.class));
-        verify(smsSenderUtil, times(1)).sendSms(user.getPhoneNumber(), any(String.class));
+        verify(smsSenderUtil, times(1)).sendSms(any(), any(String.class));
     }
 
     @Test

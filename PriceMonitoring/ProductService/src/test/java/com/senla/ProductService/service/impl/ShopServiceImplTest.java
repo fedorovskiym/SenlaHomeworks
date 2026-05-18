@@ -92,13 +92,11 @@ class ShopServiceImplTest {
     }
 
     @Test
-    void findAllByCityIdShouldReturnListOfShopDTO() {
-        UUID cityId = UUID.randomUUID();
-
-        when(shopRepository.findAllByCityId(cityId)).thenReturn(List.of(shop));
+    void findAllShouldReturnListOfShopDTO() {
+        when(shopRepository.findAll()).thenReturn(List.of(shop));
         when(shopMapper.shopToShopDTO(shop)).thenReturn(shopDTO);
 
-        List<ShopDTO> result = shopService.findAllByCityId(cityId);
+        List<ShopDTO> result = shopService.findAll();
 
         assertEquals(1, result.size());
         assertEquals(shopDTO, result.get(0));

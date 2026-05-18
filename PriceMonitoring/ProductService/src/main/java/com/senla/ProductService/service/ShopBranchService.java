@@ -29,7 +29,7 @@ public interface ShopBranchService {
      * @param shopId from request to find shop branches by shopId
      * @return list shopBranchDTO mapped from list shopBranch with shopId from request
      */
-    List<ShopBranchDTO> findAllByShopId(UUID shopId);
+    List<ShopBranchDTO> findAllByCityIdAndShopId(UUID cityId, UUID shopId);
 
     /**
      * method for finding shopBranchDTO by id

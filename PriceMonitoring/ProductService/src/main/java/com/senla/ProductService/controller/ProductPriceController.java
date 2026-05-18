@@ -5,6 +5,7 @@ import com.senla.ProductService.dto.price.CreateUpdateProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceDTO;
 import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.dto.price.UpdateProductPrice;
+import com.senla.ProductService.model.enums.PriceStatus;
 import com.senla.ProductService.service.ProductPriceService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -76,9 +77,9 @@ public class ProductPriceController {
     @PatchMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProductPriceDTO> updateProductPrice(
-            @PathVariable UUID id, @RequestBody CreateUpdateProductPriceDTO createUpdateProductPriceDTO) {
+            @PathVariable UUID id, @RequestBody UpdateProductPrice updateProductPrice) {
         logger.info("Received request to update product price by id /api/product-service/price/{}", id);
-        ProductPriceDTO updatedProductPrice = productPriceService.update(id, createUpdateProductPriceDTO);
+        ProductPriceDTO updatedProductPrice = productPriceService.update(id, updateProductPrice);
         logger.info("Succesfull update product price by id /api/product-service/price/{}", id);
         return ResponseEntity.status(HttpStatus.OK).body(updatedProductPrice);
     }
@@ -128,7 +129,7 @@ public class ProductPriceController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProductPriceDTO> acceptRequestToChangePrice(
             @PathVariable UUID id,
-            @RequestBody String status) {
+            @RequestBody PriceStatus status) {
         logger.info("Received request to accept request /api/product-service/price/{}", id);
         ProductPriceDTO priceDTO = productPriceService.acceptRequest(id, status);
         return ResponseEntity.status(HttpStatus.OK).body(priceDTO);

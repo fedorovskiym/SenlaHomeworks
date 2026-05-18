@@ -86,10 +86,10 @@ class ShopControllerTest {
     }
 
     @Test
-    void findAllByCityIdShouldReturnListOfShops() throws Exception {
+    void findAllShouldReturnListOfShops() throws Exception {
         List<ShopDTO> shops = List.of(shopDTO);
 
-        when(shopService.findAllByCityId(cityId)).thenReturn(shops);
+        when(shopService.findAll()).thenReturn(shops);
 
         mockMvc.perform(get("/shop/")
                         .param("cityId", cityId.toString()))
@@ -102,7 +102,7 @@ class ShopControllerTest {
                     assertEquals(shopDTO.name(), response.get(0).name());
                 });
 
-        verify(shopService).findAllByCityId(cityId);
+        verify(shopService).findAll();
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.senla.ProductService.dto.price.ProductPriceSearchDTO;
 import com.senla.ProductService.dto.price.UpdateProductPrice;
 import com.senla.ProductService.dto.subscription.SubscriptionDetailsDTO;
 import com.senla.ProductService.model.ProductPrice;
+import com.senla.ProductService.model.enums.PriceStatus;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -103,10 +104,10 @@ public interface ProductPriceService {
      * method for updating product price
      *
      * @param id from request to update product price
-     * @param createProductPriceDTO contains data for updating product price
+     * @param updateProductPrice contains data for updating product price
      * @return productPriceDTO mapped from updated productPrice
      */
-    ProductPriceDTO update(UUID id, CreateUpdateProductPriceDTO createProductPriceDTO);
+    ProductPriceDTO update(UUID id, UpdateProductPrice updateProductPrice);
 
     /**
      * method for subscribing on product price
@@ -131,7 +132,7 @@ public interface ProductPriceService {
      * @param status new product price status from request
      * @return productPriceDTO mapped from updated product price
      */
-    ProductPriceDTO acceptRequest(UUID id, String status);
+    ProductPriceDTO acceptRequest(UUID id, PriceStatus status);
 
     /**
      * method for finding sibscription details by id

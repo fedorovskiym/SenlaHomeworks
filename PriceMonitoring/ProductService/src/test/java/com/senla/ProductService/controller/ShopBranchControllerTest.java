@@ -81,12 +81,13 @@ class ShopBranchControllerTest {
     }
 
     @Test
-    void getShopBranchByCityIdShouldReturnListOfShopBranches() throws Exception {
+    void getShopBranchByCityIdAndShopIdShouldReturnListOfShopBranches() throws Exception {
         List<ShopBranchDTO> shopBranches = List.of(shopBranchDTO);
 
-        when(shopBranchService.findAllByShopId(shopId)).thenReturn(shopBranches);
+        when(shopBranchService.findAllByCityIdAndShopId(cityId, shopId)).thenReturn(shopBranches);
 
         mockMvc.perform(get("/shop_branch/")
+                        .param("cityId", cityId.toString())
                         .param("shopId", shopId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
@@ -97,7 +98,7 @@ class ShopBranchControllerTest {
                     assertEquals(shopBranchDTO.street(), response.get(0).street());
                 });
 
-        verify(shopBranchService).findAllByShopId(shopId);
+        verify(shopBranchService).findAllByCityIdAndShopId(cityId, shopId);
     }
 
     @Test

@@ -74,7 +74,7 @@ class SubscriptionServiceImplTest {
     @Test
     void saveShouldThrowEntityExistsException() {
         when(subscriptionRepository.findByUserIdAndProductPriceId(userId, productPriceId))
-                .thenReturn(true);
+                .thenReturn(false);
 
         Subscription existingSubscription = new Subscription();
         existingSubscription.setUserId(userId);
@@ -88,7 +88,7 @@ class SubscriptionServiceImplTest {
 
     @Test
     void saveShouldCallRepositorySaveMethod() {
-        when(subscriptionRepository.findByUserIdAndProductPriceId(userId, productPriceId)).thenReturn(false);
+        when(subscriptionRepository.findByUserIdAndProductPriceId(userId, productPriceId)).thenReturn(true);
 
         Subscription newSubscription = new Subscription();
         newSubscription.setUserId(userId);
