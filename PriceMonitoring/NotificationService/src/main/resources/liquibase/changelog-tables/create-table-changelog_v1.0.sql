@@ -9,23 +9,6 @@ CREATE TABLE local_users
 );
 
 -- changeset fedor:1777552447993-2
-CREATE TABLE subscriptions
-(
-    subscription_id  UUID NOT NULL,
-    product_price_id UUID,
-    product_id       UUID,
-    product_name     VARCHAR(255),
-    shop_branch_id   UUID,
-    shop_name        VARCHAR(255),
-    user_id          UUID,
-    CONSTRAINT pk_subscriptions PRIMARY KEY (subscription_id)
-);
-
--- changeset fedor:1777552447993-3
-ALTER TABLE subscriptions
-    ADD CONSTRAINT FK_SUBSCRIPTIONS_ON_USER FOREIGN KEY (user_id) REFERENCES local_users (id);
-
--- changeset fedor:1777552447993-4
 CREATE TABLE notifications
 (
     id             UUID NOT NULL,
@@ -35,7 +18,7 @@ CREATE TABLE notifications
     CONSTRAINT pk_notifications PRIMARY KEY (id)
 );
 
--- changeset fedor:1777552447993-5
+-- changeset fedor:1777552447993-3
 ALTER TABLE notifications
     ADD CONSTRAINT FK_NOTIFICATIONS_ON_USER FOREIGN KEY (user_id) REFERENCES local_users (id);
 

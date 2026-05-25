@@ -40,6 +40,6 @@ public class SmsSenderUtil {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-        restTemplate.postForObject(url, request, String.class);
+//       restTemplate.postForObject(url, request, String.class);
     }
 }

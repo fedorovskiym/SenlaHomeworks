@@ -62,7 +62,7 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
-    }//todo: будь готов на защите пояснить что это за класс и поверхностно рассказат как работает
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
