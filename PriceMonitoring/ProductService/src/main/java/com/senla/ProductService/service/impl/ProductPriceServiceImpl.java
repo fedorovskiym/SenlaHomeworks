@@ -368,7 +368,7 @@ public class ProductPriceServiceImpl implements ProductPriceService {
                 subscription.getProductPrice().getShopBranch().getCity().getId()
         );
 
-        List<PriceDTO> otherPrices = buildOtherPrices(productPrices);
+        List<PriceDTO> otherPrices = buildOtherPricesForSubscriptionDetails(productPrices);
 
         SubscriptionDetailsDTO subscriptionDetailsDTO = buildSubscriptionDetailsDTO(subscription, otherPrices);
         logger.info("Subscription details build");
@@ -430,6 +430,22 @@ public class ProductPriceServiceImpl implements ProductPriceService {
             throw new CsvImportException("CSV contains invalid rows: " + errors.size(), null);
         }
         return rows;
+    }
+
+    private List<PriceDTO> buildOtherPricesForSubscriptionDetails(
+            List<ProductPrice> productPrices) {
+        List<PriceDTO> otherPrices = productPrices.stream()
+                .map(productPrice -> new PriceDTO(
+                        productPrice.getPrice(),
+                        productPrice.getShopBranch().getShop().getName(),
+                        String.format("%s %s %s", productPrice.getShopBranch().getStreet(),
+                                productPrice.getShopBranch().getHouse(),
+                                productPrice.getShopBranch().getRoom()),
+                        productPrice.getShopBranch().getShop().getLogoImageUrl()
+                ))
+                .toList();
+
+        return otherPrices;
     }
 
     private List<PriceDTO> buildOtherPrices(List<ProductPrice> productPrices) {
