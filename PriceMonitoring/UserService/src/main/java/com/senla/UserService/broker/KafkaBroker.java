@@ -4,11 +4,9 @@ import com.senla.UserService.exception.KafkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -23,7 +21,6 @@ public class KafkaBroker {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Transactional
     public void sendMessageWithNewUser(UUID id, String json) {
         try {
             kafkaTemplate.executeInTransaction(t -> {
@@ -38,7 +35,6 @@ public class KafkaBroker {
         }
     }
 
-    @Transactional
     public void sendMessageWithUpdateUser(UUID id, String json) {
         try {
             kafkaTemplate.executeInTransaction(t -> {
@@ -53,7 +49,6 @@ public class KafkaBroker {
         }
     }
 
-    @Transactional
     public void sendMessageWithDeleteUser(UUID id, String json) {
         try {
             kafkaTemplate.executeInTransaction(t -> {
