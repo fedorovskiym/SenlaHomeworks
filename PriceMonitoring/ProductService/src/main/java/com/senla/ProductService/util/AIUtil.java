@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 public class AIUtil {
-    //todo: добавь в реадме чуть больше инфы про данный функционал. Чуть подробнее расккажи, будет очень круто
+
     private final ChatClient chatClient;
     private static final String PROMPT = """
             Ты анализируешь запрос пользователя для поиска продуктов питания в интернет-магазине.
