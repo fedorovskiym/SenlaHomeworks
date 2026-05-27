@@ -45,20 +45,16 @@ class LocalUserServiceImplTest {
 
     @Test
     void updateShouldUpdatePhoneNumber() {
-        LocalUser existing = new LocalUser();
-        existing.setId(id);
-        existing.setPhoneNumber("71111111111");
-
-        when(localUserRepository.findById(id)).thenReturn(Optional.of(existing));
-
         LocalUser updated = new LocalUser();
         updated.setId(id);
         updated.setPhoneNumber("72222222222");
 
+        when(localUserRepository.findById(id)).thenReturn(Optional.of(user));
+
         service.update(updated);
 
-        assertEquals("72222222222", existing.getPhoneNumber());
-        verify(localUserRepository, times(1)).update(existing);
+        assertEquals("72222222222", user.getPhoneNumber());
+        verify(localUserRepository, times(1)).update(user);
     }
 
     @Test
