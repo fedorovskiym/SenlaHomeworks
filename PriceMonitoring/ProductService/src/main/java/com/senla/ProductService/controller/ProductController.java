@@ -51,7 +51,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
-    @GetMapping(value = "/")
+    @PostMapping(value = "/search")
     public ResponseEntity<List<ProductDTO>> findAll(@RequestBody ProductSearchDTO productSearchDTO) {
         logger.info("Recieved request to find all /api/product-service/product/");
         return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(productSearchDTO));

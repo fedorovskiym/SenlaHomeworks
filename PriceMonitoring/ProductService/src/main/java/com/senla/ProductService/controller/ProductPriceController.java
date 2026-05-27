@@ -43,7 +43,7 @@ public class ProductPriceController {
         this.productPriceService = productPriceService;
     }
 
-    @PostMapping(value = "/")
+    @PostMapping(value = "/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProductPriceDTO> createProductPrice(
             @Valid @RequestBody CreateUpdateProductPriceDTO createProductPriceDTO) {
@@ -60,7 +60,7 @@ public class ProductPriceController {
         return ResponseEntity.status(HttpStatus.OK).body(productPriceService.findById(id));
     }
 
-    @GetMapping(value = "/")
+    @PostMapping(value = "/")
     public ResponseEntity<List<ProductPriceDTO>> findAllWithPagination(
             @Valid @RequestBody ProductPriceSearchDTO productPriceSearchDTO) {
         logger.info("Received request to find all product price with pagination /api/product-service/price/");

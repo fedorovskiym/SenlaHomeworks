@@ -88,7 +88,7 @@ class ProductPriceControllerTest {
     void createProductPriceShouldReturnCreatedProductPrice() throws Exception {
         when(productPriceService.save(any(CreateUpdateProductPriceDTO.class))).thenReturn(productPriceDTO);
 
-        mockMvc.perform(post("/price/")
+        mockMvc.perform(post("/price/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createUpdateProductPriceDTO)))
                 .andExpect(status().isCreated())
@@ -124,7 +124,7 @@ class ProductPriceControllerTest {
 
         when(productPriceService.findAllWithPagination(any(ProductPriceSearchDTO.class))).thenReturn(prices);
 
-        mockMvc.perform(get("/price/")
+        mockMvc.perform(post("/price/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productPriceSearchDTO)))
                 .andExpect(status().isOk())
