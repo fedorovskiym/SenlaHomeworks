@@ -118,6 +118,8 @@
 - Создавать администратора нужно через ручное изменение роли в базе данных
 - Ключ для проверки валидности JWT токена хранится на каждом из микросервисов в application.properties в поле jwt.secret.access. Выдает ключ user-service, который отдает access и refresh токен пользователю, время жизни access токена 10 минут. При истечении этого срока делается запрос /refresh с переданным refresh токеном и пользователю выдается новый access токен.
 
+---
+
 ### 8. Технологии
 1) Java 17
 2) Spring Boot (Spring Security, Spring Validation, Spring Data JPA)
