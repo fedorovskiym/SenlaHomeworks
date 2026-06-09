@@ -121,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void delete(UUID id) {
         logger.info("Deleting product by id {}", id);
         Product product = findByIdIfExists(id);
