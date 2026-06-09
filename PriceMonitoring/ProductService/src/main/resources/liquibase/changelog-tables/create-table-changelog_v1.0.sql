@@ -1,0 +1,108 @@
+-- liquibase formatted sql
+
+-- changeset fedor:1775755817881-1
+CREATE TABLE brands
+(
+    id             UUID NOT NULL,
+    name           VARCHAR(255),
+    country        VARCHAR(255),
+    logo_image_url VARCHAR(255),
+    CONSTRAINT pk_brands PRIMARY KEY (id)
+);
+
+-- changeset fedor:1775755817881-2
+CREATE TABLE price_history
+(
+    id             UUID NOT NULL,
+    product_id     UUID,
+    shop_branch_id UUID,
+    old_price      DOUBLE PRECISION,
+    new_price      DOUBLE PRECISION,
+    change_date    date,
+    CONSTRAINT pk_price_history PRIMARY KEY (id)
+);
+
+-- changeset fedor:1775755817881-3
+CREATE TABLE product_categories
+(
+    id          UUID NOT NULL,
+    name        VARCHAR(255),
+    description VARCHAR(255),
+    image_url   VARCHAR(255),
+    CONSTRAINT pk_product_categories PRIMARY KEY (id)
+);
+
+-- changeset fedor:1775755817881-4
+CREATE TABLE product_prices
+(
+    id               UUID NOT NULL,
+    product_id       UUID,
+    shop_branch_id   UUID,
+    price            DOUBLE PRECISION,
+    start_date       date,
+    discount_percent INTEGER,
+    status           VARCHAR(255),
+    CONSTRAINT pk_product_prices PRIMARY KEY (id)
+);
+
+-- changeset fedor:1775755817881-5
+CREATE TABLE products
+(
+    id          UUID NOT NULL,
+    name        VARCHAR(255),
+    description VARCHAR(255),
+    amount      DOUBLE PRECISION,
+    unit        VARCHAR(255),
+    brand_id    UUID,
+    image_url   VARCHAR(255),
+    category_id UUID,
+    CONSTRAINT pk_products PRIMARY KEY (id)
+);
+
+-- changeset fedor:1775755817881-6
+CREATE TABLE shop_branches
+(
+    id      UUID NOT NULL,
+    shop_id UUID,
+    city    VARCHAR(255),
+    address VARCHAR(255),
+    CONSTRAINT pk_shop_branches PRIMARY KEY (id)
+);
+
+-- changeset fedor:1775755817881-7
+CREATE TABLE shops
+(
+    id             UUID NOT NULL,
+    name           VARCHAR(255),
+    logo_image_url VARCHAR(255),
+    CONSTRAINT pk_shops PRIMARY KEY (id)
+);
+
+-- changeset fedor:1775755817881-8
+ALTER TABLE price_history
+    ADD CONSTRAINT FK_PRICE_HISTORY_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE ;
+
+-- changeset fedor:1775755817881-9  
+ALTER TABLE price_history
+    ADD CONSTRAINT FK_PRICE_HISTORY_ON_SHOP_BRANCH FOREIGN KEY (shop_branch_id) REFERENCES shop_branches (id) ON DELETE CASCADE ;
+
+-- changeset fedor:1775755817881-10
+ALTER TABLE products
+    ADD CONSTRAINT FK_PRODUCTS_ON_BRAND FOREIGN KEY (brand_id) REFERENCES brands (id) ON DELETE CASCADE ;
+
+-- changeset fedor:1775755817881-11
+ALTER TABLE products
+    ADD CONSTRAINT FK_PRODUCTS_ON_CATEGORY FOREIGN KEY (category_id) REFERENCES product_categories (id) ON DELETE RESTRICT ;
+
+-- changeset fedor:1775755817881-12
+ALTER TABLE product_prices
+    ADD CONSTRAINT FK_PRODUCT_PRICES_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE ;
+
+-- changeset fedor:1775755817881-13
+ALTER TABLE product_prices
+    ADD CONSTRAINT FK_PRODUCT_PRICES_ON_SHOP_BRANCH FOREIGN KEY (shop_branch_id) REFERENCES shop_branches (id) ON DELETE CASCADE ;
+
+-- changeset fedor:1775755817881-14
+ALTER TABLE shop_branches
+    ADD CONSTRAINT FK_SHOP_BRANCHES_ON_SHOP FOREIGN KEY (shop_id) REFERENCES shops (id) ON DELETE CASCADE ;
+

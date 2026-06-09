@@ -1,0 +1,141 @@
+package com.senla.ProductService.model;
+
+import com.senla.ProductService.model.enums.PriceStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
+
+@Entity
+@Table(name = "product_prices")
+public class ProductPrice {
+
+    @Id
+    @GeneratedValue
+    @UuidGenerator
+    @Column(name = "id")
+    private UUID id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_branch_id")
+    private ShopBranch shopBranch;
+    @Column(name = "price")
+    private Double price;
+    @Column(name = "start_date")
+    private LocalDate startDate;
+    @Column(name = "discount_percent")
+    private Integer discountPercent;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private PriceStatus status;
+
+
+    public ProductPrice(UUID id, Product product, ShopBranch shopBranch,
+                        Double price, LocalDate startDate, Integer discountPercent, PriceStatus status) {
+        this.id = id;
+        this.product = product;
+        this.shopBranch = shopBranch;
+        this.price = price;
+        this.startDate = startDate;
+        this.discountPercent = discountPercent;
+        this.status = status;
+    }
+
+    public ProductPrice() {
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public ShopBranch getShopBranch() {
+        return shopBranch;
+    }
+
+    public void setShopBranch(ShopBranch shopBranch) {
+        this.shopBranch = shopBranch;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public Integer getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(Integer discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public PriceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PriceStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductPrice that = (ProductPrice) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "ProductPrice{" +
+                "id=" + id +
+                ", product=" + product +
+                ", shop=" + shopBranch +
+                ", price=" + price +
+                ", startDate=" + startDate +
+                ", discountPercent=" + discountPercent +
+                ", status=" + status +
+                '}';
+    }
+}

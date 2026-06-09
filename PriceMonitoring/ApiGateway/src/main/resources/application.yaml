@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ApiGateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+          - id: user-service
+            uri: lb://USERSERVICE
+            predicates:
+              - Path=/api/user-service/**
+          - id: product-service
+            uri: lb://PRODUCTSERVICE
+            predicates:
+              - Path=/api/product-service/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
